@@ -41,6 +41,10 @@
 			<email>japarejo@gmail.com</email>
 			<url>http://www.isa.us.es</url>
 		</developer>
+		<developer>
+			<name>Ivamirbal</name>
+			<email>ivamirbal@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
