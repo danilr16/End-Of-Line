@@ -40,6 +40,10 @@
 			<name>Estrella</name>
 			<email>estangpos@alum.us.es</email>
 		</developer>
+		<developer>
+			<name>Ivamirbal</name>
+			<email>ivamirbal@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
