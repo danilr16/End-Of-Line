@@ -48,6 +48,10 @@
 			<name>Daniel</name>
 			<email>danlopram@alum.us.es</email>
 		</developer>
+		<developer>
+			<name>Diego</name>
+			<email>dieterher@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
