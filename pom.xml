@@ -44,6 +44,10 @@
 			<name>Ivamirbal</name>
 			<email>ivamirbal@alum.us.es</email>
 		</developer>
+		<developer>
+			<name>Daniel</name>
+			<email>danlopram@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
