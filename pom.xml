@@ -52,6 +52,10 @@
 			<name>Diego</name>
 			<email>dieterher@alum.us.es</email>
 		</developer>
+		<developer>
+			<name>AaronMA</name>
+			<email>aarmayans@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
