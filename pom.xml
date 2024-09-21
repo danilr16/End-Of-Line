@@ -3,7 +3,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.us.dp1</groupId>
-	<artifactId>lx-xy-2425-game-name</artifactId>
+	<artifactId>l4-2-2425-end-of-line</artifactId>
 	<version>0.1.0.BUILD-SNAPSHOT</version>
 
 	<parent>
@@ -11,7 +11,7 @@
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.3.3</version>
 	</parent>
-	<name>DP1 Game Template</name>
+	<name>2024-2025-L4-02</name>
 
 	<properties>
 
@@ -37,9 +37,20 @@
 
 	<developers>
 		<developer>
-			<name>JAParejo</name>
-			<email>japarejo@gmail.com</email>
-			<url>http://www.isa.us.es</url>
+			<name>Estrella</name>
+			<email>estangpos@alum.us.es</email>
+		</developer>
+		<developer>
+			<name>Ivamirbal</name>
+			<email>ivamirbal@alum.us.es</email>
+		</developer>
+		<developer>
+			<name>Daniel</name>
+			<email>danlopram@alum.us.es</email>
+		</developer>
+		<developer>
+			<name>Diego</name>
+			<email>dieterher@alum.us.es</email>
 		</developer>
 		<developer>
 			<name>AaronMA</name>
