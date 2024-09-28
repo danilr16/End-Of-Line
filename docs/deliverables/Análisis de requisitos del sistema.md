@@ -18,7 +18,9 @@ _Ej2: Veterinario: Profesional de la salud animal con titulación universitaria 
 
 _Ej3: Administrador: Dueño de la clínica que se encarga de dar de alta veterinarios y gestionar la información registrada en la aplicación de la clínica._
 
+Administrador: Dueño o persona responsable que se encarga de mantener el sistema del juego y gestionar el uso de ese sistema.
 
+Jugador: Persona o usuario que hace uso del sistema, con el fin de jugar al juego de mesa.
 
 ## Historias de Usuario
 
@@ -30,7 +32,23 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
+ ### HU-1: Lista de partidas en curso (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como administrador quiero que el sistema liste las partidas en curso, incluyendo el creador y participantes de dicha partida, para poder llevar un seguimiento de las partidas que se están jugando.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
+ ### HU-2: Lista de partidas jugadas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como administrador quiero que el sistema liste todas las partidas jugadas y sus participantes, para poder tener un registro y control de las partidas jugadas del sistema.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia.|
+
+ ### HU-3: Lista de partidas de cada jugador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como jugador quiero que el sistema liste mis partidas creadas y jugadas, para poder llevar un registro de mis partidas.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
 ## Diagrama conceptual del sistema
 _En esta sección debe proporcionar un diagrama UML de clases que describa el modelo de datos a implementar en la aplicación. Este diagrama estará anotado con las restricciones simples (de formato/patrón, unicidad, obligatoriedad, o valores máximos y mínimos) de los datos a gestionar por la aplicación. _
