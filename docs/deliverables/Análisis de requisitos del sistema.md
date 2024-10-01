@@ -190,12 +190,40 @@ _Si deseais usar esta herramienta para generar vuestro(s) diagramas con esta her
 ### R-< X > < Nombre Regla de negocio >
 _< Descripción de la restricción a imponer >_
 
-_Ej:_ 
-### R1 – Diagnósticos imposibles
-El diagnóstico debe estar asociado a una enfermedad que es compatible con el tipo de mascota de su visita relacionada. Por ejemplo, no podemos establecer como enfermedad diagnosticada una otitis cuando la visita está asociada a una mascota que es un pez, porque éstos no tienen orejas ni oídos (y por tanto no será uno de los tipos de mascota asociados a la enfermedad otitis en el vademecum).
-
-…
-
 _Muchas de las reglas del juego se transformarán en nuestro caso en reglas de negocio, por ejemplo, “la carta X solo podrá jugarse en la ronda Y si en la ronda anterior se jugó la carta Z”, o “en caso de que un jugador quede eliminado el turno cambia de sentido”_
+
+### R1 - Flujo de línea
+La entrada de las cartas que se coloquen debe ir unida a una de las salidas de la carta que se puso en la ronda anterior, excepto en la primera ronda, en la que la entrada de la primera carta que se coloque en el tablero debe ir unida a la salida de la carta de inicio.
+
+### R2 - Orden de turno
+En la primera ronda se compara la iniciativa de la primera carta del mazo de cada jugador, el que tenga un menor número de iniciativa comenzará el juego, en caso de empate se repetirá el proceso hasta resolverlo. En las rondas siguientes se usa la misma lógica, pero se comparan las iniciativas de la última carta colocada por cada juagdor, si hubiera empate se miran las cartas que se pusieron en la ronda anterior.
+
+### R3 - Uso de poderes
+No se podrá usar ninguno de los poderes hasta la cuarta ronda.
+
+### R4 - Gasto de energía
+Cada vez que un jugador utilice un poder perderá un punto de energía, solo se puede gastar un punto por ronda.
+
+### R5 - Tamaño de los mazos
+Cada jugador dispone de un mazo cuyo tamaño viene dado por: 50/número de jugadores. Independientemente del número de jugadores en la partida, cada uno de ellos deberá tener una mano de 5 cartas, salvo uso de poderes.
+
+### R6 - Cambio de mano inicial
+Antes de comenzar la primera ronda, los jugadores tienen la posibilidad de cambiar su mano si no les convence, esto solo se puede hacer una vez.
+
+### R7 - Emplazamiento de cartas
+En la primera ronda cada jugador coloca una sola carta, en las rondas posteriores cada jugador debe colocar 2 cartas obligatoriamnete, salvo uso de poderes.
+
+### R8 - Condición de derrota
+Si en una ronda uno de los jugadores no puede colocar alguna de las 2 cartas, quedará eliminado.
+
+### R9 - Límite de jugadores por partida
+Cada partida debe tener entre 1 y 8 jugadores, dependiendo del modo de juego.
+
+### R10 - Límite de amigos
+Cada jugador podrá agregar como máximo a 50 amigos.
+
+### R11 - Restricciones de espectador
+Todos los participantes de una partida deben ser amigos de un usuario para que este pueda unirse a esa partida como espectador.
+
 
 
