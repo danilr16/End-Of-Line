@@ -143,6 +143,20 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 
 
 
+ ### HU-19: Seleccionar modo de juego (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como jugador quiero seleccionar el modo de juego para configurar una nueva partida.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+
+ ### HU-20: Crear partida (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como jugador quiero crear la partida para jugar.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+
 ## Diagrama conceptual del sistema
 _En esta sección debe proporcionar un diagrama UML de clases que describa el modelo de datos a implementar en la aplicación. Este diagrama estará anotado con las restricciones simples (de formato/patrón, unicidad, obligatoriedad, o valores máximos y mínimos) de los datos a gestionar por la aplicación. _
 
