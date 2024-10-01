@@ -46,90 +46,101 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-4: Sistema de amistad (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
-|Como jugador quiero que el sistema me permita agregar y gestionar amigos, para poder ver si están en línea.| 
+ ### HU-4: Autenticación y gestión de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
+|Como jugador, quiero poder registrarme (sign-up) añadiendo un nombre de usuario y una contraseña, así como iniciar sesión (login) y cerrar sesión (logout).| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-5: Sistema de espectador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
+
+ ### HU-5: Edición de perfil (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
+|Como jugador quiero editar mi perfil personal, cambiando mi foto de perfil y nombre de usuario.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+  
+### HU-6: Listado de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
+| Como administrador quiero poder acceder a un listado de usuarios paginado. | 
+| ---- |
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+
+ ### HU-7: CRUD usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
+| Como administrador quiero poder realizar las operaciones básicas en la base de datos de usuarios con comprobación de seguridad y borrado en cascada de datos. | 
+| ---- |
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+
+ ### HU-8: Sistema de espectador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
 |Como jugador quiero que el sistema me permita unirme como espectador a una partida de mis amigos (todos los participantes deben ser mis amigos), para poder verlos jugar.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-6: Sistema de invitación (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
+ ### HU-9: Sistema de invitación (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
 |Como jugador quiero que el sistema me permita invitar a personas a una partida, para poder jugar o ver una partida con ellos.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-7: Chat público durante partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
+ ### HU-10: Chat público durante partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/32)
 |Como jugador quiero que el sistema tenga un chat durante la partida, para poder comunicarme con el resto de jugadores.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-8: Datos relativos a partidas del jugador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-11: Datos relativos a partidas del jugador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero que el sistema me muestre el número de partidas que llevo jugadas, para conocer mis datos de juego.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
 
- ### HU-9: Datos globales de partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-12: Datos globales de partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero poder ver datos globales de partidas (máximo y mínimo número de partidas, promedio global de partidas), para poder comparar esas estadísticas con las mías.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-10: Datos de duración de partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-13: Datos de duración de partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero poder ver datos individuales y globales relativos a la duración de las partidas (partida más larga, más corta, cantidad total y promedia de tiempo de juego), para conocer más información sobre mis partidas.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-11: Datos de número de jugadores (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-14: Datos de número de jugadores (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero que el sistema ofrezca estadísticas globales e individuales sobre el número de jugadores por partida (máximo, mínimo, total y promedio), para saber qué modo de juego es el más jugado.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-12: Estadísticas específicas de juego (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-15: Estadísticas específicas de juego (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero que el sistema me muestre estadísticas específicas de mis partidas (puntos en partidas individuales, cartas favoritas, poderes más utilizados), para conocer datos relativos a mi forma de jugar.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-13: Ranking global (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-16: Ranking global (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero que el sistema muestre un ranking de jugadores por partidas ganadas y por puntos en partidas individuales, para saber quiénes son los mejores jugadores.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-14: Logros de usuario (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-17: Logros de usuario (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero poder ver los logros que he conseguido, para tener una visión general de mis hazañas en el juego.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
   
- ### HU-15: Logros de usuario (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+ ### HU-18: Logros de administrador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como administrador quiero poder crear y editar logros desde la interfaz.|
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
-  
-### HU-16: Listado de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
-| Como administrador quiero poder acceder a un listado de usuarios paginado. | 
-| ---- |
-|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
-|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
- ### HU-17: CRUD usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
-| Como administrador quiero poder realizar las operaciones básicas en la base de datos de usuarios con comprobación de seguridad y borrado en cascada de datos. | 
-| ---- |
-|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
-|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
 
 ## Diagrama conceptual del sistema
