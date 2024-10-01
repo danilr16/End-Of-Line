@@ -26,6 +26,8 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
+
+
  ### HU-1: Lista de partidas en curso (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
 |Como administrador quiero que el sistema liste las partidas en curso, incluyendo el creador y participantes de dicha partida, para poder llevar un seguimiento de las partidas que se están jugando.| 
 |-----|
@@ -74,6 +76,7 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
+
  ### HU-9: Datos globales de partidas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como jugador quiero poder ver datos globales de partidas (máximo y mínimo número de partidas, promedio global de partidas), para poder comparar esas estadísticas con las mías.| 
 |-----|
@@ -109,6 +112,25 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+  
+ ### HU-15: Logros de usuario (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
+|Como administrador quiero poder crear y editar logros desde la interfaz.|
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+  
+### HU-16: Listado de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
+| Como administrador quiero poder acceder a un listado de usuarios paginado. | 
+| ---- |
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
+ ### HU-17: CRUD usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/30)
+| Como administrador quiero poder realizar las operaciones básicas en la base de datos de usuarios con comprobación de seguridad y borrado en cascada de datos. | 
+| ---- |
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
 
 ## Diagrama conceptual del sistema
 _En esta sección debe proporcionar un diagrama UML de clases que describa el modelo de datos a implementar en la aplicación. Este diagrama estará anotado con las restricciones simples (de formato/patrón, unicidad, obligatoriedad, o valores máximos y mínimos) de los datos a gestionar por la aplicación. _
