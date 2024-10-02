@@ -219,10 +219,7 @@ Si en una ronda uno de los jugadores no puede colocar alguna de las 2 cartas, qu
 ### R9 - Límite de jugadores por partida
 Cada partida debe tener entre 1 y 8 jugadores, dependiendo del modo de juego.
 
-### R10 - Límite de amigos
-Cada jugador podrá agregar como máximo a 50 amigos.
-
-### R11 - Restricciones de espectador
+### R10 - Restricciones de espectador
 Todos los participantes de una partida deben ser amigos de un usuario para que este pueda unirse a esa partida como espectador.
 
 
