@@ -2,8 +2,6 @@
 
 ## Introducción
 
-_En esta sección debes describir de manera general cual es la funcionalidad del proyecto a rasgos generales. ¿Qué valor puede aportar? ¿Qué objetivos pretendemos alcanzar con su implementación? ¿Cuántos jugadores pueden intervenir en una partida como máximo y como mínimo? ¿Cómo se desarrolla normalmente una partida?¿Cuánto suelen durar?¿Cuando termina la partida?¿Cuantos puntos gana cada jugador o cual es el criterio para elegir al vencedor?_
-
 El proyecto se trata de la implementación web del juego End of Line. Su objetivo es ofrecer una versión accesible y entretenida del juego de mesa, permitiendo partidas en línea entre 1 y 8 jugadores. Durante las partidas los jugadores van colocando sus cartas formando un flujo sobre el tablero, con el objetivo de cortar el flujo del resto de jugadores (o de rellenar el tablero completo en el modo solitario).
 
 La duración de las partidas varía según el número de jugadores, pero suele rondar los 3-10 minutos. La partida finaliza cuando un jugador logra que el resto no pueda continuar su flujo cuando llegue su turno.
@@ -25,7 +23,6 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
-
 
  ### HU-1: Lista de partidas en curso (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/29)
 |Como administrador quiero que el sistema liste las partidas en curso, incluyendo el creador y participantes de dicha partida, para poder llevar un seguimiento de las partidas que se están jugando.| 
@@ -134,7 +131,6 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
-  
 
  ### HU-19: Logros de administrador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/31)
 |Como administrador quiero poder crear y editar logros desde la interfaz.|
@@ -155,36 +151,97 @@ _Os recomentamos usar la siguiente plantilla de contenidos que usa un formato ta
 |Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
 ## Diagrama conceptual del sistema
-_En esta sección debe proporcionar un diagrama UML de clases que describa el modelo de datos a implementar en la aplicación. Este diagrama estará anotado con las restricciones simples (de formato/patrón, unicidad, obligatoriedad, o valores máximos y mínimos) de los datos a gestionar por la aplicación. _
-
-_Recuerde que este es un diagrama conceptual, y por tanto no se incluyen los tipos de los atributos, ni clases específicas de librerías o frameworks, solamente los conceptos del dominio/juego que pretendemos implementar_
-Ej:
 
 ```mermaid
+---
+title: End Of Line
+---
 classDiagram
-    note "From Duck till Zebra"
-    Animal <|-- Duck
-    note for Duck "can fly\ncan swim\ncan dive\ncan help in debugging"
-    Animal <|-- Fish
-    Animal <|-- Zebra
-    Animal : age
-    Animal : gender
-    class Duck{
-        beakColor        
+    class TipoCarta {
+        TIPO_1
+        TIPO_2_IZQ
+        TIPO_2_DER
+        TIPO_3_IZQ
+        TIPO_3_DER
+        TIPO_4
+        TIPO_5
+        TIPO_0
     }
-    class Fish{
-       sizeInFeet
+    <<enumeration>> Tipo Carta
+    class Tipo Tablero {
+        JUGADORES_2
+        JUGADORES_3
+        JUGADORES_4
+        JUGADORES_5
+        JUGADORES_6
+        JUGADORES_7
+        JUGADORES_8
     }
-    class Zebra{
-        is_wild
-        
+    <<enumeration>> Tipo Tablero
+    class Estado Partida {
+        EN_CURSO
+        FINALIZADA
     }
+    <<enumeration>> Estado Partida
+    class Partida {
+        modoJuego
+        numeroJugadores
+        chat
+        numTurno
+        orden
+        duracion
+        estado: EstadoPartida
+    }
+    class Jugador {
+        puntuacion
+        energia
+    }
+    class Espectador {
+    }
+    class Mazo {
+        numCartas
+    }
+    class Mano {
+        numCartas
+    }
+    class Tablero {
+        tipo: TipoTablero
+        numFilas
+        numColumnas
+    }
+    class Celda {
+        ocupada
+    }
+    class Carta {
+        tipo: TipoCarta
+        iniciativa
+        rotacion
+    }
+    class Output {
+        salida
+        entrada
+    }
+    class Usuario {
+        nombre
+        contraseña
+        foto
+        logros
+        victorias
+    }
+    Partida "*" -- "1..*" Usuario
+    Partida *-- "1" Tablero
+    Partida "1" -- "1..*" Mazo
+    Usuario "*" -- "*" Usuario: "esAmigo"
+    Jugador *-- "1" Mano
+    Jugador "1" -- "1..*" Mazo
+    Carta "0..1" -- "0..1" Celda
+    Mazo "0..1" -- "*" Carta
+    Mano "0..1" -- "*" Carta
+    Tablero *-- "1..*" Celda
+    Carta *-- "1..*" Output
+    Usuario <|-- Jugador
+    Usuario <|-- Espectador
 ```
-_Si vuestro diagrama se vuelve demasiado complejo, siempre podéis crear varios diagramas para ilustrar todos los conceptos del dominio. Por ejemplo podríais crear un diagrama para cada uno de los módulos que quereis abordar. La única limitación es que hay que ser coherente entre unos diagramas y otros si nos referimos a las mismas clases_
-
-_Puede usar la herramienta de modelado que desee para generar sus diagramas de clases. Para crear el diagrama anterior nosotros hemos usado un lenguaje textual y librería para la generación de diagramas llamada Mermaid_
-
-_Si deseais usar esta herramienta para generar vuestro(s) diagramas con esta herramienta os proporcionamos un [enlace a la documentación oficial de la sintaxis de diagramas de clases de _ermaid](https://mermaid.js.org/syntax/classDiagram.html)_
 
 ## Reglas de Negocio
 ### R-< X > < Nombre Regla de negocio >
