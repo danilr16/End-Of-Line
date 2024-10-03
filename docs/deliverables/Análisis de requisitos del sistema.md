@@ -196,6 +196,13 @@ classDiagram
         puntuacion
         energia
     }
+    class Logro {
+        nombre
+        descripcion
+        imagen
+        threshold
+        metrica
+    }
     class Espectador {
     }
     class Mazo {
@@ -225,7 +232,6 @@ classDiagram
         nombre
         contraseña
         foto
-        logros
         victorias
     }
     Partida "*" -- "1..*" Usuario
@@ -241,6 +247,7 @@ classDiagram
     Carta *-- "1..*" Output
     Usuario <|-- Jugador
     Usuario <|-- Espectador
+    Usuario "*" -- "*" Logro
 ```
 
 ## Reglas de Negocio
