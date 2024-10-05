@@ -7,10 +7,11 @@ export default function Home(){
     return(
         <div className="home-page-container">
             <div className="hero-div">
-                <h1>Your game</h1>
-                <h3>---</h3>
-                <img src={logo}></img>
-                <h3>Do you want to play?</h3>                
+                <h1>END OF LINE</h1>
+                <div className="button-container">
+                    <button className="big-button">Create</button>
+                    <button className="big-button">Join</button>
+                </div>               
             </div>
         </div>
     );

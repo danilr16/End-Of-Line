@@ -8,12 +8,12 @@
 }
 
 @font-face {
-    font-family: 'american-typewriter'; /*a name to be used later*/
-    src: url('./static/fonts/American\ Typewriter\ Bold.ttf'); /*URL to font*/
+    font-family: 'conthrax'; /*a name to be used later*/
+    src: url('./static/fonts/Conthrax.ttf'); /*URL to font*/
 }
 
 * {
-    font-family: 'american-typewriter';
+    font-family: 'conthrax';
 }
 
 /* div {

@@ -5,15 +5,20 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../../images/home_background.jpg');
+    background-color: hsl(240, 9%, 15%);
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.navbar{
+    background-color: #FDE67B; 
+    color: #291d0b;
+}
+
 .hero-div{
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(82, 82, 82, 0.3);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -26,11 +31,33 @@
 .hero-div h1{
     font-size: 3rem;
     font-weight: 700;
-    color: #2f324f;
+    color: #ffffff;
     text-align: center;
-    text-transform: uppercase;
 }
 
 .hero-div h3{
     text-align: center;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers the buttons */
+    margin-top: 20px; /* Adds some space above the buttons */
+}
+
+.big-button {
+    padding: 15px 30px; /* Increase button size */
+    font-size: 18px; /* Font size for the button text */
+    margin: 0 10px; /* Space between buttons */
+    background-color: #FDE67B; /* Button color */
+    color: rgb(31, 19, 3); /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Cursor changes to pointer on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.big-button:hover {
+    background-color: #564619; /* Darker shade on hover */
+    color: white; /* Text color */
 }
