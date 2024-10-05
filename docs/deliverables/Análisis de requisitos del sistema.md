@@ -17,12 +17,6 @@ Jugador: Persona o usuario que hace uso del sistema, con el fin de disfrutar del
 ## Historias de Usuario
 
 A continuación se definen  todas las historias de usuario a implementar:
-_Os recomentamos usar la siguiente plantilla de contenidos que usa un formato tabular:_
- ### HU-(ISSUE#ID): Nombre ([Enlace a la Issue asociada a la historia de usuario]()
-|Descripción de la historia siguiendo el esquema:  "Como <rol> quiero que el sistema <funcionalidad>  para poder <objetivo/beneficio>."| 
-|-----|
-|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
-|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
 
  ### HU-1: Lista de partidas en curso (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/45)
 |Como administrador quiero que el sistema liste las partidas en curso, incluyendo el creador y participantes de dicha partida, para poder llevar un seguimiento de las partidas que se están jugando.| 
@@ -251,10 +245,6 @@ classDiagram
 ```
 
 ## Reglas de Negocio
-### R-< X > < Nombre Regla de negocio >
-_< Descripción de la restricción a imponer >_
-
-_Muchas de las reglas del juego se transformarán en nuestro caso en reglas de negocio, por ejemplo, “la carta X solo podrá jugarse en la ronda Y si en la ronda anterior se jugó la carta Z”, o “en caso de que un jugador quede eliminado el turno cambia de sentido”_
 
 ### R1 - Cartas de Inicio
 Cartas que dan comienzo a la línea del jugador en cada partida.
