@@ -183,8 +183,16 @@ classDiagram
         FINALIZADA
     }
     <<enumeration>> Estado Partida
+    class Modo Juego {
+       VERSUS
+       PUZLE_SOLITARIO
+       SOLITARIO_CLASICO
+       PUZLE_COPERATIVO
+       TEAM_BATTLE 
+    }
+    <<enumeration>> Modo Juego
     class Partida {
-        modoJuego
+        modoJuego: ModoJuego
         numeroJugadores
         chat
         numTurno
@@ -257,7 +265,7 @@ _< Descripción de la restricción a imponer >_
 _Muchas de las reglas del juego se transformarán en nuestro caso en reglas de negocio, por ejemplo, “la carta X solo podrá jugarse en la ronda Y si en la ronda anterior se jugó la carta Z”, o “en caso de que un jugador quede eliminado el turno cambia de sentido”_
 
 ### R1 - Cartas de Inicio
-Cartas que dan comienzo a la línea del jugador en cada partida.
+Las cartas de Inicio indican el lugar y la dirección por la que un jugador puede empezar a colocar cartas de línea.
 
 ### R2 - Cartas de línea
 Cartas que forman el recorrido de la línea de cada jugador en la partida. Se dividen en entrada, salidas e iniciativa.
@@ -269,7 +277,7 @@ Cartas que representan la energía del jugador durante la partida. Empieza la pa
 Cada jugador comienza con cinco cartas en su mano salvo el modo de juego solitario clásico.
 
 ### R5 - Inicio de partida solitario clásico
-El jugador comienza sin cartas en la mano.
+El jugador comienza sin cartas en la mano y va robando a lo largo de las rondas una carta y decidiendo si usarla o descartarla.
 
 ### R7 - Cambio de mano inicial
 Antes de comenzar la primera ronda, los jugadores tienen la posibilidad de cambiar su mano si no les convence, esto solo se puede hacer una vez.
@@ -287,8 +295,7 @@ En la primera ronda se compara la iniciativa de la primera carta del mazo de cad
 Cada ronda comienza con el orden de juego establecido, cada jugador pondrá sus cartas de línea correspondientes. La ronda termina cuando cada jugador ha colocado sus cartas en el tablero y se ha ejecutado la fase de robo salvo en el solitario clásico.
 
 ### R12 - Fase de robo
-Tras colocar las cartas de línea en el tablero cada jugador deberá robas cartas de su mazo hasta volver a tener 5 en la mano salvo el modo de juego solitario clásico.
-
+Tras colocar las cartas de línea en el tablero cada jugador deberá robas cartas de su mazo hasta volver a tener 5 en la mano, salvo el modo de juego solitario clásico.
 
 ### R13 - Ronda solitario clásico
 En cada ronda el jugador va robando las cartas de su mazo de una en una decidiendo si colocarla en el tablero continuando su línea o descartarla boca arriba en una pila de descarte. Solo colocará una carta en el tablero por ronda y tendrá la opción de colocar posteriormente la carta de la parte superior de la pila de descarte en el tablero.
@@ -297,7 +304,7 @@ En cada ronda el jugador va robando las cartas de su mazo de una en una decidien
 Corresponde al modo solitario clásico. Es una pila de cartas en la que el jugador podrá descartar las cartas no interesadas para la ronda. 
 
 ### R15 - Salto de línea
-Habilidad que permite saltar la línea de tu compañero en un turno consumiendo un punto de energía, en ningún momento podras continuar la línea de tu compañero. Corresponde al modo de juego Team Battle.
+Habilidad que permite saltar una carta de línea de tu compañero en un turno consumiendo un punto de energía, en ningún momento podras continuar la línea de tu compañero. Corresponde al modo de juego Team Battle.
 
 ### R16 - Uso de poderes
 No se podrá usar ninguno de los poderes hasta la cuarta ronda. Solo se puede usar los poderes en tu turno.
@@ -318,7 +325,7 @@ Permite continuar tu línea en tu penúltima carta de línea colocada en vez de 
 Permite robar una carta de línea adicional.
 
 ### R22 - Tamaño de los mazos
-Cada jugador dispone de un mazo cuyo tamaño viene dado por: 50/número de jugadores. Independientemente del número de jugadores en la partida, cada uno de ellos deberá tener una mano de 5 cartas, salvo uso de poderes.
+Cada jugador dispone de un mazo cuyo tamaño es de veinticinco cartas. Independientemente del número de jugadores en la partida, cada uno de ellos deberá tener una mano de cinco cartas, salvo uso de poderes.
 
 ### R23 - Condición de derrota
 Si en una ronda uno de los jugadores no puede colocar alguna de las 2 cartas, quedará eliminado.
@@ -330,10 +337,10 @@ Cada partida debe tener entre 1 y 8 jugadores, dependiendo del modo de juego. El
 Las áreas de juego dependen del modo de juego que se eliga y el número de jugadores de ese modo. En el modo versus o battle royale el área de juego para dos y tres personas es de 7x7, para cuatro y cinco personas de 9x9, para seis y siete personas de 11x11 y para ocho personas de 13x13. En el modo puzzle solitario el área de juego es 5x5 mientras que en el cooperativo el área es la misma al de modo versus según los participantes. Por último el team battle tiene la misma área de juego que el modo battle royale ya que también depende de los jugadores. 
 
 ### R26 - Limites laterales
-El área de juego está limitada por una cuadrícula cuyos bordes están conectados ortogonalmente (Arriba-Abajo; Izquierda-Derecha)
+El área de juego está limitada por una cuadrícula cuyos bordes están conectados ortogonalmente (Arriba-Abajo; Izquierda-Derecha). Estos límites no pueden ser traspasados por los jugadores, pero pueden colocar cartas de línea contiguas a los límites y continuar colocando cartas de línea por el límite opuesto y contrario a ese, siempre y cuando se siga el flujo.
 
 ### R27 - Victoria puzle solitario y solitario clásico
-El objetivo es cubrir la totalidad del área de juego de 5x5.
+El objetivo es cubrir la totalidad del área de juego de 5x5. La puntuación final del jugador es: la suma de la iniciativa de la(s) carta(s) sobrante(s) más el número de puntos de energia no consumidos.
 
 ### R28 - Victoria cooperativo
 El objetivo es cubrir la totalidad del área de juego que dependerá del número de jugadores.
