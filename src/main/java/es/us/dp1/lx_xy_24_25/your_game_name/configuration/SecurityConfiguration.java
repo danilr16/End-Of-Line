@@ -71,6 +71,7 @@ public class SecurityConfiguration {
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
+			//.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games/")).hasAuthority(ADMIN)
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
 			.anyRequest().authenticated())					
 			

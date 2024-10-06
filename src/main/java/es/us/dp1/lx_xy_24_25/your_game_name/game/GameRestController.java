@@ -1,0 +1,65 @@
+package es.us.dp1.lx_xy_24_25.your_game_name.game;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
+import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.Authorities;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+import io.micrometer.core.ipc.http.HttpSender.Response;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@RestController
+@RequestMapping("api/v1/games/")
+@SecurityRequirement(name = "bearerAuth")
+class GameRestController {
+
+    private final GameService gameService;
+    
+    
+
+    @Autowired
+    public GameRestController(GameService gameService){
+        this.gameService = gameService;
+        
+       
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<Game>> findAll(){
+        List<Game>  res = (List<Game>) gameService.findAllForAdmin();
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Game> create(@RequestBody @Valid Game game){
+        Game savedGame = gameService.saveGame(game);
+        return new ResponseEntity<>(savedGame,HttpStatus.CREATED);
+    }
+
+
+
+
+
+    
+
+
+    
+
+
+
+}
