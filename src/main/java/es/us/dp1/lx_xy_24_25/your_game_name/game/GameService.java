@@ -32,6 +32,10 @@ public class GameService {
 
     }
 
+    public Iterable<Game> findAllByAuthority(String auth) {
+		return gameRepository.findAllByAuthority(auth);
+	}
+
     @Transactional
     public Game saveGame(Game game) throws DataAccessException {
         gameRepository.save(game);
