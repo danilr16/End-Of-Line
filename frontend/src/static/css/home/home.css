@@ -5,15 +5,20 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../../images/home_background.jpg');
+    background-color: hsl(240, 9%, 15%);
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.navbar{
+    background-color: #FDE67B; 
+    color: #291d0b;
+}
+
 .hero-div{
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(82, 82, 82, 0.3);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -26,11 +31,160 @@
 .hero-div h1{
     font-size: 3rem;
     font-weight: 700;
-    color: #2f324f;
+    color: #ffffff;
     text-align: center;
-    text-transform: uppercase;
 }
 
 .hero-div h3{
     text-align: center;
 }
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; 
+}
+
+.big-button {
+    padding: 15px 30px; 
+    font-size: 18px; 
+    margin: 0 10px;
+    background-color: #FDE67B; 
+    color: rgb(31, 19, 3); 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+}
+
+.big-button:hover {
+    background-color: #564619; 
+    color: white; 
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.blurred {
+    filter: blur(0px);
+}
+
+
+.createModal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.186); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; 
+}
+
+
+.createModal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    min-height: 200px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2000;
+    text-align: center;
+    position: relative;
+    display: block; 
+    margin: 0 auto; 
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-right: 18px;
+    width: 100%; 
+}
+
+.form-group input[type="checkbox"] {
+    width: 30px; 
+    height: 30px;
+    margin-left: 8px;
+    vertical-align: middle; 
+    cursor: pointer; 
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between; 
+    margin-bottom: 20px; 
+}
+
+
+.form-group label {
+    margin-right: 10px; 
+    font-size: 16px;
+}
+
+.createModal h2 {
+    margin-bottom: 20px;
+}
+
+.createModal input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.createModal-buttons .big-button {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+
+.form-group {
+    display: flex;
+    align-items: center; 
+    margin-bottom: 20px;
+    width: 100%; 
+}
+
+.form-group label {
+    margin-right: 10px; 
+    font-size: 16px;
+}
+
+.createModal select {
+    flex: 1; 
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    min-width: 200px;
+}
+
+
+.createModal-buttons {
+    margin-top: 20px; 
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+

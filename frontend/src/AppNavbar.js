@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import tokenService from './services/token.service';
 import jwt_decode from "jwt-decode";
 import NavBarDropdown from './components/NavBarDropdown';
+import { FaBell } from "react-icons/fa";
+import "./static/css/home/home.css";
+
 
 function AppNavbar() {
     const [roles, setRoles] = useState([]);
@@ -25,13 +28,18 @@ function AppNavbar() {
     let userLinks = <></>;
     let userLogout = <></>;
     let publicLinks = <></>;
+    let publicLinks2 = <>
+        <NavItem>
+            <NavLink style={{ color: "#1A1207" }} id="rules" tag={Link} to="/rules">Rules</NavLink>
+        </NavItem>
+    </>
 
     roles.forEach((role) => {
         if (role === "ADMIN") {
             adminLinks = (
                 <>                    
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/users">Users</NavLink>
+                        <NavLink style={{ color: "#1A1207" }} tag={Link} to="/users">Users</NavLink>
                     </NavItem>
                 </>
             )
@@ -41,17 +49,17 @@ function AppNavbar() {
     if (!jwt) {
         publicLinks = (
             <>
-                <NavItem>
+                {/* <NavItem>
                     <NavLink style={{ color: "white" }} id="docs" tag={Link} to="/docs">Docs</NavLink>
                 </NavItem>
                 <NavItem>
                     <NavLink style={{ color: "white" }} id="plans" tag={Link} to="/plans">Pricing Plans</NavLink>
+                </NavItem> */}
+                <NavItem>
+                    <NavLink style={{ color: "#1A1207" }} id="register" tag={Link} to="/register">Register</NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink style={{ color: "white" }} id="register" tag={Link} to="/register">Register</NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink style={{ color: "white" }} id="login" tag={Link} to="/login">Login</NavLink>
+                    <NavLink style={{ color: "#1A1207" }} id="login" tag={Link} to="/login">Login</NavLink>
                 </NavItem>
             </>
         )
@@ -59,7 +67,7 @@ function AppNavbar() {
         userLinks = (
             <>
                 <NavItem>
-                    <NavLink style={{ color: "white" }} tag={Link} to="/dashboard">Dashboard</NavLink>
+                    <NavLink style={{ color: "#1A1207" }} tag={Link} to="/dashboard">Dashboard</NavLink>
                 </NavItem>
             </>
         )
@@ -75,21 +83,23 @@ function AppNavbar() {
 
     return (
         <div>
-            <Navbar expand="md" dark color="dark">
+            <Navbar expand="md" /* dark color="dark" */className="navbar">
                 <NavbarBrand href="/">
-                    <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} />
-                    Your Game
+                    {/* <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} /> */}
+                    END OF LINE
                 </NavbarBrand>
                 <NavbarToggler onClick={toggleNavbar} className="ms-2" />
                 <Collapse isOpen={!collapsed} navbar>
                     <Nav className="me-auto mb-2 mb-lg-0" navbar>
-                        {userLinks}
+                        {publicLinks2}
+                        {/* {userLinks}
                         {adminLinks}
-                        {ownerLinks}
+                        {ownerLinks} */} 
                     </Nav>
                     <Nav className="ms-auto mb-2 mb-lg-0" navbar>
+                        <FaBell style={{ marginRight: '20px',top: '6px',position: 'relative', color: 'white', fontSize: '1.5rem' , color:"#1A1207"}} />
                         {publicLinks}
-                        {userLogout}
+                        {userLogout} 
                     </Nav>
                 </Collapse>
             </Navbar>
