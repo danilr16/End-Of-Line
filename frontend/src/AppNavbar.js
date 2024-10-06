@@ -29,7 +29,6 @@ function AppNavbar() {
     let publicLinks2 = <>
         <NavItem>
             <NavLink style={{ color: "#1A1207" }} id="rules" tag={Link} to="/rules">Rules</NavLink>
-            
         </NavItem>
     </>
 
@@ -105,7 +104,7 @@ function AppNavbar() {
                     <Nav className="ms-auto mb-2 mb-lg-0" navbar>
                         <FaBell style={{ marginRight: '20px',top: '6px',position: 'relative', color: 'white', fontSize: '1.5rem' , color:"#1A1207"}} />
                         {publicLinks}
-                        {userLogout}
+                        {userLogout} 
                     </Nav>
                 </Collapse>
             </Navbar>
