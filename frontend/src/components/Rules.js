@@ -1,12 +1,15 @@
 import React from "react";
+import "../static/css/home/home.css";
 
 const Rules = () => {
   return (
-    <div>
-      <h1>Rules of the Game</h1>
-      <p>
-        Here are the rules of the game
-      </p>
+    <div className="pdf-container">
+      <iframe
+          src="/ReglasEs.pdf"
+          title="Reglas"
+          width="100%"
+          height="100%"
+        />
     </div>
   );
 };
