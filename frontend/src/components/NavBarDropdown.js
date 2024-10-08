@@ -20,7 +20,7 @@ export default function NavBarDropdown(props){
             </DropdownToggle>
             <DropdownMenu  >
             <DropdownItem onClick={()=>navigate("/rules")} >Perfil</DropdownItem>
-            <DropdownItem onClick={()=>navigate("/rules")} >Partidas</DropdownItem>
+            <DropdownItem onClick={()=>navigate("/games")} >Partidas</DropdownItem>
             <DropdownItem onClick={()=>navigate("/rules")} >Estadísticas</DropdownItem>
             <DropdownItem onClick={()=>navigate("/rules")} >Amigos</DropdownItem>
             {isAdmin?<DropdownItem onClick={()=>navigate("/users")} >Usuarios</DropdownItem>:<></>}
