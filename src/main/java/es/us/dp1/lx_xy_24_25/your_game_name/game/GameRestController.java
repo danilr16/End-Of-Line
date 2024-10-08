@@ -20,27 +20,33 @@ import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import io.micrometer.core.ipc.http.HttpSender.Response;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
+import es.us.dp1.lx_xy_24_25.your_game_name.user.AuthoritiesService;
 @RestController
-@RequestMapping("api/v1/games/")
+@RequestMapping("api/v1/games")
 @SecurityRequirement(name = "bearerAuth")
 class GameRestController {
 
     private final GameService gameService;
+    private final AuthoritiesService authService; 
     
     
 
     @Autowired
-    public GameRestController(GameService gameService){
+    public GameRestController(GameService gameService , AuthoritiesService authService){
         this.gameService = gameService;
-        
-       
+        this.authService = authService;
     }
 
 
     @GetMapping
-    public ResponseEntity<List<Game>> findAll(){
-        List<Game>  res = (List<Game>) gameService.findAllForAdmin();
+    public ResponseEntity<List<Game>> findAll(@RequestParam(required = false) String auth){
+        //List<Game>  res = (List<Game>) gameService.findAllForAdmin();
+        List<Game> res;
+		if (auth != null) {
+			res = (List<Game>) gameService.findAllByAuthority(auth);
+		} else 
+			res = (List<Game>) gameService.findAllForAdmin();
+		
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
