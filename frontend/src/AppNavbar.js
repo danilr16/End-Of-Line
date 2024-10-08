@@ -41,6 +41,7 @@ function AppNavbar() {
                     <NavItem>
                         <NavLink style={{ color: "#1A1207" }} tag={Link} to="/users">Users</NavLink>
                     </NavItem>
+                    
                 </>
             )
         }        
@@ -92,6 +93,7 @@ function AppNavbar() {
                 <Collapse isOpen={!collapsed} navbar>
                     <Nav className="me-auto mb-2 mb-lg-0" navbar>
                         {publicLinks2}
+                        {adminLinks}
                         {/* {userLinks}
                         {adminLinks}
                         {ownerLinks} */} 
