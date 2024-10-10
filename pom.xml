@@ -56,6 +56,10 @@
 			<name>AaronMA</name>
 			<email>aarmayans@alum.us.es</email>
 		</developer>
+		<developer>
+			<name>Samuel</name>
+			<email>samgraoli@alum.us.es</email>
+		</developer>
 	</developers>
 
 	<dependencies>
