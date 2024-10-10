@@ -191,6 +191,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
+}
 
-
+.custom-dropdown-item:hover {
+    background-color:rgba(82, 82, 82, 0.3) !important;  
+}
