@@ -21,6 +21,7 @@ INSERT INTO appusers(id,username,password,authority) VALUES (17,'jct6889','$2a$1
 INSERT INTO appusers(id,username,password,authority) VALUES (18,'vwn3805','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,username,password,authority) VALUES (19,'lfb9498','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 
+
 -- AppGames examples
 
 INSERT INTO appgames (id, num_players, chat, n_turn, duration, game_mode, game_state)
