@@ -6,6 +6,7 @@ import "../../static/css/admin/adminPage.css";
 import deleteFromList from "../../util/deleteFromList";
 import getErrorModal from "../../util/getErrorModal";
 import useFetchState from "../../util/useFetchState";
+import Pagination from "../../components/Pagination";
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -20,6 +21,12 @@ export default function UserListAdmin() {
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 5;
+  const pageFinalIndex = currentPage * itemsPerPage;
+  const pageInitialIndex = pageFinalIndex - itemsPerPage;
+  const totalPages = Math.ceil(users.length / itemsPerPage);
 
   const userList = users.map((user) => {
     return (
@@ -59,6 +66,9 @@ export default function UserListAdmin() {
       </tr>
     );
   });
+
+  const userListPage = userList.slice(pageInitialIndex,pageFinalIndex);
+
   const modal = getErrorModal(setVisible, visible, message);
 
   return (
@@ -78,8 +88,9 @@ export default function UserListAdmin() {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>{userList}</tbody>
+          <tbody>{userListPage}</tbody>
         </Table>
+      <Pagination totalPages = {totalPages} currentPage = {currentPage} onPageChange = {(page) => setCurrentPage(page)}/>
       </div>
     </div>
   );
