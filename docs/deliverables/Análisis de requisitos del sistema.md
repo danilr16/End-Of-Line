@@ -207,6 +207,7 @@ classDiagram
     class Jugador {
         puntuacion
         energia
+        esEspectador
     }
     class Logro {
         nombre
@@ -214,8 +215,6 @@ classDiagram
         imagen
         threshold
         metrica
-    }
-    class Espectador {
     }
     class Mazo {
         numCartas
@@ -246,7 +245,7 @@ classDiagram
         foto
         victorias
     }
-    Partida "*" -- "1..*" Usuario
+    Partida "*" -- "1..*" Jugador
     Partida *-- "1" Tablero
     Partida "1" -- "1..*" Mazo
     Usuario "*" -- "*" Usuario: "esAmigo"
@@ -257,9 +256,8 @@ classDiagram
     Mano "0..1" -- "*" Carta
     Tablero *-- "1..*" Celda
     Carta *-- "1..*" Output
-    Usuario <|-- Jugador
-    Usuario <|-- Espectador
     Usuario "*" -- "*" Logro
+    Usuario "1" -- "*" Jugador
 ```
 
 ## Reglas de Negocio
