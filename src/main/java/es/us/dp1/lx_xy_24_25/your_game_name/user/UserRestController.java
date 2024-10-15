@@ -24,6 +24,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.stream.Collectors;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,11 +50,13 @@ class UserRestController {
 
 	private final UserService userService;
 	private final AuthoritiesService authService;
+	private final PlayerService playerService;
 
 	@Autowired
-	public UserRestController(UserService userService, AuthoritiesService authService) {
+	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService) {
 		this.userService = userService;
 		this.authService = authService;
+		this.playerService = playerService;
 	}
 
 	@GetMapping
@@ -72,6 +78,14 @@ class UserRestController {
 	@GetMapping(value = "{id}")
 	public ResponseEntity<User> findById(@PathVariable("id") Integer id) {
 		return new ResponseEntity<>(userService.findUser(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}/games")
+	public ResponseEntity<List<Game>> findAllGames(@PathVariable("id") Integer id) {
+		User user = userService.findUser(id);
+		List<Player> players = (List<Player>) userService.findAllPlayerByUser(user);
+		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p)).flatMap(List::stream).collect(Collectors.toList());
+		return new ResponseEntity<>(games, HttpStatus.OK);
 	}
 
 	@PostMapping
