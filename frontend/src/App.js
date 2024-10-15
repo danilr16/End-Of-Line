@@ -15,6 +15,7 @@ import UserEditAdmin from "./admin/users/UserEditAdmin";
 import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
 import Rules from './components/Rules';
+import CurrentGames from "./components/CurrentGames";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -65,6 +66,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/test" element={<CurrentGames />} />
         
       </>
     )
@@ -75,6 +77,8 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/test" element={<CurrentGames />} />
+
       </>
     )
   }

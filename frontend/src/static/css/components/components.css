@@ -59,3 +59,84 @@
 .custom-dropdown-item:hover {
     background-color:rgba(82, 82, 82, 0.3) !important;  
 }
+
+/* Game Container */
+.game-li-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 350px;
+    height: 130px; 
+    border: 1px solid #fde67b;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    background-color: #fde67b;
+    margin: 16px;
+    padding: 16px; 
+}
+
+.game-li-container:hover {
+    transform: translateY(-5px);
+}
+
+.game-li-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.game-header,.game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-code, .game-mode {
+    font-size: 20px;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+}
+
+.players-icon, .spectators-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.player-number, .spectator-number {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1; 
+    margin: 0;
+
+}
+
+/* CurrentGames */
+.current-games-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    max-width: 100vw; 
+    margin: 0 48px; 
+    padding: 0 16px; 
+    justify-content: space-around;
+    
+    
+
+}
+html body {
+    background-color: #23232a ; 
+    margin: 0; 
+    padding: 0;
+}
