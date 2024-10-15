@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jersey.JerseyProperties.Servlet;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 import java.util.List;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,13 +44,8 @@ class GameRestController {
 
     @GetMapping
     public ResponseEntity<List<Game>> findAll(@RequestParam(required = false) String auth){
-        //List<Game>  res = (List<Game>) gameService.findAllForAdmin();
-        List<Game> res;
-		if (auth != null) {
-			res = (List<Game>) gameService.findAllByAuthority(auth);
-		} else 
-			res = (List<Game>) gameService.findAllForAdmin();
-		
+        List<Game>  res = (List<Game>) gameService.findAll();
+        
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
@@ -54,6 +53,10 @@ class GameRestController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Game> create(@RequestBody @Valid Game game){
         Game savedGame = gameService.saveGame(game);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                                    .path("/{id}")
+                                    .buildAndExpand(savedGame.getId())
+                                    .toUri();
         return new ResponseEntity<>(savedGame,HttpStatus.CREATED);
     }
 

@@ -23,9 +23,11 @@ export default function GameListAdmin(){
     const [alerts,setAlerts] = useState([]);
     
     const gamesList = games.map((game) => {
+      console.log("si")
+      console.log(game.gameCode)
         return (
-          <tr key={game.numPlayers}>
-            <td>{game.numPlayers}</td>
+          <tr key={game.id}>
+            <td>{game.gameCode}</td>
             
             <td>
               <ButtonGroup>
@@ -65,7 +67,7 @@ export default function GameListAdmin(){
             <Table aria-label="games" className="mt-4">
               <thead>
                 <tr>
-                  <th>GamePlayers</th>
+                  <th>GameCode</th>
                   
                   <th>Actions</th>
                 </tr>
