@@ -70,9 +70,11 @@ public class SecurityConfiguration {
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/{id}/games").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
-			//.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games")).hasAuthority(ADMIN)
-			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games")).permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
+			.requestMatchers(HttpMethod.POST, "/api/v1/games").authenticated()
+			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/players")).authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
 			.anyRequest().authenticated())					
 			

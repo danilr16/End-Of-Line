@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 
 @Service
 public class UserService {
@@ -78,6 +79,11 @@ public class UserService {
 
 	public Iterable<User> findAllByAuthority(String auth) {
 		return userRepository.findAllByAuthority(auth);
+	}
+
+	@Transactional(readOnly = true)
+	public Iterable<Player> findAllPlayerByUser(User user) {
+		return userRepository.findAllPlayerByUser(user);
 	}
 
 	@Transactional

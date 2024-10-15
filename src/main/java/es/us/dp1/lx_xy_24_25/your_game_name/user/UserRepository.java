@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 
-public interface UserRepository extends  CrudRepository<User, Integer>{			
+
+public interface UserRepository extends CrudRepository<User, Integer>{			
 
 
 	Optional<User> findByUsername(String username);
@@ -23,6 +25,7 @@ public interface UserRepository extends  CrudRepository<User, Integer>{
 	//@Modifying
 	//void deletePlayerRelation(int userId);
 	
-	
+	@Query("SELECT p FROM Player p WHERE p.user = :user")
+	Iterable<Player> findAllPlayerByUser(User user);
 	
 }

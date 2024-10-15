@@ -196,6 +196,7 @@ classDiagram
     }
     <<enumeration>> Estado Partida
     class Partida {
+        anfitrion
         modoJuego
         numeroJugadores
         chat
@@ -203,11 +204,11 @@ classDiagram
         orden
         duracion
         estado: EstadoPartida
+        espectadores
     }
     class Jugador {
         puntuacion
         energia
-        esEspectador
     }
     class Logro {
         nombre
@@ -245,7 +246,7 @@ classDiagram
         foto
         victorias
     }
-    Partida "*" -- "1..*" Jugador
+    Partida "1" -- "1..*" Jugador
     Partida *-- "1" Tablero
     Partida "1" -- "1..*" Mazo
     Usuario "*" -- "*" Usuario: "esAmigo"
