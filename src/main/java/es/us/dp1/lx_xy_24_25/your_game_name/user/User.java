@@ -23,10 +23,20 @@ public class User extends BaseEntity {
 
 	String password;
 
+	String image="/resources/images/defaultProfile.png";
+
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "authority")
 	Authorities authority;
+
+	public void setImage(String image) {
+        if (image == null || image.isEmpty()) {
+            this.image = "/resources/images/defaultProfile.png"; 
+        } else {
+            this.image = image;
+        }
+    }
 
 	public Boolean hasAuthority(String auth) {
 		return authority.getAuthority().equals(auth);
