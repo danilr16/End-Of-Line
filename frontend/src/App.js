@@ -18,7 +18,7 @@ import Rules from './components/Rules';
 import CurrentGames from "./components/CurrentGames";
 import PaletColorTest from "./components/PaletColorTest"
 import MyGames from "./components/MyGames";
-import PaletColorTest from "./components/PaletColorTest";
+
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div role="alert">
