@@ -16,6 +16,7 @@ import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
 import Rules from './components/Rules';
 import CurrentGames from "./components/CurrentGames";
+import PaletColorTest from "./components/PaletColorTest"
 import MyGames from "./components/MyGames";
 
 function ErrorFallback({ error, resetErrorBoundary }) {

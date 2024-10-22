@@ -248,7 +248,6 @@ classDiagram
     }
     Partida "1" -- "1..*" Jugador
     Partida *-- "1" Tablero
-    Partida "1" -- "1..*" Mazo
     Usuario "*" -- "*" Usuario: "esAmigo"
     Jugador *-- "1" Mano
     Jugador "1" -- "1..*" Mazo
