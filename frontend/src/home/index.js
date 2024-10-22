@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../App.css';
 import '../static/css/home/home.css';
+import '../static/css/components/components.css';
 import logo from '../static/images/palanca-de-mando.png' 
 
 export default function Home(){
