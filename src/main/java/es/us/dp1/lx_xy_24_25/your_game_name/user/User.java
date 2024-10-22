@@ -3,10 +3,13 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.achivements.Achivement;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 
 import lombok.Getter;
@@ -41,4 +44,11 @@ public class User extends BaseEntity {
 		return cond;
 	}
 
+	@ManyToMany
+	@NotNull
+	List<Achivement> achievements;
+
+	@ManyToMany
+	@NotNull
+	List<User> friends;
 }

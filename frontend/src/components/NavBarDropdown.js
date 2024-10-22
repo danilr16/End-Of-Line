@@ -15,15 +15,15 @@ export default function NavBarDropdown(props){
     return(
         <div> 
         <Dropdown isOpen={dropdown} toggle={toggleDropdown}>
-            <DropdownToggle>
+            <DropdownToggle className="dropdown-toggle">
                 {username}
             </DropdownToggle>
             <DropdownMenu >
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Perfil</DropdownItem>
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/games")} >Partidas</DropdownItem>
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Estadísticas</DropdownItem>
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Amigos</DropdownItem>
-            {isAdmin?<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Usuarios</DropdownItem>:<></>}
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Profile</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/games")} >My Games</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Stats</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Friends</DropdownItem>
+            {isAdmin?<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Users</DropdownItem>:<></>}
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/logout")} >Logout</DropdownItem>
             </DropdownMenu>
         </Dropdown>

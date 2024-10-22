@@ -2,11 +2,12 @@ package es.us.dp1.lx_xy_24_25.your_game_name.player;
 
 import java.util.List;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -24,7 +25,6 @@ public class Player extends BaseEntity{
 
     @NotNull
     @ManyToOne(optional = false)
-    @JoinColumn
     User user;
 
     List<Integer> playedCarts;
@@ -36,4 +36,9 @@ public class Player extends BaseEntity{
             return false;
         }
     }
+
+    @NotNull
+    @OneToOne(optional = false)
+    Hand hand;
+
 }
