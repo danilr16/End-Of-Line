@@ -51,13 +51,11 @@ function App() {
           <Route path="/users" exact={true} element={<PrivateRoute><UserListAdmin /></PrivateRoute>} />
           <Route path="/users/:username" exact={true} element={<PrivateRoute><UserEditAdmin /></PrivateRoute>} />
           <Route path="/games" exact={true} element={<PrivateRoute><GameListAdmin /></PrivateRoute>} />          
-          <Route path="/profile" exact={true} element={<PrivateRoute><Profile /></PrivateRoute>} />
         </>)
     }
     if (role === "PLAYER") {
       ownerRoutes = (
         <>
-        <Route path="/profile" element={<Profile />} />
           
         </>)
     }    
@@ -78,8 +76,10 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/profile" exact={true} element={<PrivateRoute><Profile /></PrivateRoute>} />
+
       </>
-    )
+  )
   }
 
   return (
