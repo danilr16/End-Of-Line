@@ -1,3 +1,5 @@
+@import "../colors.css";
+
 /*Pagination*/
 .pagination {
     display: flex;
@@ -59,28 +61,36 @@
 .custom-dropdown-item:hover {
     background-color:rgba(82, 82, 82, 0.3) !important;  
 }
+.dropdown-toggle{
+    background-color: var(--brand-yellow) !important;
+    color:var(--brand-dark) !important;
+    border: 0 !important;
+}
+.dropdown-toggle:hover{
+    background-color: var(--brand-yellow-dark) !important;
+    color:white !important;
+}
 
 /* Game Container */
 .game-li-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 350px;
-    height: 130px; 
-    border: 1px solid #fde67b;
+    width: 100%;
+    height: 100%; 
+    border: 1px solid var(--brand-yellow);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    background-color: #fde67b;
-    margin: 16px;
-    padding: 16px; 
+    background-color: var(--brand-yellow); 
+    margin: 0;
+    padding: 12px; 
 }
 .game-li-container.team-battle {
-    background-color: #fc0581;
-    border : 1px solid #fc0581;
+    background-color: var(--brand-red);
+    border : 1px solid var(--brand-red);
 }
-
 .game-li-container:hover {
     transform: translateY(-5px);
 }
@@ -146,13 +156,13 @@
 
 /* CurrentGames */
 .current-games-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    max-width: 100vw; 
-    margin: 0 48px; 
-    padding: 0 16px; 
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    justify-items: start;
+    max-width: 85vw; 
+    gap: 20px;
+    margin: 20px auto;
+    padding: 16px;
 }
 html body {
     background-color: #23232a ; 

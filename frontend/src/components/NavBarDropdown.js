@@ -15,7 +15,7 @@ export default function NavBarDropdown(props){
     return(
         <div> 
         <Dropdown isOpen={dropdown} toggle={toggleDropdown}>
-            <DropdownToggle>
+            <DropdownToggle className="dropdown-toggle">
                 {username}
             </DropdownToggle>
             <DropdownMenu >
