@@ -31,7 +31,7 @@ export default function MyGames(){
             const fetchGames = async () => {
                 setLoadingGames(true); // Establecemos el estado de carga
                 try {
-                    const response = await fetch(`/api/v1/user/${currentUser.id}/games`, {
+                    const response = await fetch(`/api/v1/users/${currentUser.id}/games`, {
                         headers: {
                             Authorization: `Bearer ${jwt}`
                         }
@@ -52,12 +52,12 @@ export default function MyGames(){
     if (loadingGames) {
       return <p>Cargando partidas...</p>;
   }
-
+  console.log(games)
   return (
     <div>
-        <h1>Mis Partidas</h1>
+        <h1 style={{backgroundColor:'#fff'}}>Mis Partidas</h1>
         {games.length === 0 ? (
-            <p>No hay partidas disponibles.</p>
+            <p style={{backgroundColor:'#fff'}}>No hay partidas disponibles.</p>
         ) : (
             <ul>
                 {games}

@@ -68,7 +68,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/test" element={<CurrentGames />} />
+        <Route path="/test" element={<MyGames />} />
         
       </>
     )
