@@ -73,6 +73,7 @@
 
 /* Game Container */
 .game-li-container {
+    position:relative;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -98,19 +99,19 @@
 
 .lock-icon {
     position: absolute;
-    top: 75%;
+    top: 70%;
     left: 50%;
-    transform: translate(-50%, -50%);
     height: 24px;
-
     color: rgba(0, 0, 0, 0.7); 
     opacity: 0; 
     transition: opacity 0.3s ease; 
 }
+.game-li-container.locked .lock-icon{
+    opacity: 0.5;
+}
 
-/* Mostrar el icono al hacer hover sobre la tarjeta */
 .game-li-container.locked:hover .lock-icon {
-    opacity: 1; /* Muestra el icono con transparencia */
+    opacity: 1; 
 }
 
 .game-li-content {
