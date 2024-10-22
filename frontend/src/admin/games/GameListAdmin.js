@@ -23,8 +23,6 @@ export default function GameListAdmin(){
     const [alerts,setAlerts] = useState([]);
     
     const gamesList = games.map((game) => {
-      console.log("si")
-      console.log(game.gameCode)
         return (
           <tr key={game.id}>
             <td>{game.gameCode}</td>

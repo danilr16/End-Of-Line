@@ -16,6 +16,7 @@ import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
 import Rules from './components/Rules';
 import CurrentGames from "./components/CurrentGames";
+import MyGames from "./components/MyGames";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -56,7 +57,7 @@ function App() {
     if (role === "PLAYER") {
       ownerRoutes = (
         <>
-          
+          <Route path="/users/{id}/games" exact={true} element={<PrivateRoute><GameListAdmin /></PrivateRoute>} /> 
         </>)
     }    
   })
@@ -77,7 +78,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/test" element={<CurrentGames />} />
+        <Route path="/test" element={<MyGames />} />
 
       </>
     )
