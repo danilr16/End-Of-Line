@@ -25,18 +25,28 @@ import lombok.Setter;
 @Table(name = "appgames")
 public class Game extends BaseEntity {
 
-    @NotNull
     @Column(unique = true)
     String gameCode;
 
     @OneToOne
     Player host;
 
+    Boolean isPublic;
+
     @PrePersist
     @PreUpdate
     public void prePersist() {
         if (gameCode == null ) {
             gameCode = UUID.randomUUID().toString().substring(0, 8);
+        }
+        if (isPublic == null) {
+            isPublic = true;
+        }
+        if (chat == null) {
+            chat = "";
+        }
+        if (nTurn == null) {
+            nTurn = 0;
         }
     }
 

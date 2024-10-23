@@ -8,6 +8,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -40,5 +42,16 @@ public class Player extends BaseEntity{
     @NotNull
     @OneToOne(optional = false)
     Hand hand;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (score == null) {
+            score = 0;
+        }
+        if (energy == null) {
+            energy = 3;
+        }
+    }
 
 }
