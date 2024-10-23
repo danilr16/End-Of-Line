@@ -30,14 +30,14 @@ export default function UserListAdmin() {
 
   const userList = users.map((user) => {
     return (
-      <tr key={user.id}>
+      <tr key={user.id} className="table-row">
         <td>{user.username}</td>
         <td>{user.authority.authority}</td>
         <td>
           <ButtonGroup>
             <Button
               size="sm"
-              color="primary"
+              className="edit-btn"
               aria-label={"edit-" + user.id}
               tag={Link}
               to={"/users/" + user.id}
@@ -46,7 +46,7 @@ export default function UserListAdmin() {
             </Button>
             <Button
               size="sm"
-              color="danger"
+              className="delete-btn"
               aria-label={"delete-" + user.id}
               onClick={() =>
                 deleteFromList(
@@ -81,8 +81,8 @@ export default function UserListAdmin() {
       </Button>
       <div>
         <Table aria-label="users" className="mt-4">
-          <thead>
-            <tr>
+          <thead >
+            <tr className="table-row">
               <th>Username</th>
               <th>Authority</th>
               <th>Actions</th>

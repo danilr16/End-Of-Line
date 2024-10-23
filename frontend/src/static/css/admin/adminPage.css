@@ -1,3 +1,5 @@
+@import "../colors.css";
+
 .admin-page-container {
   height: 100%;
   width: 100%;
@@ -5,6 +7,24 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.text-center{
+  color: var(--br-selected-over-bg);
+}
+
+.table-row{
+  --bs-table-bg: var(--br-dark);
+  --bs-table-color: white ;
+}
+
+.table-row .edit-btn{
+  --bs-btn-bg: var(--br-blue-dark) ;
+  --bs-btn-border-color:var(--br-blue-dark) ;
+}
+.table-row .delete-btn{
+  --bs-btn-bg: var(--br-red) ;
+  --bs-btn-border-color: var(--br-red) ;
 }
 
 .custom-form-input {

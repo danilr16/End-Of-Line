@@ -7,18 +7,18 @@
     justify-content: space-between;
     width: 100%;
     height: 100%; 
-    border: 1px solid var(--brand-yellow);
+    border: 1px solid var(--br-yellow);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    background-color: var(--brand-yellow); 
+    background-color: var(--br-yellow); 
     margin: 16px auto;
     padding: 16px; 
 }
 .game-li-container-test.team-battle {
-    background-color: var(--brand-red);
-    border : 1px solid var(--brand-red);
+    background-color: var(--br-red);
+    border : 1px solid var(--br-red);
 }
 .game-li-container-test:hover {
     transform: translateY(-5px);
@@ -95,25 +95,25 @@
 
 /*Palet Color Test*/
 .test-button {
-    background-color: var(--brand-blue) !important;
-    color: var(--brand-blue-dark) !important;
-    border: 4px solid var(--brand-blue-light) !important;
+    background-color: var(--br-blue) !important;
+    color: var(--br-blue-dark) !important;
+    border: 4px solid var(--br-blue-light) !important;
 
 }
 .test-button2{
-    background-color: var(--brand-green) !important;
-    color: var(--brand-green-dark) !important;
-    border: 4px solid var(--brand-green-light) !important; 
+    background-color: var(--br-green) !important;
+    color: var(--br-green-dark) !important;
+    border: 4px solid var(--br-green-light) !important; 
 }
 .test-button3{
-    background-color: var(--brand-yellow) !important;
-    color: var(--brand-yellow-dark) !important;
-    border: 4px solid var(--brand-yellow-light) !important; 
+    background-color: var(--br-yellow) !important;
+    color: var(--br-yellow-dark) !important;
+    border: 4px solid var(--br-yellow-light) !important; 
 }
 .test-button4{
-    background-color: var(--brand-red) !important; 
-    color: var(--brand-red-dark) !important;
-    border: 4px solid var(--brand-red-light) !important;
+    background-color: var(--br-red) !important; 
+    color: var(--br-red-dark) !important;
+    border: 4px solid var(--br-red-light) !important;
 }
 .test-button-group{
     display: flex !important;
