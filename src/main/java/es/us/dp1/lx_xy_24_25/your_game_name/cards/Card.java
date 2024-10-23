@@ -2,6 +2,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.cards;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -34,5 +36,13 @@ public class Card extends BaseEntity{
 
     @Transient
     Output output;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (rotation == null) {
+            rotation = 0;
+        }
+    }
     
 }

@@ -1,4 +1,4 @@
-package es.us.dp1.lx_xy_24_25.your_game_name.achivements;
+package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name="appAchivements")
-public class Achivement extends BaseEntity{
+public class Achievement extends BaseEntity{
 
     String name;
 

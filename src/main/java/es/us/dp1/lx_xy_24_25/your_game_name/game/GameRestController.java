@@ -37,16 +37,4 @@ class GameRestController {
         Game savedGame = gameService.saveGame(game);
         return new ResponseEntity<>(savedGame,HttpStatus.CREATED);
     }
-
-
-
-
-
-    
-
-
-    
-
-
-
 }
