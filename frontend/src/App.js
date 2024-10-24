@@ -80,6 +80,8 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/profile" element={<Profile />} />
+
       </>
   )
   }

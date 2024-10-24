@@ -14,7 +14,7 @@ export default function Profile() {
 
     const [user, setUser] = useFetchState(
         null,
-        '/api/v1/users/current',
+        '/api/v1/users/currentUser',
         jwt,
         setMessage,
         setVisible
