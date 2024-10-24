@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+
 import java.util.List;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,10 +21,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 class GameRestController {
 
     private final GameService gameService;
+    private final UserService userService;
 
     @Autowired
-    public GameRestController(GameService gameService){
+    public GameRestController(GameService gameService, UserService userService){
         this.gameService = gameService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -33,9 +37,13 @@ class GameRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Game> create(@RequestBody @Valid Game game){
+    public ResponseEntity<Game> create(@RequestBody @Valid Game game) {
+        
+        game.setHost(userService.findCurrentUser());
+        
         Game savedGame = gameService.saveGame(game);
-        return new ResponseEntity<>(savedGame,HttpStatus.CREATED);
+        
+        return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
 
 
