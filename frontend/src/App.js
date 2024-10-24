@@ -15,6 +15,9 @@ import UserEditAdmin from "./admin/users/UserEditAdmin";
 import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
 import Rules from './components/Rules';
+import CurrentGames from "./components/CurrentGames";
+import PaletColorTest from "./components/PaletColorTest"
+import MyGames from "./components/MyGames";
 import Profile from './components/Profile';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -56,7 +59,7 @@ function App() {
     if (role === "PLAYER") {
       ownerRoutes = (
         <>
-          
+          <Route path="/users/{id}/games" exact={true} element={<PrivateRoute><GameListAdmin /></PrivateRoute>} /> 
         </>)
     }    
   })
@@ -66,6 +69,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
+        <Route path="/test" element={<MyGames />} />
         
       </>
     )
@@ -76,8 +80,6 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/profile" exact={true} element={<PrivateRoute><Profile /></PrivateRoute>} />
-
       </>
   )
   }

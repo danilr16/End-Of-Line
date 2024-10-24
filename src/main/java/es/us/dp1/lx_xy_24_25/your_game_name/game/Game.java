@@ -1,17 +1,24 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
+
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import java.util.UUID;
 
@@ -24,18 +31,57 @@ import lombok.Setter;
 @Table(name = "appgames")
 public class Game extends BaseEntity {
 
-    @NotNull
     @Column(unique = true)
     String gameCode;
 
-    @OneToOne
-    Player host;
+    @ManyToOne
+    User host;
+
+    Boolean isPublic;
 
     @PrePersist
     @PreUpdate
     public void prePersist() {
-        if (gameCode == null ) {
-            gameCode = UUID.randomUUID().toString().substring(0, 8);
+        if (gameCode == null) {
+            String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            Random random = new Random();
+            StringBuilder a = new StringBuilder(5);
+
+            for (int i = 0; i < 5; i++) {
+                int index = random.nextInt(letters.length());
+                a.append(letters.charAt(index));
+            }
+            gameCode = a.toString();
+        }
+        
+        if (duration == null) {
+            duration = 0;
+        }
+
+        if (gameState == null) {
+            gameState = GameState.IN_PROCESS; 
+        }
+
+        if (spectators == null) {
+            spectators = new ArrayList<>();
+        }
+
+        if (players == null) {
+            players = new ArrayList<>();
+        }
+        
+        if (table == null) {
+            //table = new TableCard();
+        }
+      
+        if (isPublic == null) {
+            isPublic = true;
+        }
+        if (chat == null) {
+            chat = "";
+        }
+        if (nTurn == null) {
+            nTurn = 0;
         }
     }
 
@@ -53,12 +99,15 @@ public class Game extends BaseEntity {
     GameState gameState;
 
     @OneToMany
-    @JoinColumn
-    List<Player> espectators;
+    @JoinColumn(name="game_id")
+    List<Player> spectators;
 
-    @NotNull
     @OneToMany
-    @JoinColumn
+    @JoinColumn(name="game_id")
     List<Player> players;
+
+    //@NotNull
+    @OneToOne //(optional = false)
+    TableCard table;
 
 }

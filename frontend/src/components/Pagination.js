@@ -70,11 +70,11 @@ return (
         <PaginationFirst currentPage={ currentPage} onPageChange={onPageChange}/> 
         <PaginationPrev currentPage={ currentPage} onPageChange={onPageChange}/> 
 
-        {currentPage>1? <PaginationItem
+        {currentPage>1&& <PaginationItem
         page={currentPage -1}
         currentPage={currentPage}
         onPageChange={onPageChange}
-        />:<></>}
+        />}
 
         <PaginationItem
         page={currentPage}
@@ -82,11 +82,11 @@ return (
         onPageChange={onPageChange}
         />
 
-        {currentPage < totalPages? <PaginationItem
+        {currentPage < totalPages&& <PaginationItem
         page={currentPage+1}
         currentPage={currentPage}
         onPageChange={onPageChange}
-        />: <></>}
+        />}
 
         <PaginationNext  currentPage={currentPage} onPageChange={onPageChange} totalPages = {totalPages}/>
         <PaginationLast currentPage={currentPage} onPageChange={onPageChange} totalPages = {totalPages}/>

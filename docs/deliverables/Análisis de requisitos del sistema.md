@@ -162,6 +162,12 @@ A continuación se definen  todas las historias de usuario a implementar:
 |![alt text](mockups/image-2.png) ![alt text](mockups/image-6.png)|
 |Desde la pantalla principal, haz click en 'crear'. |
 
+ ### HU-22: Jugar partida (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/103)
+|Como jugador quiero poder empezar y jugar una partida, respetando el orden de turnos, reglas de acción y condiciones de vitoria, para poder disfrutar del juego y aprovechar todas las mecánicas de este para ganar.| 
+|-----|
+|Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
+|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+
 ## Diagrama conceptual del sistema
 
 ```mermaid
@@ -191,6 +197,7 @@ classDiagram
     }
     <<enumeration>> Tipo Tablero
     class Estado Partida {
+        EN_ESPERA
         EN_CURSO
         FINALIZADA
     }
@@ -248,7 +255,6 @@ classDiagram
     }
     Partida "1" -- "1..*" Jugador
     Partida *-- "1" Tablero
-    Partida "1" -- "1..*" Mazo
     Usuario "*" -- "*" Usuario: "esAmigo"
     Jugador *-- "1" Mano
     Jugador "1" -- "1..*" Mazo

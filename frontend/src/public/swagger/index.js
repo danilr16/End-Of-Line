@@ -15,9 +15,17 @@ export default function SwaggerDocs(){
         setDocs(mydocs);
     }
 
+    useEffect(() => {
+        // Set background color of the entire page when the component is mounted
+        document.body.style.backgroundColor = 'white';
+        
+        // Cleanup: reset background when component is unmounted
+        return () => {
+          document.body.style.backgroundColor = '';
+        };
+      }, []); // Empty dependency array to run once on mount
     
-    
-    return (
+      return (
         <SwaggerUI spec={docs} url="" />
     );
     
