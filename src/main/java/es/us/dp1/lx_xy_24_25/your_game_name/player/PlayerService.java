@@ -33,6 +33,5 @@ public class PlayerService {
     @Transactional(readOnly = true)
 	public Player findPlayer(Integer id) {
 		return playerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Player", "id", id));
-	}	
-    
+	}
 }

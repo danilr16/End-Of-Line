@@ -29,7 +29,7 @@ public class Player extends BaseEntity{
     @ManyToOne(optional = false)
     User user;
 
-    List<Integer> playedCarts;
+    List<Integer> playedCards;
 
     public Boolean canUseEnergy() {
         if (this.energy > 0) {
