@@ -80,15 +80,15 @@ class UserRestController {
 		return new ResponseEntity<>(userService.findUser(id), HttpStatus.OK);
 	}
 
-	@GetMapping("/{id}/games")
-	public ResponseEntity<List<Game>> findAllGames(@PathVariable("id") Integer id) {
-		User user = userService.findUser(id);
+	@GetMapping("/games")
+	public ResponseEntity<List<Game>> findAllGames() {
+		User user = userService.findCurrentUser();
 		List<Player> players = (List<Player>) userService.findAllPlayerByUser(user);
 		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p)).flatMap(List::stream).collect(Collectors.toList());
 		return new ResponseEntity<>(games, HttpStatus.OK);
 	}
 
-	@GetMapping("/currentUser")
+	@GetMapping("/currentUser")//Hay que quitarlo y no usarlo
 	public ResponseEntity<User> findUserByName() {
 		User user = userService.findCurrentUser();
 		return  new ResponseEntity<>(user, HttpStatus.OK);

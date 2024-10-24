@@ -38,11 +38,8 @@ class GameRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Game> create(@RequestBody @Valid Game game) {
-        
         game.setHost(userService.findCurrentUser());
-        
         Game savedGame = gameService.saveGame(game);
-        
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
 }
