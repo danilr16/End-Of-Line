@@ -4,10 +4,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
-
+import org.hibernate.validator.constraints.UUID;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 
@@ -25,7 +27,15 @@ public class User extends BaseEntity {
 
 	String password;
 
-	String image= "/resources/images/defaultProfile.png" ;
+	String image;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (image == null ) {
+            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+        }
+    }
 
 	@NotNull
 	@ManyToOne(optional = false)
@@ -34,7 +44,7 @@ public class User extends BaseEntity {
 
 	public void setImage(String image) {
         if (image == null || image.isEmpty()) {
-            this.image = "/resources/images/defaultProfile.png"; 
+            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"; 
         } else {
             this.image = image;
         }

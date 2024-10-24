@@ -114,19 +114,7 @@ class UserRestController {
 		} else
 			throw new AccessDeniedException("You can't delete yourself!");
 	}
-/* 
-	@GetMapping("/current")
-	public ResponseEntity<User> getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.isAuthenticated()) {
-			User currentUser = userService.findUser(authentication.getName()); 
-			return new ResponseEntity<>(currentUser, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
-		
-	}
-		*/
+	
 	@GetMapping("/current")
 	public ResponseEntity<User> getCurrentUser() {
 	User currentUser = userService.findCurrentUser(); 	
