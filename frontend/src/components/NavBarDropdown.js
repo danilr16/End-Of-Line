@@ -23,7 +23,7 @@ export default function NavBarDropdown(props){
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/games")} >My Games</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Stats</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Friends</DropdownItem>
-            {isAdmin?<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Users</DropdownItem>:<></>}
+            {isAdmin&&<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Users</DropdownItem>}
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/logout")} >Logout</DropdownItem>
             </DropdownMenu>
         </Dropdown>

@@ -7,7 +7,7 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    background-color: var(--brand-dark);
+    background-color: var(--br-dark);
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -15,7 +15,7 @@
 }
 
 .navbar{
-    background-color: var(--brand-yellow); 
+    background-color: var(--br-yellow); 
     color: #291d0b;
 }
 
@@ -51,7 +51,7 @@
     padding: 15px 30px; 
     font-size: 18px; 
     margin: 0 10px;
-    background-color: var(--brand-yellow); 
+    background-color: var(--br-yellow); 
     color: rgb(0,0,0); 
     border: none; 
     border-radius: 5px; 
@@ -60,7 +60,7 @@
 }
 
 .big-button:hover {
-    background-color: var(--brand-yellow-dark);
+    background-color: var(--br-yellow-dark);
     color: white; 
 }
 
