@@ -22,6 +22,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 import java.util.stream.Collectors;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
@@ -118,5 +120,13 @@ class UserRestController {
 		} else
 			throw new AccessDeniedException("You can't delete yourself!");
 	}
+	
+	@GetMapping("/current")
+	public ResponseEntity<User> getCurrentUser() {
+	User currentUser = userService.findCurrentUser(); 	
+    return new ResponseEntity<>(currentUser, HttpStatus.OK);
+}
+
+
 
 }

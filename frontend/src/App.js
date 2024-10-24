@@ -18,6 +18,7 @@ import Rules from './components/Rules';
 import CurrentGames from "./components/CurrentGames";
 import PaletColorTest from "./components/PaletColorTest"
 import MyGames from "./components/MyGames";
+import Profile from './components/Profile';
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -79,10 +80,10 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/test" element={<MyGames />} />
+        <Route path="/profile" element={<Profile />} />
 
       </>
-    )
+  )
   }
 
   return (
