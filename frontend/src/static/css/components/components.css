@@ -307,6 +307,11 @@ html body {
     align-items: center;
 }
 
+.error-message {
+    color: var(--br-red);
+    font-weight: bold;
+}
+
 /*MyGames*/
 .myGames-container {
     display: flex;
