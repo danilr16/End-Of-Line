@@ -337,12 +337,12 @@ html body {
   
   /* Estilos para las celdas */
 .myGames-td {
-    background-color: #4a90e2; /* Color de fondo azul */
-    color: white; /* Color de las letras */
+    background-color: #fde77c; /* Color de fondo  */
+    color: black; /* Color de las letras */
     padding: 15px;
     margin: 10px;
     border-radius: 10px; /* Bordes redondeados */
-    text-align: center;
+    text-align: left;
 }
   
   /* Asegura que los componentes se muestren de manera vertical */

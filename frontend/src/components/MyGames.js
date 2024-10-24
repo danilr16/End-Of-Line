@@ -60,7 +60,12 @@ export default function MyGames(){
             <p className="myGames-title">No hay partidas disponibles.</p>
         ) : (
             <ul className="myGames-table">
-                {games}
+                {games.map((item, index) => (
+            <div className="myGames-td" key={index}>
+                <h4 className="myGames-tr">GameCode: {item.gameCode}</h4>
+                <p className="myGames-tr">Host: {item.host.username}</p>
+        </div>
+      ))}
             </ul>
         )}
     </div>
