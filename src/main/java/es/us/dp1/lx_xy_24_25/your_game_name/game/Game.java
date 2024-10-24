@@ -7,6 +7,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
@@ -31,7 +32,7 @@ public class Game extends BaseEntity {
     @Column(unique = true)
     String gameCode;
 
-    @OneToOne
+    @ManyToOne
     User host;
 
     Boolean isPublic;
@@ -61,7 +62,7 @@ public class Game extends BaseEntity {
 
         
         if (table == null) {
-            table = new TableCard();
+            //table = new TableCard();
         }
       
         if (isPublic == null) {
@@ -92,13 +93,12 @@ public class Game extends BaseEntity {
     @JoinColumn(name="game_id")
     List<Player> spectators;
 
-    @NotNull
     @OneToMany
     @JoinColumn(name="game_id")
     List<Player> players;
 
-    @OneToOne(optional = false)
-    @NotNull
+    //@NotNull
+    @OneToOne //(optional = false)
     TableCard table;
 
 }
