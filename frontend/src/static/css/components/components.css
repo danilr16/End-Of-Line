@@ -306,3 +306,48 @@ html body {
     justify-content: center;
     align-items: center;
 }
+
+/*MyGames*/
+.myGames-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  
+}
+
+.myGames-title {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+/* Estilos para la tabla */
+.myGames-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  /* Estilos para las celdas */
+.myGames-td {
+    background-color: #4a90e2; /* Color de fondo azul */
+    color: white; /* Color de las letras */
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px; /* Bordes redondeados */
+    text-align: center;
+}
+  
+  /* Asegura que los componentes se muestren de manera vertical */
+.myGames-tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  /* Para un mejor aspecto visual */
+.myGames-td:not(:last-child) {
+    margin-bottom: 10px; /* Espaciado entre celdas */
+  }

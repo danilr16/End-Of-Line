@@ -54,12 +54,12 @@ export default function MyGames(){
   }
   console.log(games)
   return (
-    <div>
-        <h1 style={{backgroundColor:'#fff'}}>Mis Partidas</h1>
+    <div className="myGames-container">
+        <h1 className="myGames-title">Mis Partidas</h1>
         {games.length === 0 ? (
-            <p style={{backgroundColor:'#fff'}}>No hay partidas disponibles.</p>
+            <p className="myGames-title">No hay partidas disponibles.</p>
         ) : (
-            <ul>
+            <ul className="myGames-table">
                 {games}
             </ul>
         )}
