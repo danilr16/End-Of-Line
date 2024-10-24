@@ -70,7 +70,7 @@ public class SecurityConfiguration {
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
-			.requestMatchers(HttpMethod.GET, "/api/v1/users/{id}/games").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/games").authenticated()
 			.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUser").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)

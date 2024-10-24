@@ -17,7 +17,7 @@ import java.util.List;
 public class Card extends BaseEntity{
 
     public enum TypeCard {
-        TYPE_1,TYPE_2_IZQ,TYPE_2_DER,TYPE_3_IZQ,TYPE_3_DER,TYPE_4,TYPE_5,TYPE_0
+        TYPE_1,TYPE_2_IZQ,TYPE_2_DER,TYPE_3_IZQ,TYPE_3_DER,TYPE_4,TYPE_5,TYPE_0,INICIO
     }
 
     TypeCard type;

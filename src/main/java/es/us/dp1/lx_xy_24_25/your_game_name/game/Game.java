@@ -46,34 +46,27 @@ public class Game extends BaseEntity {
             String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Random random = new Random();
             StringBuilder a = new StringBuilder(5);
-
             for (int i = 0; i < 5; i++) {
                 int index = random.nextInt(letters.length());
                 a.append(letters.charAt(index));
             }
             gameCode = a.toString();
         }
-        
         if (duration == null) {
             duration = 0;
         }
-
         if (gameState == null) {
             gameState = GameState.IN_PROCESS; 
         }
-
         if (spectators == null) {
             spectators = new ArrayList<>();
         }
-
         if (players == null) {
             players = new ArrayList<>();
         }
-        
         if (table == null) {
             //table = new TableCard();
         }
-      
         if (isPublic == null) {
             isPublic = true;
         }
@@ -104,10 +97,9 @@ public class Game extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name="game_id")
-    List<Player> players;
+    List<Player> players;//autocompletar con jugador de user
 
-    //@NotNull
-    @OneToOne //(optional = false)
-    TableCard table;
+    @OneToOne
+    TableCard table;//autocompletar según numJugadores y modoJuego
 
 }
