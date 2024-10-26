@@ -4,10 +4,10 @@ import classNames from "classnames";
 import { useNavigate } from 'react-router-dom';
 
 export default function GameContainer(props) {
-    const classes = classNames({"game-li-container" : true, "team-battle" : props.gameMode === "Team Battle","locked": props.isPrivate})
+    const classes = classNames({"game-li-container" : true, "team-battle" : props.gameMode === "Team Battle","locked": props.isPrivate, "puzzle": props.gameMode === "Puzzle"})
     const navigate = useNavigate()
     return(
-    <button className={classes}>
+    <li className={classes}>
         <div className = "game-li-content" onClick={() => {
                 if (!props.isPrivate) {
                     navigate(`/game/${props.gameCode}`);
@@ -48,7 +48,7 @@ export default function GameContainer(props) {
         
         </div>
 
-    </button>
+    </li>
 );
 
 }

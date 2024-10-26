@@ -61,7 +61,7 @@ export default function CreateModal({
                 return [2, 3, 4, 5, 6, 7, 8]; 
             case 'puzzle_coop':
                 return [2, 3, 4]; 
-            case 'classic_single':
+            case 'puzzle_single':
                 return [1];
             default:
                 return []; 
@@ -83,7 +83,7 @@ export default function CreateModal({
                             <option value="" disabled>Select a Gamemode</option>
                             <option value="versus">Versus</option>
                             <option value="puzzle_coop">Puzzle Coop</option>
-                            <option value="classic_single">Single Player</option>
+                            <option value="puzzle_single">Single Player</option>
                             <option value="team_battle">Team Battle</option>
                         </select>
                     </div>

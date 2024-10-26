@@ -4,11 +4,14 @@ import GameContainer from '../components/GameContainer';
 import tokenService from "../services/token.service";
 import { useState } from 'react';
 import useFetchState from "../util/useFetchState";
+import CreateModal from '../components/CreateModal';
 
 
 export default function CurrentGames(){
     const jwt = tokenService.getLocalAccessToken();
 
+    const [isCreationModalOpen,setIsCreationModalOpen] = useState(false);
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
     const [message, setMessage] = useState(null)
     const [visible, setVisible] = useState(false);
     const [games,setGames] = useFetchState(
@@ -20,6 +23,15 @@ export default function CurrentGames(){
     );
     console.log(games)
 
+    const openCreationModal =  () =>setIsCreationModalOpen(true);
+    const openJoinModal =  () =>setIsCreationModalOpen(true);
+    const closeCreationModal =  () =>setIsCreationModalOpen(false);
+    const closeJoinModal =  () =>setIsCreationModalOpen(false);
+    const [selectedGamemode, setSelectedGamemode] = useState('');
+    const [maxPlayers, setMaxPlayers] = useState(1); 
+    const [isPrivateRoom, setIsPrivateRoom] = useState(false); 
+
+
     const parseGamemode = (gameMode) =>{
         switch(gameMode){
             case "VERSUS":
@@ -27,6 +39,7 @@ export default function CurrentGames(){
             case "TEAM_BATTLE":
                 return "Team Battle"
             case "PUZZLE_COOP":
+            case "PUZZLE_SINGLE":
                 return "Puzzle"
             default:
                 return "";
@@ -63,18 +76,26 @@ export default function CurrentGames(){
         <>
             <div className="curgames-options-div">
                 <div className="curgames-button-container">
-                    <button className="curgames-button">Create Game</button>
+                    <button className="curgames-button" onClick={openCreationModal}>Create Game</button>
                 </div>
                 <div className="curgames-button-container">
                     <button className="curgames-button">Join with Code</button>
                 </div>
                 <div className="curgames-button-container">
-                    <button className="curgames-button curgames-button-light">Quick Join</button>
+                    <button className="curgames-button">Quick Join</button>
                 </div>
             </div>
             <ul className="current-games-container">
                 {gamesToShow}
             </ul>
+            {isCreationModalOpen&&<CreateModal                    
+                selectedGamemode={selectedGamemode}
+                setSelectedGamemode={setSelectedGamemode}
+                maxPlayers={maxPlayers}
+                setMaxPlayers={setMaxPlayers}
+                isPrivateRoom={isPrivateRoom}
+                setIsPrivateRoom={setIsPrivateRoom}
+                closeModal={closeCreationModal}/>}
         </>
     );
 }

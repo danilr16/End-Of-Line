@@ -19,3 +19,9 @@
     --br-selected-over-bg:#818a91;
     --br-hovered-over-bg:#96a1aa;
 }
+
+html body {
+    background-color: var(--br-dark) ; 
+    margin: 0; 
+    padding: 0;
+}

@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedGamemode, setSelectedGamemode] = useState('');
-    const [maxPlayers, setMaxPlayers] = useState(2); 
+    const [maxPlayers, setMaxPlayers] = useState(1); 
     const [isPrivateRoom, setIsPrivateRoom] = useState(false); 
     const navigate = useNavigate()
 
