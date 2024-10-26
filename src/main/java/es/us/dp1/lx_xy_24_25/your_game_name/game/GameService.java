@@ -1,5 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +9,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 
 
 
@@ -35,6 +39,14 @@ public class GameService {
     @Transactional(readOnly = true)
     public Game findGame(Integer id){
         return gameRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Game","id",id));
+    }
+
+    @Transactional
+    public Game saveCreatedGame(Game g, User u, Player p){ //crea la lista de jugadores con un jugador asociado al usuario
+        g.setHost(u);
+        g.setPlayers(Collections.singletonList(p));
+        saveGame(g);
+        return g;
     }
 
 }

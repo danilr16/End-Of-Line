@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 
 @Service
 public class PlayerService {
@@ -33,5 +35,14 @@ public class PlayerService {
     @Transactional(readOnly = true)
 	public Player findPlayer(Integer id) {
 		return playerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Player", "id", id));
+	}
+
+	@Transactional
+	public Player saveUserPlayerbyUser(User u,Hand h) {
+		Player p = new Player();
+		p.setUser(u);
+		p.setHand(h);
+		playerRepository.save(p);
+		return p;
 	}
 }
