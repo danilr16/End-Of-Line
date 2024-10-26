@@ -13,8 +13,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
-import aj.org.objectweb.asm.Type;
-
 import java.util.ArrayList;
 
 @Entity
