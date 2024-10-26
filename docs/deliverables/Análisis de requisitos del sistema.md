@@ -257,6 +257,7 @@ classDiagram
     Partida *-- "1" Tablero
     Usuario "*" -- "*" Usuario: "esAmigo"
     Jugador *-- "1" Mano
+    Jugador "1" -- "*" Carta
     Jugador "1" -- "1..*" Mazo
     Carta "0..1" -- "0..1" Celda
     Mazo "0..1" -- "*" Carta

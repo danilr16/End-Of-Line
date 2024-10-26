@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
+import java.util.ArrayList;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import jakarta.validation.Valid;
 
 @Service
@@ -48,5 +51,41 @@ public class CardService {
 		Card toDelete = findCard(id);
 		this.repository.delete(toDelete);
 	}
+
+    @Transactional
+    public List<Card> create25Cards(Player player) {
+        List<Card> cards = new ArrayList<>();
+        for(int i=1;i<=3;i++) {
+            Card c1 = Card.createByType(TypeCard.TYPE_1, player);
+            saveCard(c1);
+            cards.add(c1);
+            Card c2 = Card.createByType(TypeCard.TYPE_2_IZQ, player);
+            saveCard(c2);
+            cards.add(c2);
+            Card c3 = Card.createByType(TypeCard.TYPE_2_DER, player);
+            saveCard(c3);
+            cards.add(c3);
+            Card c4 = Card.createByType(TypeCard.TYPE_3_IZQ, player);
+            saveCard(c4);
+            cards.add(c4);
+            Card c5 = Card.createByType(TypeCard.TYPE_3_DER, player);
+            saveCard(c5);
+            cards.add(c5);
+            Card c6 = Card.createByType(TypeCard.TYPE_4, player);
+            saveCard(c6);
+            cards.add(c6);
+            Card c7 = Card.createByType(TypeCard.TYPE_5, player);
+            saveCard(c7);
+            cards.add(c7);
+            Card c8 = Card.createByType(TypeCard.TYPE_0, player);
+            saveCard(c8);
+            cards.add(c8);
+        }
+        Card c9 = Card.createByType(TypeCard.TYPE_1, player);
+        saveCard(c9);
+        cards.add(c9);
+        return cards;
+
+    }
     
 }

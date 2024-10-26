@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -28,5 +30,13 @@ public class PackCard extends BaseEntity{
     @OneToMany
     @JoinColumn(name="packCard_id")
     List<Card> cards;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (numCards == null) {
+            numCards = 25;
+        }
+    }
     
 }
