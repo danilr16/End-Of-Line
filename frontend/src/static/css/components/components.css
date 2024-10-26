@@ -270,7 +270,7 @@ span.page-link:hover {
 }
 
 
-.createModal-overlay {
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -284,7 +284,7 @@ span.page-link:hover {
 }
 
 
-.createModal {
+.modal-container {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -327,11 +327,11 @@ span.page-link:hover {
     font-size: 16px;
 }
 
-.createModal h2 {
+.modal-container h2 {
     margin-bottom: 20px;
 }
 
-.createModal input {
+.modal-container input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
@@ -339,7 +339,7 @@ span.page-link:hover {
     border-radius: 5px;
 }
 
-.createModal-buttons .big-button {
+.modal-buttons .big-button {
     padding: 10px 20px;
     font-size: 16px;
 }
@@ -352,12 +352,13 @@ span.page-link:hover {
     width: 100%; 
 }
 
+
 .form-group label {
     margin-right: 10px; 
     font-size: 16px;
 }
 
-.createModal select {
+.modal-container select {
     flex: 1; 
     padding: 10px;
     border: 1px solid #ccc;
@@ -368,7 +369,7 @@ span.page-link:hover {
 }
 
 
-.createModal-buttons {
+.modal-buttons {
     margin-top: 20px; 
     display: flex;
     justify-content: space-between;

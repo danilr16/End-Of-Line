@@ -5,6 +5,7 @@ import tokenService from "../services/token.service";
 import { useState } from 'react';
 import useFetchState from "../util/useFetchState";
 import CreateModal from '../components/CreateModal';
+import JoinGameModal from '../components/JoinGameModal';
 
 
 export default function CurrentGames(){
@@ -24,12 +25,13 @@ export default function CurrentGames(){
     console.log(games)
 
     const openCreationModal =  () =>setIsCreationModalOpen(true);
-    const openJoinModal =  () =>setIsCreationModalOpen(true);
+    const openJoinModal =  () =>setIsJoinModalOpen(true);
     const closeCreationModal =  () =>setIsCreationModalOpen(false);
-    const closeJoinModal =  () =>setIsCreationModalOpen(false);
+    const closeJoinModal =  () =>setIsJoinModalOpen(false);
     const [selectedGamemode, setSelectedGamemode] = useState('');
     const [maxPlayers, setMaxPlayers] = useState(1); 
     const [isPrivateRoom, setIsPrivateRoom] = useState(false); 
+    const [gameCode, setGameCode] = useState("");
 
 
     const parseGamemode = (gameMode) =>{
@@ -79,7 +81,7 @@ export default function CurrentGames(){
                     <button className="curgames-button" onClick={openCreationModal}>Create Game</button>
                 </div>
                 <div className="curgames-button-container">
-                    <button className="curgames-button">Join with Code</button>
+                    <button className="curgames-button" onClick={openJoinModal}>Join with Code</button>
                 </div>
                 <div className="curgames-button-container">
                     <button className="curgames-button">Quick Join</button>
@@ -96,6 +98,7 @@ export default function CurrentGames(){
                 isPrivateRoom={isPrivateRoom}
                 setIsPrivateRoom={setIsPrivateRoom}
                 closeModal={closeCreationModal}/>}
+            {isJoinModalOpen&&<JoinGameModal gameCode={gameCode} setGameCode={setGameCode} closeModal={closeJoinModal}/>}
         </>
     );
 }

@@ -69,8 +69,8 @@ export default function CreateModal({
     };
 
     return (
-        <div className="createModal-overlay">
-            <div className="createModal">
+        <div className="modal-overlay">
+            <div className="modal-container">
                 <h2>Create a Room</h2>
                 <form onSubmit={handleCreateRoom}>
                     <div className="form-group">
@@ -114,7 +114,7 @@ export default function CreateModal({
                     </div>
 
                     {error && <div className="error-message">{error}</div>}
-                    <div className="createModal-buttons">
+                    <div className="modal-buttons">
                         <button 
                             type="button" 
                             className="big-button" 
