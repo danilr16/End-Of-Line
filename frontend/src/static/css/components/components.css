@@ -116,7 +116,12 @@ span.page-link:hover {
     opacity: 1; 
 }
 
+.locked {
+    cursor: default; /* Set default cursor when locked */
+  }
+
 .game-li-content {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 8px;
