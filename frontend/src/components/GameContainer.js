@@ -1,13 +1,18 @@
 import React from 'react';
 import "../static/css/components/components.css"
 import classNames from "classnames";
-
+import { useNavigate } from 'react-router-dom';
 
 export default function GameContainer(props) {
     const classes = classNames({"game-li-container" : true, "team-battle" : props.gameMode === "Team Battle","locked": props.isPrivate})
+    const navigate = useNavigate()
     return(
-    <li className={classes}>
-        <div className = "game-li-content">
+    <button className={classes}>
+        <div className = "game-li-content" onClick={() => {
+                if (!props.isPrivate) {
+                    navigate(`/game/${props.gameCode}`);
+                }
+            }}>
             <div className = "game-header">
                 <h4 className = "game-code"> {props.gameCode} </h4> 
                 <h4 className="game-mode"> {props.gameMode} </h4>
@@ -43,7 +48,7 @@ export default function GameContainer(props) {
         
         </div>
 
-    </li>
+    </button>
 );
 
 }
