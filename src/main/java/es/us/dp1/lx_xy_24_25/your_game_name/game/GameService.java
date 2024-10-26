@@ -10,8 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 
 
 
@@ -42,6 +40,7 @@ public class GameService {
         return gameRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Game","id",id));
     }
 
+
     @Transactional
     public Game saveCreatedGame(Game g, User u, Player p){ //crea la lista de jugadores con un jugador asociado al usuario
         g.setHost(u);
@@ -55,5 +54,6 @@ public class GameService {
         List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
         return gameRepository.findByGameStateIn(validStates);
     }
+
 
 }

@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
-import java.util.Collections;
-
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
+import java.util.ArrayList;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,13 +34,19 @@ class GameRestController {
     private final UserService userService;
     private final PlayerService playerService;
     private final HandService handService;
+    private final TableCardService tableService;
+    private final PackCardService packCardService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, PlayerService playerService, HandService handService){
+    public GameRestController(GameService gameService, UserService userService, 
+        PlayerService playerService, HandService handService, 
+        TableCardService tableService, PackCardService packCardService){
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
         this.handService = handService;
+        this.tableService = tableService;
+        this.packCardService = packCardService;
     }
 
     @GetMapping
@@ -53,7 +61,12 @@ class GameRestController {
         User currentUser = userService.findCurrentUser();
         Hand initialUserHand = handService.saveVoidHand();
         Player userPlayer = playerService.saveUserPlayerbyUser(currentUser,initialUserHand);
-        Game savedGame = gameService.saveCreatedGame(game,currentUser,userPlayer);
+        TableCard tableCard = tableService.creaTableCard(game.getNumPlayers(), game.getGameMode(), userPlayer);
+        packCardService.creaPackCard(userPlayer);
+        game.setHost(currentUser);
+        game.setPlayers(new ArrayList<>(List.of(userPlayer)));
+        game.setTable(tableCard);
+        Game savedGame = gameService.saveGame(game);
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
     @GetMapping("/current")

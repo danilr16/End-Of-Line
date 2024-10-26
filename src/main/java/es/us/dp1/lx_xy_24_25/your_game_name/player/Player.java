@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -51,6 +52,9 @@ public class Player extends BaseEntity{
         }
         if (energy == null) {
             energy = 3;
+        }
+        if (playedCards == null) {
+            playedCards = new ArrayList<>();
         }
     }
 

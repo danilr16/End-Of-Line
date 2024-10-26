@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 
-import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -18,7 +17,7 @@ import java.util.List;
 public class TableCard extends BaseEntity{
 
     public enum TypeTable {
-        JUGADORES_2,JUGADORES_3,JUGADORES_4,JUGADORES_5,JUGADORES_6,JUGADORES_7,JUGADORES_8
+        JUGADORES_1,JUGADORES_2,JUGADORES_3,JUGADORES_4,JUGADORES_5,JUGADORES_6,JUGADORES_7,JUGADORES_8
     }
 
     TypeTable type;
@@ -31,22 +30,4 @@ public class TableCard extends BaseEntity{
     @NotNull
     @JoinColumn(name="table_id")
     List<Row> rows;
-
-    // public TableCard creaTableCard(Integer numJugadores, GameMode gameMode) {
-    //     switch (gameMode) {
-    //         case VERSUS:
-    //             return createVersus(numJugadores, gameMode);
-    //         case PUZZLE_SINGLE:
-    //             return createSingle(numJugadores, gameMode);
-    //         case PUZZLE_COOP:
-    //             return createCoop(numJugadores, gameMode);
-    //         case TEAM_BATTLE:
-    //             return createTeam(numJugadores, gameMode);
-    //         default:
-    //             return null;
-    //     }
-    // }
-
-
-    
 }
