@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import java.util.UUID;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -56,16 +54,10 @@ public class Game extends BaseEntity {
             duration = 0;
         }
         if (gameState == null) {
-            gameState = GameState.IN_PROCESS; 
+            gameState = GameState.WAITING; 
         }
         if (spectators == null) {
             spectators = new ArrayList<>();
-        }
-        if (players == null) {
-            players = new ArrayList<>();
-        }
-        if (table == null) {
-            //table = new TableCard();
         }
         if (isPublic == null) {
             isPublic = true;
@@ -100,6 +92,6 @@ public class Game extends BaseEntity {
     List<Player> players;//autocompletar con jugador de user
 
     @OneToOne
-    TableCard table;//autocompletar según numJugadores y modoJuego
+    TableCard table;
 
 }
