@@ -81,7 +81,7 @@ function App() {
         <Route path="/rules" element={<Rules />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/games/current" element={<CurrentGames />} />
-        <Route path="/users/{id}/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
+        <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
         <Route path="/games/{id}" exact={true} element={<PrivateRoute><MatchScreen /></PrivateRoute>} /> 
 
 
