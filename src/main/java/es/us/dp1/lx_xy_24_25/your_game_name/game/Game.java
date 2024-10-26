@@ -56,7 +56,7 @@ public class Game extends BaseEntity {
             duration = 0;
         }
         if (gameState == null) {
-            gameState = GameState.IN_PROCESS; 
+            gameState = GameState.WAITING; 
         }
         if (spectators == null) {
             spectators = new ArrayList<>();

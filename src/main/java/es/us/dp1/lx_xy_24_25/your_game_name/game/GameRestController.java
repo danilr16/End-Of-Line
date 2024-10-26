@@ -56,4 +56,9 @@ class GameRestController {
         Game savedGame = gameService.saveCreatedGame(game,currentUser,userPlayer);
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
+    @GetMapping("/current")
+    public ResponseEntity<List<Game>> findJoinableGames(){
+        List<Game> res = gameService.findJoinableGames();
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
 }

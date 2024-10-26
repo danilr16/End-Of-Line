@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,12 @@ public class GameService {
         g.setPlayers(Collections.singletonList(p));
         saveGame(g);
         return g;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Game> findJoinableGames(){
+        List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
+        return gameRepository.findByGameStateIn(validStates);
     }
 
 }
