@@ -84,7 +84,7 @@ public class Game extends BaseEntity {
     GameState gameState;
 
     @OneToMany
-    @JoinColumn(name="game_id")
+    @JoinColumn
     List<Player> spectators;
 
     @OneToMany
