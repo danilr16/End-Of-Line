@@ -1,6 +1,6 @@
 import React from 'react';
 import "../static/css/components/components.css"
-import GameContainer from './GameContainer';
+import GameContainer from '../components/GameContainer';
 
 export default function CurrentGames(){
 

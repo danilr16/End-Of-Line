@@ -1,10 +1,13 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.hand;
 
+import java.util.*;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
@@ -28,6 +31,15 @@ public class HandService {
     public Hand saveHand(Hand hand) throws DataAccessException {
         repository.save(hand);
         return hand;
+    }
+
+    @Transactional 
+    public Hand saveVoidHand(){
+        Hand h = new Hand();
+        List<Card> cards = new ArrayList<>();
+        h.setCards(cards);
+        saveHand(h);
+        return h;
     }
 
     @Transactional(readOnly = true)

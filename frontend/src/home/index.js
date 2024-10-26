@@ -4,12 +4,17 @@ import '../static/css/home/home.css';
 import '../static/css/components/components.css';
 import logo from '../static/images/palanca-de-mando.png';
 import CreateModal from '../components/CreateModal';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedGamemode, setSelectedGamemode] = useState('');
     const [maxPlayers, setMaxPlayers] = useState(2); 
     const [isPrivateRoom, setIsPrivateRoom] = useState(false); 
+    const navigate = useNavigate()
+
+
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -21,7 +26,7 @@ export default function Home() {
                     <h1>End of Line</h1>
                     <div className="button-container">
                         <button className="big-button" onClick={openModal}>Create</button>
-                        <button className="big-button">Join</button>
+                        <button className="big-button" onClick={()=>navigate("/games/current")}>Join</button>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import "../static/css/components/testpalet.css"
-import GameContainer from './GameContainer';
+import GameContainer from '../components/GameContainer';
 import { Button, ButtonGroup } from "reactstrap";
 
 export default function PaletColorTest(){

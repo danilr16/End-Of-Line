@@ -19,8 +19,8 @@ export default function NavBarDropdown(props){
                 {username}
             </DropdownToggle>
             <DropdownMenu >
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Profile</DropdownItem>
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/games")} >My Games</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/profile")} >Profile</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users/games")} >My Games</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Stats</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Friends</DropdownItem>
             {isAdmin&&<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Users</DropdownItem>}

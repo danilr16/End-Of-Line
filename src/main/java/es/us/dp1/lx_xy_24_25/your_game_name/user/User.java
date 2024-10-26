@@ -5,9 +5,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+
+import org.hibernate.validator.constraints.UUID;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
@@ -26,10 +30,28 @@ public class User extends BaseEntity {
 
 	String password;
 
+	String image;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        if (image == null ) {
+            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+        }
+    }
+
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "authority")
 	Authorities authority;
+
+	public void setImage(String image) {
+        if (image == null || image.isEmpty()) {
+            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"; 
+        } else {
+            this.image = image;
+        }
+    }
 
 	public Boolean hasAuthority(String auth) {
 		return authority.getAuthority().equals(auth);
