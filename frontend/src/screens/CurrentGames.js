@@ -59,10 +59,22 @@ export default function CurrentGames(){
     console.log(games)
     const gamesToShow = games.map((game)=>parseGame(game))
 
-    return(
-        <ul className = "current-games-container"> 
-           {gamesToShow}
-        </ul>
+    return (
+        <>
+            <div className="curgames-options-div">
+                <div className="curgames-button-container">
+                    <button className="curgames-button">Create Game</button>
+                </div>
+                <div className="curgames-button-container">
+                    <button className="curgames-button">Join with Code</button>
+                </div>
+                <div className="curgames-button-container">
+                    <button className="curgames-button curgames-button-light">Quick Join</button>
+                </div>
+            </div>
+            <ul className="current-games-container">
+                {gamesToShow}
+            </ul>
+        </>
     );
-
 }
