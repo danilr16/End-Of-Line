@@ -19,27 +19,7 @@
     color: #291d0b;
 }
 
-.hero-div{
-    background-color: #ffffff0a;
-    padding: 2rem;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
 
-.hero-div h1{
-    font-size: 3rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-align: center;
-}
-
-.hero-div h3{
-    text-align: center;
-}
 
 .button-container {
     display: flex;
