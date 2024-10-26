@@ -14,10 +14,11 @@ import UserListAdmin from "./admin/users/UserListAdmin";
 import UserEditAdmin from "./admin/users/UserEditAdmin";
 import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
-import Rules from './components/Rules';
-import CurrentGames from "./components/CurrentGames";
-import PaletColorTest from "./components/PaletColorTest"
-import MyGames from "./components/MyGames";
+import Rules from './screens/Rules';
+import CurrentGames from "./screens/CurrentGames";
+import MyGames from "./screens/MyGames";
+import Profile from './screens/Profile';
+import MatchScreen from "./screens/MatchScreen";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -58,7 +59,6 @@ function App() {
     if (role === "PLAYER") {
       ownerRoutes = (
         <>
-          <Route path="/users/{id}/games" exact={true} element={<PrivateRoute><GameListAdmin /></PrivateRoute>} /> 
         </>)
     }    
   })
@@ -79,10 +79,15 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
-        <Route path="/test" element={<MyGames />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/games/current" element={<CurrentGames />} />
+        <Route path="/users/{id}/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
+        <Route path="/games/{id}" exact={true} element={<PrivateRoute><MatchScreen /></PrivateRoute>} /> 
+
+
 
       </>
-    )
+  )
   }
 
   return (
