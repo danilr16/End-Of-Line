@@ -13,7 +13,7 @@ export default function GameInProcess(){
     const { gameCode } = useParams();
     const [game,setGame] = useFetchState(
         null,
-        `/api/v1/users/games/${gameCode}`,
+        `/api/v1/games/${gameCode}`,
         jwt,
         setMessage,
         setVisible
