@@ -35,7 +35,7 @@ export default function GameListAdmin(){
                   aria-label={"delete-" + game.id}
                   onClick={() =>
                     deleteFromList(
-                      `/api/v1/games/${game.id}`,
+                      `/api/v1/game/${game.id}`,
                       game.id,
                       [games, setGames],
                       [alerts, setAlerts],

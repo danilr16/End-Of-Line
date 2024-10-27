@@ -76,7 +76,7 @@ export default function CurrentGames(){
 
     return (
         <>
-            <div className="curgames-options-div">
+            <div className={`curgames-options-div ${isCreationModalOpen || isJoinModalOpen ? "blurred" : ""}`}>
                 <div className="curgames-button-container">
                     <button className="curgames-button" onClick={openCreationModal}>Create Game</button>
                 </div>
@@ -87,18 +87,29 @@ export default function CurrentGames(){
                     <button className="curgames-button">Quick Join</button>
                 </div>
             </div>
-            <ul className="current-games-container">
+            <ul className={`current-games-container ${isCreationModalOpen || isJoinModalOpen ? "blurred" : ""}`}>
                 {gamesToShow}
             </ul>
-            {isCreationModalOpen&&<CreateModal                    
-                selectedGamemode={selectedGamemode}
-                setSelectedGamemode={setSelectedGamemode}
-                maxPlayers={maxPlayers}
-                setMaxPlayers={setMaxPlayers}
-                isPrivateRoom={isPrivateRoom}
-                setIsPrivateRoom={setIsPrivateRoom}
-                closeModal={closeCreationModal}/>}
-            {isJoinModalOpen&&<JoinGameModal gameCode={gameCode} setGameCode={setGameCode} closeModal={closeJoinModal}/>}
+
+            {isCreationModalOpen && (
+                <CreateModal                    
+                    selectedGamemode={selectedGamemode}
+                    setSelectedGamemode={setSelectedGamemode}
+                    maxPlayers={maxPlayers}
+                    setMaxPlayers={setMaxPlayers}
+                    isPrivateRoom={isPrivateRoom}
+                    setIsPrivateRoom={setIsPrivateRoom}
+                    closeModal={closeCreationModal}
+                />
+            )}
+
+            {isJoinModalOpen && (
+                <JoinGameModal
+                    gameCode={gameCode}
+                    setGameCode={setGameCode}
+                    closeModal={closeJoinModal}
+                />
+            )}
         </>
     );
 }
