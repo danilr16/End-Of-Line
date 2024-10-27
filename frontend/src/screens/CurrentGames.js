@@ -3,9 +3,11 @@ import "../static/css/components/components.css"
 import GameContainer from '../components/GameContainer';
 import tokenService from "../services/token.service";
 import { useState } from 'react';
+import { useEffect } from 'react';
 import useFetchState from "../util/useFetchState";
 import CreateModal from '../components/CreateModal';
 import JoinGameModal from '../components/JoinGameModal';
+import { ColorProvider,useColors } from "../ColorContext";
 
 
 export default function CurrentGames(){
@@ -15,6 +17,7 @@ export default function CurrentGames(){
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
     const [message, setMessage] = useState(null)
     const [visible, setVisible] = useState(false);
+    const { colors, updateColors } = useColors();
     const [games,setGames] = useFetchState(
         [],
         `/api/v1/games/current`,
@@ -59,6 +62,9 @@ export default function CurrentGames(){
     }
 
     const parseGame = (game) =>{
+
+        
+
         return(<GameContainer key = {game.gameCode} 
             gameCode = {game.gameCode} 
             gameMode = {parseGamemode(game.gameMode)}
@@ -71,6 +77,15 @@ export default function CurrentGames(){
             />)
     }
 
+    useEffect(() => {
+        updateColors({
+            light: 'var(--br-yellow-light)',
+            normal: 'var(--br-yellow)',
+            dark: 'var(--br-yellow-dark)',
+        });
+    }, []);
+
+    
     console.log(games)
     const gamesToShow = games.map((game)=>parseGame(game))
 
