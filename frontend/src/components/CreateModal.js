@@ -51,7 +51,7 @@ export default function CreateModal({
 
             closeModal();
 
-            navigate(`/games/${data.gameCode}`)
+            navigate(`/game/${data.gameCode}`)
         } catch (err) {
             console.error(err);
             setError('An error occurred while creating the game.');

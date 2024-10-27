@@ -64,12 +64,12 @@ span.page-link:hover {
     background-color:rgba(82, 82, 82, 0.3) !important;  
 }
 .dropdown-toggle{
-    background-color: var(--br-yellow) !important;
+    background-color: var(--br-c-normal) !important;
     color:var(--br-dark) !important;
     border: 0 !important;
 }
 .dropdown-toggle:hover{
-    background-color: var(--br-yellow-dark) !important;
+    background-color: var(--br-c-dark) !important;
     color:white !important;
 }
 
@@ -122,7 +122,7 @@ span.page-link:hover {
 }
 
 .locked {
-    cursor: default; /* Set default cursor when locked */
+    cursor: default; 
   }
 
 .game-li-content {
@@ -181,7 +181,7 @@ span.page-link:hover {
 }
 
 .current-games-container > * {
-    max-width: 600px; /* Limit each grid item's width */
+    max-width: 600px; 
 }
 
 .curgames-options-div{
@@ -223,17 +223,17 @@ span.page-link:hover {
 }
 
 .curgames-button {
-    font-size: 18px;          /* Font size */
-    margin: 0;                /* Remove margin */
-    background-color: var(--br-selected-over-bg); /* Button background color */
-    color: #ffffff;      /* Text color */
-    border: none;             /* No border */
-    border-radius: 5px;      /* Rounded corners */
-    cursor: pointer;          /* Pointer cursor on hover */
-    transition: background-color 0.3s; /* Smooth transition for background color */
-    width: 80%;              /* Make the button occupy full width of the container */
-    height: 80%;             /* Make the button occupy full height of the container */
-    box-sizing: border-box;   /* Include padding and border in element's total width and height */
+    font-size: 18px;        
+    margin: 0;               
+    background-color: var(--br-selected-over-bg); 
+    color: #ffffff;     
+    border: none;          
+    border-radius: 5px;      
+    cursor: pointer;          
+    transition: background-color 0.3s;
+    width: 80%;            
+    height: 80%;           
+    box-sizing: border-box;  
 }
 
 .curgames-button:hover {
@@ -249,6 +249,13 @@ span.page-link:hover {
     background-color: var(--br-blue);
 }
 
+.full-screen {
+    width: 100vw;
+    height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* CreateModal */
 
@@ -266,7 +273,8 @@ span.page-link:hover {
 }
 
 .blurred {
-    filter: blur(0px);
+    filter: blur(7px);
+    z-index: 4;
 }
 
 
@@ -448,7 +456,7 @@ span.page-link:hover {
 
 
 .profile-details {
-    width: 500px; 
+    width: 500px;
     height: 150px; 
     overflow: hidden; 
     padding: 10px; 
@@ -575,3 +583,29 @@ span.page-link:hover {
     text-align: center;
 }
 
+/*Game Screen*/
+.table-frame {
+    aspect-ratio: 1 / 1;             /* Maintains a 1:1 square aspect ratio */
+    width: 25%;                     /* Makes it responsive to its container */
+    padding: 0.7%;
+    border-radius: 4%;
+    font-size: 16px;
+    background-color: var(--br-c-normal);
+    display: flex;                   /* Optional: centers content within */
+    justify-content: center;         /* Optional: centers content horizontally */
+    align-items: center;             /* Optional: centers content vertically */
+    box-shadow: 0px 5px 0px var(--br-c-dark)
+}
+
+.grid-container {
+    display: grid;
+    gap: 2%;                        /* Optional: space between the grid items */
+    width: 100%;                     /* Ensures the grid takes the full width of the container */
+    height: 100%;                    /* Ensures the grid takes the full height of the container */
+}
+
+.grid-item {
+    background-color: transparent;   /* Transparent background */
+    border: 1px solid var(--br-c-dark);         /* 1px black border */
+    border-radius: 10%;              /* Rounded edges */
+}

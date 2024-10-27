@@ -7,12 +7,12 @@
     justify-content: space-between;
     width: 100%;
     height: 100%; 
-    border: 1px solid var(--br-yellow);
+    border: 1px solid var(--br-c-normal);
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
-    background-color: var(--br-yellow); 
+    background-color: var(--br-c-normal); 
     margin: 16px auto;
     padding: 16px; 
 }
@@ -106,9 +106,9 @@
     border: 4px solid var(--br-green-light) !important; 
 }
 .test-button3{
-    background-color: var(--br-yellow) !important;
-    color: var(--br-yellow-dark) !important;
-    border: 4px solid var(--br-yellow-light) !important; 
+    background-color: var(--br-c-normal) !important;
+    color: var(--br-c-dark) !important;
+    border: 4px solid var(--br-c-light) !important; 
 }
 .test-button4{
     background-color: var(--br-red) !important; 

@@ -2,6 +2,8 @@ import React, { useState, } from 'react'
 import {Dropdown, DropdownToggle, DropdownItem, DropdownMenu} from 'reactstrap'
 import { useNavigate } from 'react-router-dom';
 import "../static/css/components/components.css";
+import { useColors } from '../ColorContext'
+
 
 export default function NavBarDropdown(props){
     const [dropdown, setDropdown] = useState(false)
@@ -9,6 +11,7 @@ export default function NavBarDropdown(props){
     const roles = props.roles
     const username = props.username
     const isAdmin = roles.includes("ADMIN")
+    const { colors, updateColors } = useColors();
     const navigate = useNavigate()
 
 

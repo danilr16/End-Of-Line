@@ -15,7 +15,7 @@
 }
 
 .navbar{
-    background-color: var(--br-yellow); 
+    background-color: var(--br-c-normal); 
     color: #291d0b;
 }
 
@@ -31,7 +31,7 @@
     padding: 15px 30px; 
     font-size: 18px; 
     margin: 0 10px;
-    background-color: var(--br-yellow); 
+    background-color: var(--br-c-normal); 
     color: rgb(0,0,0); 
     border: none; 
     border-radius: 5px; 
@@ -40,7 +40,7 @@
 }
 
 .big-button:hover {
-    background-color: var(--br-yellow-dark);
+    background-color: var(--br-c-dark);
     color: white; 
 }
 

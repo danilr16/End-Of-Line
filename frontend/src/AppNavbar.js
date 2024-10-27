@@ -5,6 +5,7 @@ import tokenService from './services/token.service';
 import jwt_decode from "jwt-decode";
 import NavBarDropdown from './components/NavBarDropdown';
 import { FaBell } from "react-icons/fa";
+import { useColors } from './ColorContext'
 import "./static/css/home/home.css";
 
 
@@ -13,6 +14,7 @@ function AppNavbar() {
     const [username, setUsername] = useState("");
     const jwt = tokenService.getLocalAccessToken();
     const [collapsed, setCollapsed] = useState(true);
+    const { colors, updateColors } = useColors();
 
     const toggleNavbar = () => setCollapsed(!collapsed);
 
@@ -82,7 +84,7 @@ function AppNavbar() {
 
     return (
         <div>
-            <Navbar expand="md" /* dark color="dark" */className="navbar">
+            <Navbar expand="md" /* dark color="dark" */className="navbar" style={{"background-color":colors.normal}}>
                 <NavbarBrand href="/">
                     {/* <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} /> */}
                     END OF LINE

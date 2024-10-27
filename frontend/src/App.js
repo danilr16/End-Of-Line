@@ -19,7 +19,8 @@ import CurrentGames from "./screens/CurrentGames";
 import MyGames from "./screens/MyGames";
 import Profile from './screens/Profile';
 import MatchScreen from "./screens/MatchScreen";
-import GameInProcess from "./screens/GameInProcess";
+import GameScreen from "./screens/GameScreen";
+import { ColorProvider } from "./ColorContext";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -84,7 +85,7 @@ function App() {
         <Route path="/games/current" element={<CurrentGames />} />
         <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
         <Route path="/games/{id}" exact={true} element={<PrivateRoute><MatchScreen /></PrivateRoute>} /> 
-        <Route path="/games/:gameCode" exact={true} element={<PrivateRoute><GameInProcess /></PrivateRoute>} /> 
+        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} /> 
 
 
       </>
@@ -92,22 +93,24 @@ function App() {
   }
 
   return (
-    <div>
-      <ErrorBoundary FallbackComponent={ErrorFallback} >
-        <AppNavbar />
-        <Routes>
-          <Route path="/" exact={true} element={<Home />} />
-          <Route path="/plans" element={<PlanList />} />
-          <Route path="/docs" element={<SwaggerDocs />} />
-          <Route path="/rules" element={<Rules />} />
-          {publicRoutes}
-          {userRoutes}
-          {adminRoutes}
-          {ownerRoutes}
-          {vetRoutes}
-        </Routes>
-      </ErrorBoundary>
-    </div>
+    <ColorProvider>
+      <div>
+        <ErrorBoundary FallbackComponent={ErrorFallback} >
+          <AppNavbar />
+          <Routes>
+            <Route path="/" exact={true} element={<Home />} />
+            <Route path="/plans" element={<PlanList />} />
+            <Route path="/docs" element={<SwaggerDocs />} />
+            <Route path="/rules" element={<Rules />} />
+            {publicRoutes}
+            {userRoutes}
+            {adminRoutes}
+            {ownerRoutes}
+            {vetRoutes}
+          </Routes>
+        </ErrorBoundary>
+      </div>
+    </ColorProvider>
   );
 }
 
