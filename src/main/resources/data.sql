@@ -23,3 +23,10 @@ INSERT INTO appusers(id,image,username,password,authority) VALUES (19,'https://c
 
 
 
+INSERT INTO achievement(id,name,description,image,threshold,metric) VALUES (1,'achievement1','description1','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',50,'GAMES_PLAYED');
+INSERT INTO achievement(id,name,description,image,threshold,metric) VALUES (2,'achievement2','description2','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',100,'GAMES_PLAYED');
+INSERT INTO achievement(id,name,description,image,threshold,metric) VALUES (3,'achievement3','description3','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',50,'VICTORIES');
+
+INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
+INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
+

@@ -400,7 +400,7 @@ span.page-link:hover {
     width: 900px;
     height: 250px;
     border-radius: 25px;
-    box-shadow: 15px 10px 25px 0px #f8f661;
+    box-shadow: 0px 0px 15px 1px var(--br-yellow);
     opacity: 0;
     animation: slideFadeIn 3s ease forwards;
     margin: auto;
@@ -448,12 +448,11 @@ span.page-link:hover {
 
 
 .profile-details {
-    width: 500px; /* Ajusta el ancho según tus necesidades */
-    height: 150px; /* Ajusta la altura según tus necesidades */
-    overflow: hidden; /* Oculta el contenido que excede el tamaño del div */
-    padding: 10px; /* Opcional: para espaciar el contenido del borde */
+    width: 500px; 
+    height: 150px; 
+    overflow: hidden; 
+    padding: 10px; 
 }
-
 
 .button-profile {
     background-color: #28a745; 
@@ -467,14 +466,6 @@ span.page-link:hover {
 }
 
 
-.save-button:hover {
-    background-color: #218838; 
-}
-
-.save-button:focus {
-    outline: none; 
-}
-
 .editable-input {
     padding: 8px;
     border-radius: 5px;
@@ -482,9 +473,34 @@ span.page-link:hover {
     width: 100%;
 }
 
-.input-profile[type="file"] {
-    display: none;
+
+
+.achievements-container{
+    margin-top: 100px;
+    padding: 20px;
+    background-color: #e8e8e8;
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px 1px var(--br-yellow);
+
+
 }
+.achievement-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.achievement-image {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.achievement-details {
+    display: flex;
+    flex-direction: column;
+}
+
 
 
 
