@@ -13,9 +13,11 @@ import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.nodeCoordinates;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TableCardService {
@@ -64,40 +66,17 @@ public class TableCardService {
 	}
 
     @Transactional
-    public TableCard creaTableCard(Integer numJugadores, GameMode gameMode, Player player) {
-        switch (gameMode) {
-            case VERSUS:
-                return createVersus(numJugadores, player);
-            case PUZZLE_SINGLE:
-                return createTableCard(5, numJugadores, player, 5, 3, 0);
-            case PUZZLE_COOP:
-                return createVersus(numJugadores, player);
-            case TEAM_BATTLE:
-                return createVersus(numJugadores, player);
-            default:
-                return null;
+    public TableCard creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) {
+        TableCard tableCard = null;
+        Map<Integer, List<nodeCoordinates>> mp = TableCard.homeNodes();//Coordenadas de los nodos de inicio según el número de jugadores
+        Map<Integer, Integer> aux = Map.of(1, 5, 2, 7, 3, 7, 4, 9, 5, 9, 6, 11, 7, 11, 8, 13);//Tamaño del tablero según el número de jugadores
+        List<nodeCoordinates> ls = mp.get(numJugadores);
+        tableCard = createGenericTable(aux.get(numJugadores), numJugadores);
+        for (int i = 0; i < numJugadores; i++) {
+            createHomeNode(tableCard, players.get(i), ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
         }
-    }
-
-    private TableCard createVersus(Integer numJugadores, Player player) {//Tableros modo versus según número de jugadores
-        switch (numJugadores) {
-            case 2:
-                return createTableCard(7, numJugadores, player, 7, 3, 0);
-            case 3:
-                return createTableCard(7, numJugadores, player, 6, 4, 0);
-            case 4:
-                return createTableCard(9, numJugadores, player, 4, 5, 0);
-            case 5:
-                return createTableCard(9, numJugadores, player, 6, 5, 0);
-            case 6:
-                return createTableCard(11, numJugadores, player, 5, 5, 0);
-            case 7:
-                return createTableCard(11, numJugadores, player, 7, 6, 2);
-            case 8:
-                return createTableCard(13, numJugadores, player, 5, 6, 0);
-            default:
-                return null;
-        }
+        updateTableCard(tableCard, tableCard.getId());
+        return tableCard;
     }
 
     private TableCard createGenericTable(Integer n, Integer numJugadores) {//Crea tablero nxn
@@ -123,8 +102,7 @@ public class TableCardService {
         return tableCard;
     }
 
-    private TableCard createTableCard(Integer n , Integer numJugadores, Player player, Integer f, Integer c, Integer rotation) {
-        TableCard tableCard = createGenericTable(n, numJugadores);//TableroGenérico y luego creamos el nodo de inicio del host
+    private void createHomeNode(TableCard tableCard, Player player, Integer f, Integer c, Integer rotation) {//Actualiza la celda y crea ahí el nodo de inicio
         Cell cell = tableCard.rows.get(f-1).getCells().get(c-1);
         Card card = Card.createByType(TypeCard.INICIO, player);
         card.setRotation(rotation);
@@ -132,7 +110,5 @@ public class TableCardService {
         cell.setCard(card);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
-        updateTableCard(tableCard, tableCard.getId());
-        return tableCard;
     }
 }

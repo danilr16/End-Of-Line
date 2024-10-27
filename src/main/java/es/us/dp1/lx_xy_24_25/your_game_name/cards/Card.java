@@ -97,51 +97,6 @@ public class Card extends BaseEntity{
         } else {
             card = null;
         }
-        // switch (type) {
-        //     case TYPE_1:
-        //        card.setIniciative(1);
-        //        outputs.add(2);
-        //        card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_2_IZQ:
-        //         card.setIniciative(2);
-        //         outputs.add(1);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_2_DER:
-        //         card.setIniciative(2);
-        //         outputs.add(3);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_3_IZQ:
-        //         card.setIniciative(3);
-        //         outputs.add(1);
-        //         outputs.add(2);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_3_DER:
-        //         card.setIniciative(3);
-        //         outputs.add(3);
-        //         outputs.add(2);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_4:
-        //         card.setIniciative(4);
-        //         outputs.add(1);
-        //         outputs.add(3);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_5:
-        //         card.setIniciative(5);
-        //         outputs.add(1);
-        //         outputs.add(2);
-        //         outputs.add(3);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case TYPE_0:
-        //         card.setIniciative(0);
-        //         outputs.add(1);
-        //         outputs.add(2);
-        //         outputs.add(3);
-        //         card.setOutput(Output.of(outputs, 0));
-        //     case INICIO:
-        //         break;  
-        //     default:
-        //         card = null;
-        // }
         return card;
     }
     

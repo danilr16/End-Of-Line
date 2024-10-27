@@ -56,13 +56,14 @@ public class PackCardService {
 	}
 
     @Transactional
-    public PackCard creaPackCard(Player player) {
-        PackCard packCard = new PackCard();
-        List<Card> cards = cardService.create25Cards(player);
-        packCard.setPlayer(player);
-        packCard.setCards(cards);
-        savePackCard(packCard);
-        return packCard;
+    public void creaPackCards(List<Player> players) {
+        for(Player player:players) {
+            PackCard packCard = new PackCard();
+            List<Card> cards = cardService.create25Cards(player);
+            packCard.setPlayer(player);
+            packCard.setCards(cards);
+            savePackCard(packCard);
+        }
     }
     
 }
