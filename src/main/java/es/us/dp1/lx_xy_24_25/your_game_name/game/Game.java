@@ -15,6 +15,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,8 @@ public class Game extends BaseEntity {
     Integer nTurn;
 
     Integer duration;
+
+    LocalDateTime started;
 
     GameMode gameMode;
 

@@ -2,7 +2,6 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

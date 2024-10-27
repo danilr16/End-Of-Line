@@ -44,6 +44,12 @@ public class Player extends BaseEntity{
     @OneToOne(optional = false)
     Hand hand;
 
+    public enum PlayerState {
+        PLAYING, WON, LOST
+    }
+
+    PlayerState state;
+
     @PrePersist
     @PreUpdate
     public void prePersist() {
@@ -55,6 +61,9 @@ public class Player extends BaseEntity{
         }
         if (playedCards == null) {
             playedCards = new ArrayList<>();
+        }
+        if (state == null) {
+            state = PlayerState.PLAYING;
         }
     }
 

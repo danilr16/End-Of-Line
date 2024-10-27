@@ -2,6 +2,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 
 
@@ -55,6 +57,14 @@ public class GameService {
     public List<Game> findJoinableGames(){
         List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
         return gameRepository.findByGameStateIn(validStates);
+    }
+
+    @Transactional
+    public Game updateGame(@Valid Game game, Integer idToUpdate) {
+        Game toUpdate = findGame(idToUpdate);
+		BeanUtils.copyProperties(game, toUpdate, "id");
+		gameRepository.save(toUpdate);
+		return toUpdate;
     }
 
 

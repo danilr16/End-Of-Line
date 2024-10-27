@@ -11,7 +11,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-
+@Table(name = "Appachievements")
 public class Achievement extends BaseEntity{
 
     String name;

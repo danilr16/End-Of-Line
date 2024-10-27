@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Getter
@@ -30,4 +31,29 @@ public class TableCard extends BaseEntity{
     @NotNull
     @JoinColumn(name="table_id")
     List<Row> rows;
+
+    public static record nodeCoordinates(Integer f, Integer c, Integer rotation) {
+        public static nodeCoordinates of(Integer f, Integer c, Integer rotation) {
+            return new nodeCoordinates(f, c, rotation);
+        }
+    }
+
+    public static Map<Integer, List<nodeCoordinates>> homeNodes() {//Coordenadas de los nodos de inicio en función del número de jugadores en partida
+        Map<Integer, List<nodeCoordinates>> mp = Map.of(1, List.of(nodeCoordinates.of(5, 3, 0)),
+            2, List.of(nodeCoordinates.of(7, 3, 0), nodeCoordinates.of(7, 5, 0)),
+            3, List.of(nodeCoordinates.of(7, 3, 3), nodeCoordinates.of(6, 4, 0), nodeCoordinates.of(7, 5, 1)),
+            4, List.of(nodeCoordinates.of(4, 5, 0), nodeCoordinates.of(5, 4, 3), nodeCoordinates.of(6, 5, 2), 
+                nodeCoordinates.of(5, 6, 1)),
+            5, List.of(nodeCoordinates.of(6, 5, 0),nodeCoordinates.of(7, 4, 3),nodeCoordinates.of(9, 4, 3),
+                nodeCoordinates.of(7, 6, 1),nodeCoordinates.of(9, 6, 1)),
+            6, List.of(nodeCoordinates.of(5, 5, 0),nodeCoordinates.of(5, 7, 0),nodeCoordinates.of(6, 8, 1),
+                nodeCoordinates.of(7, 7, 2),nodeCoordinates.of(7, 5, 2),nodeCoordinates.of(6, 4, 3)),
+            7, List.of(nodeCoordinates.of(7, 4, 3),nodeCoordinates.of(5, 4, 3),nodeCoordinates.of(4, 5, 0),
+                nodeCoordinates.of(4, 7, 0),nodeCoordinates.of(5, 8, 1),nodeCoordinates.of(7, 8, 1),
+                nodeCoordinates.of(7, 6, 2)),
+            8, List.of(nodeCoordinates.of(5, 6, 0),nodeCoordinates.of(5, 8, 0),nodeCoordinates.of(6, 9, 1),
+                nodeCoordinates.of(8, 9, 1),nodeCoordinates.of(9, 8, 2),nodeCoordinates.of(9, 6, 2),
+                nodeCoordinates.of(8, 5, 3),nodeCoordinates.of(6, 5, 3)));
+        return mp;
+    }
 }
