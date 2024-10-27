@@ -77,6 +77,7 @@ public class SecurityConfiguration {
 			.requestMatchers(HttpMethod.GET, "/api/v1/games/createdGame").authenticated()
 			.requestMatchers(HttpMethod.GET, "/api/v1/games/*").authenticated()
 			.requestMatchers(HttpMethod.POST, "/api/v1/games").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/achievements/myAchievement").authenticated()
 			.requestMatchers(HttpMethod.PUT, "/api/v1/users/update/{id}").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/players")).authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/achievements")).hasAuthority(ADMIN)
