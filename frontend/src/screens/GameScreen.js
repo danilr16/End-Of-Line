@@ -3,18 +3,19 @@ import { useDebugValue, useEffect, useState, useRef } from "react";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
-import { ColorProvider,useColors } from "../ColorContext";
+import { ColorProvider, useColors } from "../ColorContext";
+import Board from "../components/Board";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(7); 
+
+    const [gridSize, setGridSize] = useState(5); // TAMAÑO DEL TABLERO
 
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
-
     const { colors, updateColors } = useColors();
-
     const { gameCode } = useParams();
+
     const [game, setGame] = useFetchState(
         null,
         `/api/v1/games/${gameCode}`,
@@ -26,25 +27,23 @@ export default function GameScreen() {
     const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
 
-
     useEffect(() => {
         if (!gridRef.current) return;
 
         const updateGridItemSize = () => {
             if (gridRef.current) {
                 const itemSize = gridRef.current.clientWidth / gridSize;
-                setGridItemSize(itemSize); 
+                setGridItemSize(itemSize);
             }
         };
 
-        updateGridItemSize(); 
+        updateGridItemSize();
         window.addEventListener('resize', updateGridItemSize);
 
         return () => {
-            window.removeEventListener('resize', updateGridItemSize); 
+            window.removeEventListener('resize', updateGridItemSize);
         };
-    }, [gridSize]); 
-
+    }, [gridSize]);
 
     useEffect(() => {
         if (!game) return;
@@ -53,12 +52,6 @@ export default function GameScreen() {
 
         switch (gameMode) {
             case 'PUZZLE_COOP':
-                updateColors({
-                    light: 'var(--br-green-light)',
-                    normal: 'var(--br-green)',
-                    dark: 'var(--br-green-dark)',
-                });
-                break;
             case 'PUZZLE_SINGLE':
                 updateColors({
                     light: 'var(--br-green-light)',
@@ -90,7 +83,7 @@ export default function GameScreen() {
         }
     }, [game, updateColors]);
 
-    if (!game) { 
+    if (!game) {
         return (
             <div className="full-screen">
                 <p className="myGames-title">Cargando partida...</p>
@@ -98,25 +91,26 @@ export default function GameScreen() {
         );
     }
 
-    
-
     return (
         <div className="full-screen">
-            <div className="table-frame" style={{width:`${(gridSize/5)*5+20}%`}}>
-                <div 
-                    className="grid-container" 
-                    ref={gridRef} 
-                    style={{ 
-                        gridTemplateColumns: `repeat(${gridSize}, 1fr)`, 
-                        gridTemplateRows: `repeat(${gridSize}, 1fr)` ,
-                        gap:`${(5/gridSize)*2}%`
-                    }}
-                >
-                    {Array.from({ length: gridSize * gridSize }, (_, index) => (
-                        <div key={index} className="grid-item" ></div>
-                    ))}
+            <div className="player-list-container">
+                <div className="player-list">
+                    <h5 style={{color:"white"}}>
+                        Players:
+                    </h5>
                 </div>
-                
+            </div>
+            <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} />
+            <div className="chat-container">
+                <div className="chat">
+                    <p>
+                        <span style={{color:"grey"}}>Welcome to the chat! </span>
+                    </p>
+                    <p>
+                        <span style={{color:`var(--br-c-normal)`}}>{"[renfe_lover]: "} </span>
+                        <span style={{color:`white`}}>{"ivan putero"} </span>
+                    </p>
+                </div>
             </div>
         </div>
     );

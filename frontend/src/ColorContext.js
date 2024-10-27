@@ -17,11 +17,10 @@ export const ColorProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        // Set CSS custom properties based on the colors
         document.documentElement.style.setProperty('--br-c-light', colors.light);
         document.documentElement.style.setProperty('--br-c-normal', colors.normal);
         document.documentElement.style.setProperty('--br-c-dark', colors.dark);
-    }, [colors]); // Run effect when colors change
+    }, [colors]); 
 
     return (
         <ColorContext.Provider value={{ colors, updateColors }}>
