@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState,useEffect } from 'react';
 import "../static/css/components/components.css";
 import tokenService from "../services/token.service"
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,29 @@ export default function CreateModal({
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    
+    //Carga la lista SOLO cuando se cambia el modo seleccionado
+    const getMaxPlayerOptions = useCallback(() => {
+        switch (selectedGamemode) {
+            case 'versus':
+            case 'team_battle':
+                return [2, 3, 4, 5, 6, 7, 8];
+            case 'puzzle_coop':
+                return [2, 3, 4];
+            case 'puzzle_single':
+                return [1];
+            default:
+                return [];
+        }
+    }, [selectedGamemode]);
+
+   //Carga el valor por defecto de max players cada  vez que cambia el modo seleccionado
+    useEffect(() => {
+        const options = getMaxPlayerOptions();
+        if (options.length > 0) {
+            setMaxPlayers(options[0]); 
+        }
+    }, [getMaxPlayerOptions, setMaxPlayers]);
 
     const handleCreateRoom = async (e) => {
         e.preventDefault();
@@ -57,20 +80,6 @@ export default function CreateModal({
             setError('An error occurred while creating the game.');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const getMaxPlayerOptions = () => {
-        switch (selectedGamemode) {
-            case 'versus':
-            case 'team_battle':
-                return [2, 3, 4, 5, 6, 7, 8]; 
-            case 'puzzle_coop':
-                return [2, 3, 4]; 
-            case 'puzzle_single':
-                return [1];
-            default:
-                return []; 
         }
     };
 
