@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -26,10 +27,12 @@ import java.util.List;
 public class AchievementRestController {
 
     private final AchievementService service;
+	private final UserService userService;
 
     @Autowired
-	public AchievementRestController(AchievementService achievementService) {
+	public AchievementRestController(AchievementService achievementService,UserService userService) {
 		this.service = achievementService;
+		this.userService = userService;
 	}
     
     @GetMapping
@@ -58,5 +61,12 @@ public class AchievementRestController {
 		RestPreconditions.checkNotNull(service.findAchievement(id), "Achievement", "ID", id);
 		service.deleteAchievement(id);
 		return new ResponseEntity<>(new MessageResponse("Achievement deleted!"), HttpStatus.OK);
+	}
+
+	@GetMapping("/myAchievement")
+	public ResponseEntity<List<Achievement>> getAchievementsByUserId() {
+		int userId = userService.findCurrentUser().getId();
+		List<Achievement> achievements = service.findAchievementByUserId(userId);
+		return new ResponseEntity<>(achievements, HttpStatus.OK);
 	}
 }
