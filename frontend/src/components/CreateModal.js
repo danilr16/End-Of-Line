@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import "../static/css/components/components.css";
 import tokenService from "../services/token.service"
+import { useNavigate } from 'react-router-dom';
+
 
 export default function CreateModal({
     selectedGamemode,
@@ -13,6 +15,8 @@ export default function CreateModal({
 }) {
 
     const token = tokenService.getLocalAccessToken();
+
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -46,6 +50,8 @@ export default function CreateModal({
             console.log('Game created successfully:', data);
 
             closeModal();
+
+            navigate(`/games/${data.gameCode}`)
         } catch (err) {
             console.error(err);
             setError('An error occurred while creating the game.');

@@ -89,7 +89,7 @@ public class Game extends BaseEntity {
 
     @OneToMany
     @JoinColumn(name="game_id")
-    List<Player> players;//autocompletar con jugador de user
+    List<Player> players;
 
     @OneToOne
     TableCard table;

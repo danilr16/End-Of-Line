@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
@@ -73,6 +74,19 @@ class GameRestController {
     @GetMapping("/current")
     public ResponseEntity<List<Game>> findJoinableGames(){
         List<Game> res = gameService.findJoinableGames();
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
+    @GetMapping("/createdGame")
+    public ResponseEntity<Game> findCreatedGame(){
+        User host = userService.findCurrentUser();
+        Game game = gameService.findCreatedGameByHost(host);
+        return new ResponseEntity<>(game,HttpStatus.OK);
+    }
+
+    @GetMapping(value = "{gameCode}")
+    public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") String gameCode ){
+        Game res = gameService.findGameByGameCode(gameCode);
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 }
