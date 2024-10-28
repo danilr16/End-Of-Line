@@ -25,8 +25,7 @@ export default function Home() {
                 <div className="hero-div">
                     <h1>End of Line</h1>
                     <div className="button-container">
-                        <button className="big-button" onClick={openModal}>Create</button>
-                        <button className="big-button" onClick={()=>navigate("/games/current")}>Join</button>
+                        <button className="big-button" onClick={()=>navigate("/games/current")}>Play</button>
                     </div>
                 </div>
             </div>

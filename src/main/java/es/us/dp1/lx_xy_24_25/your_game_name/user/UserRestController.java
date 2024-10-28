@@ -88,6 +88,12 @@ class UserRestController {
 		return new ResponseEntity<>(games, HttpStatus.OK);
 	}
 
+	@GetMapping("/currentUser")
+	public ResponseEntity<User> findCurrentUser() {
+		User user = userService.findCurrentUser();
+		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<User> create(@RequestBody @Valid User user) {
