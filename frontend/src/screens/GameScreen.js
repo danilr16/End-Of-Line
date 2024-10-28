@@ -5,17 +5,15 @@ import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
 import { ColorProvider, useColors } from "../ColorContext";
 import Board from "../components/Board";
+import GameCard from "../components/GameCard"; // Import the new GameCard component
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-
     const [gridSize, setGridSize] = useState(5); // TAMAÑO DEL TABLERO
-
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const { colors, updateColors } = useColors();
     const { gameCode } = useParams();
-
     const [game, setGame] = useFetchState(
         null,
         `/api/v1/games/${gameCode}`,
@@ -24,24 +22,35 @@ export default function GameScreen() {
         setVisible
     );
 
+    document.body.style.overflow = "hidden";
+
     const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
 
-    useEffect(() => {
-        if (!gridRef.current) return;
+    // Function to update grid item size
+    const updateGridItemSize = () => {
+        if (gridRef.current) {
+            const itemSize = gridRef.current.clientWidth / gridSize;
+            setGridItemSize(itemSize * 0.9);
+        }
+    };
 
-        const updateGridItemSize = () => {
-            if (gridRef.current) {
-                const itemSize = gridRef.current.clientWidth / gridSize;
-                setGridItemSize(itemSize);
-            }
+    useEffect(() => {
+        updateGridItemSize();
+
+        const handleResize = () => {
+            updateGridItemSize();
         };
 
-        updateGridItemSize();
-        window.addEventListener('resize', updateGridItemSize);
+        const animate = () => {
+            updateGridItemSize();
+            requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+        window.addEventListener('resize', handleResize);
 
         return () => {
-            window.removeEventListener('resize', updateGridItemSize);
+            window.removeEventListener('resize', handleResize);
         };
     }, [gridSize]);
 
@@ -85,7 +94,7 @@ export default function GameScreen() {
 
     if (!game) {
         return (
-            <div className="full-screen">
+            <div className="half-screen">
                 <p className="myGames-title">Cargando partida...</p>
             </div>
         );
@@ -93,23 +102,35 @@ export default function GameScreen() {
 
     return (
         <div className="full-screen">
-            <div className="player-list-container">
-                <div className="player-list">
-                    <h5 style={{color:"white"}}>
-                        Players:
-                    </h5>
+            <div className="half-screen">
+                <div className="player-list-container">
+                    <div className="player-list">
+                        <h5 style={{ color: "white" }}>
+                            Players:
+                        </h5>
+                    </div>
+                </div>
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} />
+                <div className="chat-container">
+                    <div className="chat">
+                        <p>
+                            <span style={{ color: "grey" }}>Welcome to the chat! </span>
+                        </p>
+                        <p>
+                            <span style={{ color: `var(--br-c-normal)` }}>{"[renfe_lover]: "} </span>
+                            <span style={{ color: `white` }}>{"ivan putero"} </span>
+                        </p>
+                    </div>
                 </div>
             </div>
-            <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} />
-            <div className="chat-container">
-                <div className="chat">
-                    <p>
-                        <span style={{color:"grey"}}>Welcome to the chat! </span>
-                    </p>
-                    <p>
-                        <span style={{color:`var(--br-c-normal)`}}>{"[renfe_lover]: "} </span>
-                        <span style={{color:`white`}}>{"ivan putero"} </span>
-                    </p>
+            <div className="bottom-container">
+                <div className="card-container">
+                    {/* Use the GameCard component instead of inline divs */}
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <GameCard key={index} size={gridItemSize} />
+                    ))}
+                </div>
+                <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
             </div>
         </div>

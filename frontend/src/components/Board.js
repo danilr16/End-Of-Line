@@ -1,7 +1,7 @@
 // Board.js
 import React from 'react';
 
-export default function Board({ gridSize, gridItemSize, gridRef }) {
+export default function Board({ gridSize, size, gridRef }) {
     return (
         <div className="board-frame" style={{ width: `${(gridSize / 5) * 5 + 24}%` }}>
             <div
@@ -14,7 +14,7 @@ export default function Board({ gridSize, gridItemSize, gridRef }) {
                 }}
             >
                 {Array.from({ length: gridSize * gridSize }, (_, index) => (
-                    <div key={index} className="drop-zone"></div>
+                    <div key={index} className="drop-zone" style={{ minWidth: `${size}px`, minHeight: `${size}px` }}></div>
                 ))}
             </div>
         </div>
