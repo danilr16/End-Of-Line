@@ -2,6 +2,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -19,7 +20,7 @@ public class Cell extends BaseEntity{
 
     Boolean isFull;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn
     Card card;
 
