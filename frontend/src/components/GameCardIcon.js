@@ -11,7 +11,6 @@ import { ReactComponent as TFR3Card } from '../static/images/card-icons/t_fr_3_c
 import { ReactComponent as TRL4Card } from '../static/images/card-icons/t_rl_4_card.svg';
 import { ReactComponent as TileCard } from '../static/images/card-icons/tile.svg';
 
-
 export const GameCardIcon = ({ iconName }) => {
     const iconData = {
         block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
@@ -30,18 +29,24 @@ export const GameCardIcon = ({ iconName }) => {
 
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
-    if(iconName == null) return;
-    return IconComponent ? (
-        <IconComponent
-            style={{
-                width: iconSize.width,
-                height: iconSize.height,
-                position: 'absolute',
-                top: iconPosition.top,
-                left: iconPosition.left,
-                transform: iconPosition.transform,
-                color: 'var(--br-c-dark)',
-            }}
-        />
-    ) : null;
+    if (!IconComponent) return null;
+
+    return (
+        <div
+            className="game-card"
+        >
+            <IconComponent
+                style={{
+                    width: iconSize.width,
+                    height: iconSize.height,
+                    position: 'absolute',
+                    top: iconPosition.top,
+                    left: iconPosition.left,
+                    transform: iconPosition.transform,
+                    color: 'var(--br-c-dark)',
+                    zIndex: 60
+                }}
+            />
+        </div>
+    );
 };
