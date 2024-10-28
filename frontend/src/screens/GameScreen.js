@@ -5,7 +5,7 @@ import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
 import { ColorProvider, useColors } from "../ColorContext";
 import Board from "../components/Board";
-import GameCard from "../components/GameCard"; // Import the new GameCard component
+import GameCard from "../components/GameCard"; 
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -27,7 +27,6 @@ export default function GameScreen() {
     const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
 
-    // Function to update grid item size
     const updateGridItemSize = () => {
         if (gridRef.current) {
             const itemSize = gridRef.current.clientWidth / gridSize;
@@ -125,7 +124,6 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-                    {/* Use the GameCard component instead of inline divs */}
                     <GameCard size={gridItemSize} iconName = "t_rl_4_card"/>
                     <GameCard size={gridItemSize} iconName = "t_fr_3_card"/>
                     <GameCard size={gridItemSize} iconName = "forward_1_card"/>
