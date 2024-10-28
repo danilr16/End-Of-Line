@@ -1,7 +1,7 @@
 import React from 'react';
-import GameCard from "../components/GameCard";
+import DropZone from './DropZone';
 
-export default function Board({ gridSize, size, gridRef }) {
+export default function Board({ gridSize, size, gridRef,onDrop,boardItems }) {
     return (
         <div className="board-frame" style={{ width: `${(gridSize / 5) * 5 + 24}%` }}>
             <div
@@ -13,12 +13,9 @@ export default function Board({ gridSize, size, gridRef }) {
                     gap: `${(5 / gridSize) * 2}%`,
                 }}
             >
-                {Array.from({ length: Math.floor((gridSize * gridSize)/2) }, (_, index) => (
-                    <div key={index} className="drop-zone" style={{ minWidth: `${size}px`, minHeight: `${size}px` }}></div>
-                ))}
-                <GameCard size={gridSize} iconName = "start_card" hoverable = {false}/>
-                {Array.from({ length: Math.floor((gridSize * gridSize)/2) }, (_, index) => (
-                    <div key={index} className="drop-zone" style={{ minWidth: `${size}px`, minHeight: `${size}px` }}></div>
+                {Array.from({ length: Math.floor((gridSize * gridSize)) }, (_, index) => (
+                    <DropZone key = {index} index = {index} size = {size} onDrop = {onDrop} cardIcon = {boardItems[Math.floor(index / gridSize)][index % gridSize]} />
+                        
                 ))}
             </div>
         </div>

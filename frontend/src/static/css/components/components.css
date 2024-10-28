@@ -260,7 +260,7 @@ span.page-link:hover {
 
 .half-screen {
     width: 100vw;
-    height: 40vh;
+    height: 60vh;
     padding: 20px;
     margin-top: 2%;
     display: flex;
@@ -616,9 +616,12 @@ span.page-link:hover {
     height: 100%;               
 }
 
-.drop-zone {
-    background-color: transparent;  
+.drop-zone-hide {
     border: 1px solid var(--br-c-dark);     
+    border-radius: 15%;            
+}
+.drop-zone-show {
+    border: 1px solid #fff ;   
     border-radius: 15%;            
 }
 
@@ -689,7 +692,12 @@ span.page-link:hover {
     font-weight: bold;
     background-color: var(--br-c-normal);
     transition: transform 0.3s ease; 
-    cursor: pointer; 
+    cursor: grab; 
+}
+
+.game-card.dragging{
+    opacity: 1;
+    border: 3px solid #fff;
 }
 
 .game-card:hover {
