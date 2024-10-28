@@ -5,7 +5,7 @@ import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
 import { ColorProvider, useColors } from "../ColorContext";
 import Board from "../components/Board";
-import GameCard from "../components/GameCard"; // Import the new GameCard component
+import GameCard from "../components/GameCard"; 
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -30,8 +30,10 @@ export default function GameScreen() {
 
 
 
+
     useEffect(() => {
             // Function to update grid item size
+
     const updateGridItemSize = () => {
         if (gridRef.current) {
             const itemSize = gridRef.current.clientWidth / gridSize;
@@ -130,10 +132,13 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
+
                     {/* Use the GameCard component instead of inline divs */}
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <GameCard key={index} size={gridItemSize} setBeingDraggedCard = {setBeingDraggedCard} index = {index} />
-                    ))}
+                    <GameCard size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
