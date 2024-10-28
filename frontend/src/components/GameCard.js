@@ -30,16 +30,10 @@ const GameCard = ({ size, iconName, hoverable = true }) => {
 
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
-
-const GameCard = ({size, setBeingDraggedCard,index }) => {
-    const handleDragStart = () => {setBeingDraggedCard(index)}
-    const handleDragEnd = () => {setBeingDraggedCard(null)}
     return (
         <div 
             className={`game-card ${!hoverable ? 'non-hoverable' : ''}`} 
             draggable
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
             style={{ minWidth: `${size}px`, minHeight: `${size}px`, position: 'relative' }}
 
         >
@@ -59,5 +53,6 @@ const GameCard = ({size, setBeingDraggedCard,index }) => {
         </div>
     );
 };
+
 
 export default GameCard;
