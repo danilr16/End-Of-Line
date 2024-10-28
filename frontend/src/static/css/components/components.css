@@ -696,6 +696,14 @@ span.page-link:hover {
     transform: translateY(-10px);
 }
 
+.non-hoverable {
+    cursor: default; /* Change the cursor style */
+}
+
+.non-hoverable:hover {
+    transform: none; /* Disable hover effect */
+}
+
 .card-deck {
     position: absolute; 
     bottom: -40px; 
