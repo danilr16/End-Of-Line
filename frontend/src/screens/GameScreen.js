@@ -57,7 +57,7 @@ export default function GameScreen() {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, [gridSize]);
+    }, [gridSize,game]);
 
     useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
 
@@ -133,11 +133,11 @@ export default function GameScreen() {
             <div className="bottom-container">
                 <div className="card-container">
 
-                    {/* Use the GameCard component instead of inline divs */}
-                    <GameCard size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
-                    <GameCard size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
-                    <GameCard size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
-                    <GameCard size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard}/>
+                    <GameCard size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard}/>
+                    <GameCard size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard}/>
+                    <GameCard size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard}/>
+                    <GameCard size={gridItemSize} iconName = "cross_0_card" setBeingDraggedCard = {setBeingDraggedCard}/>
 
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
