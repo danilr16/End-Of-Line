@@ -12,78 +12,30 @@ import { ReactComponent as TFR3Card } from '../static/images/card-icons/t_fr_3_c
 import { ReactComponent as TRL4Card } from '../static/images/card-icons/t_rl_4_card.svg';
 import { ReactComponent as TileCard } from '../static/images/card-icons/tile.svg';
 
-const GameCard = ({ size, iconName }) => {
+const GameCard = ({ size, iconName, hoverable = true }) => {
     const iconData = {
-        block_card: {
-            iconSize: { width: '50%', height: '50%' },
-            iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: BlockCard // Reference the unique name
-        },
-        cross_0_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: Cross0Card
-        },
-        cross_5_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: Cross5Card
-        },
-        energy_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: EnergyCard
-        },
-        forward_1_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '64.5%', transform: 'translate(-50%, -50%)' },
-            IconComponent: Forward1Card
-        },
-        l_l_2_card: {
-            iconSize: { width: '92%', height: '92%' },
-            iconPosition: { top: '54%', left: '46%', transform: 'translate(-50%, -50%)' },
-            IconComponent: LL2Card
-        },
-        l_r_2_card: {
-            iconSize: { width: '92%', height: '92%' },
-            iconPosition: { top: '54%', left: '72%', transform: 'translate(-50%, -50%)' },
-            IconComponent: LR2Card
-        },
-        start_card: {
-            iconSize: { width: '70%', height: '70%' },
-            iconPosition: { top: '35%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: StartCard
-        },
-        t_fl_3_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '46%', transform: 'translate(-50%, -50%)' },
-            IconComponent: TFL3Card
-        },
-        t_fr_3_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '71%', transform: 'translate(-50%, -50%)' },
-            IconComponent: TFR3Card
-        },
-        t_rl_4_card: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '54%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: TRL4Card
-        },
-        tile: {
-            iconSize: { width: '100%', height: '100%' },
-            iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' },
-            IconComponent: TileCard
-        }
+        block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
+        cross_0_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross0Card },
+        cross_5_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross5Card },
+        energy_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: EnergyCard },
+        forward_1_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '64.5%', transform: 'translate(-50%, -50%)' }, IconComponent: Forward1Card },
+        l_l_2_card: { iconSize: { width: '92%', height: '92%' }, iconPosition: { top: '54%', left: '46%', transform: 'translate(-50%, -50%)' }, IconComponent: LL2Card },
+        l_r_2_card: { iconSize: { width: '92%', height: '92%' }, iconPosition: { top: '54%', left: '72%', transform: 'translate(-50%, -50%)' }, IconComponent: LR2Card },
+        start_card: { iconSize: { width: '70%', height: '70%' }, iconPosition: { top: '35%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: StartCard },
+        t_fl_3_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '46%', transform: 'translate(-50%, -50%)' }, IconComponent: TFL3Card },
+        t_fr_3_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '71%', transform: 'translate(-50%, -50%)' }, IconComponent: TFR3Card },
+        t_rl_4_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '54%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: TRL4Card },
+        tile: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: TileCard },
     };
 
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
     return (
         <div 
-            className="game-card" 
+            className={`game-card ${!hoverable ? 'non-hoverable' : ''}`} 
             style={{ minWidth: `${size}px`, minHeight: `${size}px`, position: 'relative' }}
         >
-            {IconComponent && ( // Render the SVG component only if it's valid
+            {IconComponent && (
                 <IconComponent
                     style={{
                         width: iconSize.width,
@@ -92,7 +44,7 @@ const GameCard = ({ size, iconName }) => {
                         top: iconPosition.top,
                         left: iconPosition.left,
                         transform: iconPosition.transform,
-                        color: 'var(--br-c-dark)' // Change the color here
+                        color: 'var(--br-c-dark)',
                     }}
                 />
             )}

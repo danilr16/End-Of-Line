@@ -1,5 +1,6 @@
 // Board.js
 import React from 'react';
+import GameCard from "../components/GameCard"; // Import the new GameCard component
 
 export default function Board({ gridSize, size, gridRef }) {
     return (
@@ -13,7 +14,11 @@ export default function Board({ gridSize, size, gridRef }) {
                     gap: `${(5 / gridSize) * 2}%`,
                 }}
             >
-                {Array.from({ length: gridSize * gridSize }, (_, index) => (
+                {Array.from({ length: Math.floor((gridSize * gridSize)/2) }, (_, index) => (
+                    <div key={index} className="drop-zone" style={{ minWidth: `${size}px`, minHeight: `${size}px` }}></div>
+                ))}
+                <GameCard size={gridSize} iconName = "start_card" hoverable = {false}/>
+                {Array.from({ length: Math.floor((gridSize * gridSize)/2) }, (_, index) => (
                     <div key={index} className="drop-zone" style={{ minWidth: `${size}px`, minHeight: `${size}px` }}></div>
                 ))}
             </div>
