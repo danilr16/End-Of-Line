@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 
@@ -39,13 +38,6 @@ public class GameService {
     @Transactional(readOnly = true)
     public Game findGame(Integer id){
         return gameRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Game","id",id));
-    }
-
-    @Transactional
-    public Game findCreatedGameByHost(User host){
-        List<Game> actualGames = findJoinableGames();
-        Game hostGame = actualGames.stream().filter(g -> g.host.equals(host)).findFirst().orElse(null);
-        return hostGame;
     }
 
     @Transactional

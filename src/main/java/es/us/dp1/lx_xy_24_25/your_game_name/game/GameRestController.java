@@ -78,13 +78,6 @@ class GameRestController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
-    @GetMapping("/createdGame")
-    public ResponseEntity<Game> findCreatedGame(){
-        User host = userService.findCurrentUser();
-        Game game = gameService.findCreatedGameByHost(host);
-        return new ResponseEntity<>(game,HttpStatus.OK);
-    }
-
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") String gameCode ){
         Game res = gameService.findGameByGameCode(gameCode);
