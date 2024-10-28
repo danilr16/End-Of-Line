@@ -619,7 +619,7 @@ span.page-link:hover {
 .drop-zone {
     background-color: transparent;  
     border: 1px solid var(--br-c-dark);     
-    border-radius: 10%;            
+    border-radius: 15%;            
 }
 
 .player-list-container{
@@ -685,7 +685,7 @@ span.page-link:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10%; 
+    border-radius: 15%; 
     font-weight: bold;
     background-color: var(--br-c-normal);
     transition: transform 0.3s ease; 
@@ -704,7 +704,7 @@ span.page-link:hover {
     text-align: center;
     font-size: 150%;
     background-color: var(--br-c-normal);
-    border-radius: 10%;
+    border-radius: 15%;
     display: flex;
     justify-content: center; 
     align-items: center; 

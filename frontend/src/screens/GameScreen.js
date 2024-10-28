@@ -126,9 +126,11 @@ export default function GameScreen() {
             <div className="bottom-container">
                 <div className="card-container">
                     {/* Use the GameCard component instead of inline divs */}
-                    {Array.from({ length: 5 }).map((_, index) => (
-                        <GameCard key={index} size={gridItemSize} />
-                    ))}
+                    <GameCard size={gridItemSize} iconName = "t_rl_4_card"/>
+                    <GameCard size={gridItemSize} iconName = "t_fr_3_card"/>
+                    <GameCard size={gridItemSize} iconName = "forward_1_card"/>
+                    <GameCard size={gridItemSize} iconName = "l_r_2_card"/>
+                    <GameCard size={gridItemSize} iconName = "cross_0_card"/>
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
