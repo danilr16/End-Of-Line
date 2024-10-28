@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -16,7 +17,7 @@ import java.util.List;
 @Table(name="appRows")
 public class Row extends BaseEntity{
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name="row_id")
     @NotNull
     List<Cell> cells;

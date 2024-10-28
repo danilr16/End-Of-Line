@@ -4,9 +4,13 @@ import java.util.List;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -41,8 +45,13 @@ public class Player extends BaseEntity{
     }
 
     @NotNull
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = CascadeType.REMOVE)
     Hand hand;
+
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @NotNull
+    @JoinColumn(name = "player_id")
+    List<PackCard> packCards;
 
     public enum PlayerState {
         PLAYING, WON, LOST
@@ -64,6 +73,9 @@ public class Player extends BaseEntity{
         }
         if (state == null) {
             state = PlayerState.PLAYING;
+        }
+        if (packCards == null) {
+            packCards = new ArrayList<>();
         }
     }
 

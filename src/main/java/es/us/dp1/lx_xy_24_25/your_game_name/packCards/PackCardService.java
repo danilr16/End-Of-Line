@@ -11,6 +11,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import jakarta.validation.Valid;
 
 @Service
@@ -18,11 +19,13 @@ public class PackCardService {
 
     private PackCardRepository repository;
     private CardService cardService;
+    private PlayerService playerService;
 
     @Autowired
-    public PackCardService(PackCardRepository repository, CardService cardservice){
+    public PackCardService(PackCardRepository repository, CardService cardservice, PlayerService playerService){
         this.repository = repository;
         this.cardService = cardservice;
+        this.playerService = playerService;
     }
 
     @Transactional(readOnly = true)
@@ -60,9 +63,10 @@ public class PackCardService {
         for(Player player:players) {
             PackCard packCard = new PackCard();
             List<Card> cards = cardService.create25Cards(player);
-            packCard.setPlayer(player);
             packCard.setCards(cards);
             savePackCard(packCard);
+            player.getPackCards().add(packCard);
+            playerService.updatePlayer(player, player.getId());
         }
     }
     

@@ -3,6 +3,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -137,6 +138,18 @@ class GameRestController {
             return new ResponseEntity<>(new MessageResponse("Game started!"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't start this game");
+        }
+    }
+
+    @Async
+    public void espera() {
+        try {
+            System.out.println("iniciando");
+            Thread.sleep(10000);
+            System.out.println("iniciado");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Error durante la espera: " + e.getMessage());
         }
     }
 }
