@@ -12,7 +12,7 @@ const GameCard = ({ size, iconName, hoverable = true , beingDraggedCard, setBein
 
     return (
         <div 
-            className={classNames({'game-card':true, 'non-hoverable':!hoverable, 'dragging': beingDraggedCard&& beingDraggedCard === index})}
+            className={classNames({'game-card-container':true, 'non-hoverable':!hoverable, 'dragging': beingDraggedCard&& beingDraggedCard === index})}
             draggable
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
