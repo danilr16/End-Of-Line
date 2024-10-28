@@ -84,7 +84,7 @@ function AppNavbar() {
 
     return (
         <div>
-            <Navbar expand="md" /* dark color="dark" */className="navbar" style={{"background-color":colors.normal}}>
+            <Navbar expand="md" /* dark color="dark" */className="navbar" style={{"backgroundColor":colors.normal}}>
                 <NavbarBrand href="/">
                     {/* <img alt="logo" src="/logo1-recortado.png" style={{ height: 40, width: 40 }} /> */}
                     END OF LINE

@@ -12,6 +12,7 @@ export default function GameScreen() {
     const [gridSize, setGridSize] = useState(5); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
+    const [beingDraggedCard, setBeingDraggedCard] = useState(null);
     const { colors, updateColors } = useColors();
     const { gameCode } = useParams();
     const [game, setGame] = useFetchState(
@@ -27,6 +28,12 @@ export default function GameScreen() {
     const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
 
+
+
+
+    useEffect(() => {
+            // Function to update grid item size
+
     const updateGridItemSize = () => {
         if (gridRef.current) {
             const itemSize = gridRef.current.clientWidth / gridSize;
@@ -34,24 +41,25 @@ export default function GameScreen() {
         }
     };
 
-    useEffect(() => {
         updateGridItemSize();
 
         const handleResize = () => {
             updateGridItemSize();
         };
 
-        const animate = () => {
+        /*const animate = () => {
             updateGridItemSize();
             requestAnimationFrame(animate);
         };
-        requestAnimationFrame(animate);
+        requestAnimationFrame(animate);*/
         window.addEventListener('resize', handleResize);
 
         return () => {
             window.removeEventListener('resize', handleResize);
         };
     }, [gridSize]);
+
+    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
 
     useEffect(() => {
         if (!game) return;
@@ -124,11 +132,13 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-                    <GameCard size={gridItemSize} iconName = "t_rl_4_card"/>
-                    <GameCard size={gridItemSize} iconName = "t_fr_3_card"/>
-                    <GameCard size={gridItemSize} iconName = "forward_1_card"/>
-                    <GameCard size={gridItemSize} iconName = "l_r_2_card"/>
-                    <GameCard size={gridItemSize} iconName = "cross_0_card"/>
+
+                    {/* Use the GameCard component instead of inline divs */}
+                    <GameCard size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+                    <GameCard size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard} index = {index}/>
+
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
