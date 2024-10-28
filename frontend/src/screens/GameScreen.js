@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { ColorProvider, useColors } from "../ColorContext";
 import Board from "../components/Board";
 import GameCard from "../components/GameCard"; 
+import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -27,6 +28,8 @@ export default function GameScreen() {
 
     const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
+    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))); // Estado para el tablero
+
 
 
 
@@ -59,8 +62,8 @@ export default function GameScreen() {
         };
     }, [gridSize,game]);
 
-    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
 
+    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
     useEffect(() => {
         if (!game) return;
 
@@ -98,6 +101,26 @@ export default function GameScreen() {
                 break;
         }
     }, [game, updateColors]);
+    
+    const handCards =[<GameCard  key = {0} size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard} index = {0} beingDraggedCard={beingDraggedCard} />,
+        <GameCard key = {1}  size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard} index = {1} beingDraggedCard={beingDraggedCard}/>,
+        <GameCard  key = {2} size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard} index = {2} beingDraggedCard={beingDraggedCard}/>,
+        <GameCard  key = {3} size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard} index = {3} beingDraggedCard={beingDraggedCard}/>]
+
+    const onDrop = (index) => {
+            if (beingDraggedCard !== null) {
+                const iconName = handCards[beingDraggedCard].props.iconName;
+                const rowIndex = Math.floor(index / gridSize);
+                const colIndex = index % gridSize;
+        
+                setBoardItems(prevBoardItems => {
+                    const newBoardItems = [...prevBoardItems];
+                    newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />; // Almacena el icono en el tablero
+                    return newBoardItems;
+                });
+                setBeingDraggedCard(null); // Resetea el icono arrastrado
+            }
+        };
 
     if (!game) {
         return (
@@ -117,7 +140,7 @@ export default function GameScreen() {
                         </h5>
                     </div>
                 </div>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} />
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop = {onDrop} boardItems = {boardItems} />
                 <div className="chat-container">
                     <div className="chat">
                         <p>
@@ -132,13 +155,7 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-
-                    <GameCard size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard}/>
-                    <GameCard size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard}/>
-                    <GameCard size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard}/>
-                    <GameCard size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard}/>
-                    <GameCard size={gridItemSize} iconName = "cross_0_card" setBeingDraggedCard = {setBeingDraggedCard}/>
-
+                    {handCards}
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
