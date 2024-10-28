@@ -1,6 +1,5 @@
-// Board.js
 import React from 'react';
-import GameCard from "../components/GameCard"; // Import the new GameCard component
+import GameCard from "../components/GameCard";
 
 export default function Board({ gridSize, size, gridRef }) {
     return (

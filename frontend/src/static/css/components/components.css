@@ -697,11 +697,11 @@ span.page-link:hover {
 }
 
 .non-hoverable {
-    cursor: default; /* Change the cursor style */
+    cursor: default; 
 }
 
 .non-hoverable:hover {
-    transform: none; /* Disable hover effect */
+    transform: none;
 }
 
 .card-deck {
