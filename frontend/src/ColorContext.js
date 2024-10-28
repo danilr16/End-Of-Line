@@ -10,12 +10,16 @@ export const ColorProvider = ({ children }) => {
     });
 
     const updateColors = (newColors) => {
-        setColors((prevColors) => ({
-            ...prevColors,
-            ...newColors
-        }));
+        setColors((prevColors) => {
+            const hasChanged = Object.keys(newColors).some(
+                (key) => newColors[key] !== prevColors[key]
+            );
+    
+            // Solo actualiza el estado si los colores han cambiado
+            return hasChanged ? { ...prevColors, ...newColors } : prevColors;
+        });
     };
-
+    
     useEffect(() => {
         document.documentElement.style.setProperty('--br-c-light', colors.light);
         document.documentElement.style.setProperty('--br-c-normal', colors.normal);

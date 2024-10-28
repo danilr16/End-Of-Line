@@ -18,7 +18,6 @@ import Rules from './screens/Rules';
 import CurrentGames from "./screens/CurrentGames";
 import MyGames from "./screens/MyGames";
 import Profile from './screens/Profile';
-import MatchScreen from "./screens/MatchScreen";
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
 
@@ -84,7 +83,6 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/games/current" element={<CurrentGames />} />
         <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
-        <Route path="/games/{id}" exact={true} element={<PrivateRoute><MatchScreen /></PrivateRoute>} /> 
         <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} /> 
 
 
