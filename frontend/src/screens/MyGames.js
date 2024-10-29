@@ -27,14 +27,14 @@ export default function MyGames(){
 
   return (
     <div className="myGames-container">
-        <h1 className="myGames-title">Mis Partidas</h1>
+        <h1 className="myGames-title">My Games</h1>
         {games.length === 0 ? (
-            <p className="myGames-title">No hay partidas disponibles.</p>
+            <p className="myGames-title">No games available.</p>
         ) : (
             <ul className="myGames-table">
                 {games.map((item, index) => (
             <div className="myGames-td" key={index}>
-                <h4 className="myGames-tr">GameCode: {item.gameCode}</h4>
+                <p className="myGames-tr">GameCode: {item.gameCode}</p>
                 <p className="myGames-tr">Host: {item.host.username}</p>
         </div>
       ))}

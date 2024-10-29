@@ -548,19 +548,33 @@ span.page-link:hover {
   }
   
   /* Estilos para las celdas */
-.myGames-td {
-    background-color: #fde77c; /* Color de fondo  */
-    color: black; /* Color de las letras */
+  /*
+    .myGames-td {
+    background-color: #fde77c; 
+    color: black; 
     padding: 15px;
     margin: 10px;
-    border-radius: 10px; /* Bordes redondeados */
+    border-radius: 10px; 
+    text-align: left;
+    } 
+    */
+/* Cell styles */
+.myGames-td {
+    display: flex; /* Set to flex for horizontal alignment */
+    align-items: center; /* Center vertically */
+    background-color: #fde77c; /* Background color */
+    color: black; /* Text color */
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px; /* Rounded borders */
     text-align: left;
 }
+
   
   /* Asegura que los componentes se muestren de manera vertical */
 .myGames-tr {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: 100%;
   }
   
