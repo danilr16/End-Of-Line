@@ -20,6 +20,11 @@
   font-size: 5em;
 }
 
+.auth-form-container input {
+  color: #fff; 
+  background-color: transparent; 
+}
+
 .options-row {
   display: flex;
   justify-content: space-evenly;
