@@ -148,7 +148,7 @@ export default function GameScreen() {
                         </p>
                         <p>
                             <span style={{ color: `var(--br-c-normal)` }}>{"[renfe_lover]: "} </span>
-                            <span style={{ color: `white` }}>{"ivan putero"} </span>
+                            <span style={{ color: `white` }}>{"hola"} </span>
                         </p>
                     </div>
                 </div>
