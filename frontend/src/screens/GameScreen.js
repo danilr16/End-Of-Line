@@ -10,7 +10,7 @@ import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(5); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(13); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [beingDraggedCard, setBeingDraggedCard] = useState(null);
@@ -148,7 +148,7 @@ export default function GameScreen() {
                         </p>
                         <p>
                             <span style={{ color: `var(--br-c-normal)` }}>{"[renfe_lover]: "} </span>
-                            <span style={{ color: `white` }}>{"hola"} </span>
+                            <span style={{ color: `white` }}>{"Hola!"} </span>
                         </p>
                     </div>
                 </div>

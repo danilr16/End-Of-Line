@@ -11,7 +11,9 @@ import { ReactComponent as TFR3Card } from '../static/images/card-icons/t_fr_3_c
 import { ReactComponent as TRL4Card } from '../static/images/card-icons/t_rl_4_card.svg';
 import { ReactComponent as TileCard } from '../static/images/card-icons/tile.svg';
 
-export const GameCardIcon = ({ iconName }) => {
+
+//Elemento icono, imagen renderizada sobre overlay y dropzone
+export const GameCardIcon = ({ iconName}) => {
     const iconData = {
         block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
         cross_0_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross0Card },
@@ -25,7 +27,7 @@ export const GameCardIcon = ({ iconName }) => {
         t_fr_3_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '71%', transform: 'translate(-50%, -50%)' }, IconComponent: TFR3Card },
         t_rl_4_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '54%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: TRL4Card },
         tile: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: TileCard },
-    };
+        };
 
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
@@ -33,18 +35,18 @@ export const GameCardIcon = ({ iconName }) => {
 
     return (
         <div
-            className="game-card"
+            className="game-card-icon"
+            style={{width:'100%',height:'100%'}}
         >
             <IconComponent
                 style={{
                     width: iconSize.width,
                     height: iconSize.height,
-                    position: 'absolute',
+                    position: 'absolute',   
                     top: iconPosition.top,
                     left: iconPosition.left,
                     transform: iconPosition.transform,
                     color: 'var(--br-c-dark)',
-                    zIndex: 60
                 }}
             />
         </div>
