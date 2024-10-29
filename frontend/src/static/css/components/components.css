@@ -681,7 +681,7 @@ span.page-link:hover {
     justify-content: center; 
     align-items: center; 
     gap: 1.8%; 
-    position: relative;
+    position:relative;
 }
 
 .game-card-container {
@@ -689,9 +689,10 @@ span.page-link:hover {
     justify-content: center;
     align-items: center;
     border-radius: 15%; 
-    background-color: var(--br-c-normal);
-    transition: transform 0.3s ease; 
+    transition: transform 0.3s ease;
+    opacity: 0.3; 
     cursor: grab; 
+    z-index: 60;
 }
 
 .game-card {
@@ -712,7 +713,19 @@ span.page-link:hover {
     cursor: grab;
 }
 
-.game-card-container:hover {
+
+.game-card-icon{
+    position: absolute;
+    border-radius: 15%; 
+    font-weight: bold;
+    background-color: var(--br-c-normal);
+
+}
+.card-overlay{
+    transition: transform 0.3s ease;
+
+}
+.card-overlay:hover {
     transform: translateY(-10px);
 }
 
