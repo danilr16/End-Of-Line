@@ -8,21 +8,6 @@ const GameCard = ({ size, iconName, hoverable = true , beingDraggedCard, setBein
     const cardRef = useRef(null);
     const [position, setPosition] = useState({top:0,left:0})
 
-    const [mousePosition, setMousePosition] = useState({ top: 0, left: 0 });
-
-    useEffect(() => {
-    const handleMouseMove = (event) => {
-        setMousePosition({ left: event.clientX, top: event.clientY });
-    };
-
-      // Attach the event listener to the window object
-    window.addEventListener('mousemove', handleMouseMove);
-
-      // Cleanup function to remove the event listener
-    return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-    };
-    }, []);
 
 
     
@@ -50,7 +35,7 @@ const GameCard = ({ size, iconName, hoverable = true , beingDraggedCard, setBein
             onDragEnd={handleDragEnd}
             style={{ minWidth: `${size}px`, minHeight: `${size}px`}}
         />
-        <CardOverlay iconName={iconName} size = {size} position= {beingDraggedCard?mousePosition:position}/>
+        <CardOverlay iconName={iconName} size = {size} position= {position}/>
         </React.Fragment>
         
     );
