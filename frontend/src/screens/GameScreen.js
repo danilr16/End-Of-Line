@@ -129,7 +129,7 @@ export default function GameScreen() {
             </div>
         );
     }
-
+    console.log(game)
     return (
         <div className="full-screen">
             <div className="half-screen">
@@ -138,6 +138,14 @@ export default function GameScreen() {
                         <h5 style={{ color: "white" }}>
                             Players:
                         </h5>
+                        <ul className="myGames-td">
+                        {game.players.map((item, index) => (
+                        <div   key={index}>
+                            <p className="myGames-tr">User: {item.user.username}</p>
+                            <p className="myGames-tr">Score: {item.score}</p>
+                        </div>
+      ))}
+                        </ul>
                     </div>
                 </div>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop = {onDrop} boardItems = {boardItems} />
