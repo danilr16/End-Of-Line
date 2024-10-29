@@ -30,6 +30,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -39,7 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
@@ -51,12 +52,15 @@ class UserRestController {
 	private final UserService userService;
 	private final AuthoritiesService authService;
 	private final PlayerService playerService;
+	private final PasswordEncoder encoder;
+	
 
 	@Autowired
-	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService) {
+	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService,PasswordEncoder encoder) {
 		this.userService = userService;
 		this.authService = authService;
 		this.playerService = playerService;
+		this.encoder = encoder;
 	}
 
 	@GetMapping
@@ -118,4 +122,29 @@ class UserRestController {
 		} else
 			throw new AccessDeniedException("You can't delete yourself!");
 	}
+	
+	@PatchMapping("/myProfile")
+	public ResponseEntity<MessageResponse> updateMyProfile(String newUsername, String newPassword, String newImage) {
+		User toUpdate = userService.findCurrentUser();
+		int id = toUpdate.getId();
+		if (newUsername != null && !newUsername.strip().isEmpty()) {
+			if (userService.findUser(newUsername) == null) {
+				toUpdate.setUsername(newUsername);
+			} else {
+				throw new AccessDeniedException("There already is a user with that username!");
+			}
+		}
+		if (newPassword != null && !newPassword.strip().isEmpty()) {
+			String encodedPassword = encoder.encode(newPassword);
+			toUpdate.setPassword(encodedPassword);
+		}
+		if (newImage != null) {
+			toUpdate.setImage(newImage);
+		}
+		userService.updateUser(toUpdate, id);
+		return new ResponseEntity<>(new MessageResponse("User profile updated!"), HttpStatus.ACCEPTED);
+	}
+
+
+
 }
