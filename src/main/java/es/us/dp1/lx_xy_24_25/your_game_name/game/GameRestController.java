@@ -85,6 +85,12 @@ class GameRestController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
+    @GetMapping("/{gameCode}/players")
+    public ResponseEntity<List<Player>> findPlayersByGameCode(@PathVariable("gameCode") String gameCode) {
+        List<Player> players = gameService.findPlayersByGameCode(gameCode);
+        return new ResponseEntity<>(players,HttpStatus.OK);
+    }
+
     @PatchMapping("/{gameCode}/joinAsPlayer")
     public ResponseEntity<MessageResponse> joinAsPlayer(@PathVariable("gameCode") String gameCode) {
         Game game = gameService.findGameByGameCode(gameCode);

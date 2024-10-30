@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 
 @Service
 public class GameService {
@@ -59,5 +60,10 @@ public class GameService {
 		return toUpdate;
     }
 
+    @Transactional(readOnly = true)
+    public List<Player> findPlayersByGameCode(String gameCode){
+        Game game = findGameByGameCode(gameCode);
+        return game.getPlayers();
+    }
 
 }
