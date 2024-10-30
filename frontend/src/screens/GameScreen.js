@@ -187,10 +187,10 @@ export default function GameScreen() {
                         </h5>
 
                         <ul className="myGames-td">
-                        {players.map((item, index) => (
+                        {players.map((player, index) => (
                         <div   key={index}>
                             <p className="myGames-tr">User: {player.user.username}</p>
-                            <p className="myGames-tr">Score: {payer.score}</p>
+                            <p className="myGames-tr">Score: {player.score}</p>
                         </div>
                         ))}
                         </ul>
