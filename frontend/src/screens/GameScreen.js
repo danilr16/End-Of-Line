@@ -28,13 +28,7 @@ export default function GameScreen() {
         '/api/v1/users/currentUser',
         jwt
     );
-    const [players, setPlayers] = useFetchState(
-        [],
-        `/api/v1/games/${gameCode}/players`,
-        jwt,
-        setMessage,
-        setVisible
-    );
+    const [players, setPlayers] = useState([]);
 
     document.body.style.overflow = "hidden";
 
@@ -111,7 +105,10 @@ export default function GameScreen() {
     useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])
     useEffect(() => {
         if (!game) return;
-
+        
+        if (game.players) {
+            setPlayers(game.players);
+        }
         const gameMode = game.gameMode;
 
         switch (gameMode) {
