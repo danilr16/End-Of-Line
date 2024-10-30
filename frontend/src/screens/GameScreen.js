@@ -10,7 +10,7 @@ import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(5); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(13); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [beingDraggedCard, setBeingDraggedCard] = useState(null);
@@ -176,7 +176,7 @@ export default function GameScreen() {
             </div>
         );
     }
-
+    console.log(game)
     return (
         <div className="full-screen">
             <div className="half-screen">
@@ -185,13 +185,16 @@ export default function GameScreen() {
                         <h5 style={{ color: "white" }}>
                             Players:
                         </h5>
-                        <h6 style={{ color: "darkgray" }}>
-                            {players.map((player, index) =>
-                                <h7 key={index}>
-                                    {player.user.username}
-                                </h7>
-                            )}
-                        </h6>
+
+                        <ul className="myGames-td">
+                        {players.map((item, index) => (
+                        <div   key={index}>
+                            <p className="myGames-tr">User: {player.user.username}</p>
+                            <p className="myGames-tr">Score: {payer.score}</p>
+                        </div>
+                        ))}
+                        </ul>
+
                     </div>
                 </div>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
@@ -200,6 +203,7 @@ export default function GameScreen() {
                         <p>
                             <span style={{ color: "grey" }}>Welcome to the chat! </span>
                         </p>
+
                         <div className="message-container" ref={chatMessagesEndRef}>
                             {chatMessages.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">

@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -27,7 +28,7 @@ public class TableCard extends BaseEntity{
 
     Integer numColum;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @NotNull
     @JoinColumn(name="table_id")
     List<Row> rows;
