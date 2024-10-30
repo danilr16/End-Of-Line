@@ -665,6 +665,30 @@ span.page-link:hover {
     height: 100%
 }
 
+.message-container {
+    flex: 1;
+    width: 100%;
+    max-height: 275px;
+    overflow-y: auto;
+}
+
+.chat-message {
+    color: var(--br-c-normal);
+}
+
+.message-content {
+    color: var(--br-c-light);
+}
+
+.message-input {
+    margin-top: 3%;
+    background-color: var(--br-c-normal);
+}
+
+.message-input::placeholder {
+    color: black;
+}
+
 .bottom-container {
     width: 100%;
     flex-grow: 1;
