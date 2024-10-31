@@ -3,7 +3,7 @@ import DropZone from './DropZone';
 
 export default function Board({ gridSize, size, gridRef,onDrop,boardItems,isDragging,hoveredIndex,setHoveredIndex }) {
     return (
-        <div className="board-frame" style={{ width: `${(gridSize / 5) * 5 + 24}%` }}>
+        <div className="board-frame" style={{ width: `${(gridSize / 5) * 4 + 24}%` }}>
             <div
                 className="grid-container"
                 ref={gridRef}
