@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { GameCardIcon } from "./GameCardIcon";
 
-export const CardOverlay = ({ iconName, position, size , isDragging}) => {
+export const CardOverlay = ({ iconName, position, size , isDragging,dropIndex}) => {
     const [currentPosition, setCurrentPosition] = useState(position);
+    const [currentRotation, setCurrentRotation] = useState(0);
     const intervalRef = useRef(null);
     const remainingTimeRef = useRef(16); // Duration of each interval in ms (16 milliseconds)
     const lastUpdateTimeRef = useRef(Date.now());
@@ -14,9 +15,11 @@ export const CardOverlay = ({ iconName, position, size , isDragging}) => {
     // Function to update the position
     const updatePosition = () => {
         setCurrentPosition((prevPosition) => ({
-            top: lerp(prevPosition.top, position.top, 0.4),
-            left: lerp(prevPosition.left, position.left, 0.4),
+            top: lerp(prevPosition.top, position.top, 0.2),
+            left: lerp(prevPosition.left, position.left, 0.2),
         }));
+        setCurrentRotation((dropIndex === 13 && isDragging) ? 90 : 0, 1)
+    
         lastUpdateTimeRef.current = Date.now(); // Reset last update time
     };
 
@@ -70,6 +73,8 @@ export const CardOverlay = ({ iconName, position, size , isDragging}) => {
                 left: currentPosition.left,
                 minWidth: `${size}px`,
                 minHeight: `${size}px`,
+                zIndex: isDragging? 2: 1,
+                transform: `rotate(${currentRotation}deg)`
             }}
         >
             {iconName && <GameCardIcon iconName={iconName} size={size} />}
