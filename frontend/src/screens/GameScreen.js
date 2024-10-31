@@ -183,11 +183,10 @@ export default function GameScreen() {
                             Players:
                         </h5>
 
-                        <ul className="myGames-td">
+                        <ul className="player-container">
                         {players.map((player, index) => (
                         <div   key={index}>
-                            <p className="myGames-tr">User: {player.user.username}</p>
-                            <p className="myGames-tr">Score: {player.score}</p>
+                            <p className="player-container-text">{player.user.username}</p>
                         </div>
                         ))}
                         </ul>
