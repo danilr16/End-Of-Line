@@ -18,6 +18,8 @@
     --black-transparency:rgba(0,0,0,0.7);
     --br-selected-over-bg:#818a91;
     --br-hovered-over-bg:#96a1aa;
+    --br-trans-grey: #ffffff0a;
+    --br-trans-grey-light: #ffffff27;
 }
 
 html body {

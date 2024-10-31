@@ -185,7 +185,7 @@ span.page-link:hover {
 }
 
 .curgames-options-div{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -572,7 +572,7 @@ span.page-link:hover {
 
 
   .hero-div{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -634,7 +634,7 @@ span.page-link:hover {
 }
 
 .player-list{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 5%;
     border-radius: 25px;
     display: flex;
@@ -653,40 +653,67 @@ span.page-link:hover {
     height: 100%
 }
 
-.chat{
-    background-color: #ffffff0a;
+.chat {
+    background-color: var(--br-trans-grey);
     padding: 5%;
     border-radius: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: top;
-    align-items:left;
+    justify-content: flex-start; 
+    align-items: flex-start;
     width: 100%;
-    height: 100%
+    height: 100%;
 }
 
 .message-container {
     flex: 1;
     width: 100%;
-    max-height: 275px;
+    height: calc(100%-40px);
+    margin-bottom: 20px;
     overflow-y: auto;
 }
 
+.message-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.message-container::-webkit-scrollbar-track {
+    background: var(--br-dark); 
+    border-radius: 4px;/* Dark track */
+}
+
+.message-container::-webkit-scrollbar-thumb {
+    background-color: var(--br-trans-grey-light); /* Darker thumb */
+    border-radius: 4px;
+}
+
+
 .chat-message {
     color: var(--br-c-normal);
+    margin-bottom: 15px;
 }
 
 .message-content {
-    color: var(--br-c-light);
+    color: white;
 }
 
 .message-input {
-    margin-top: 3%;
-    background-color: var(--br-c-normal);
+    margin-top: auto;
+    background-color: var(--br-trans-grey);
+    border: 0;
+    padding: 5px;
+    outline: none;
+    box-shadow: none;
+    border-radius: 5px;
+    color: white;
+    width: 100%;
+}
+.message-input::placeholder {
+    color: "grey";
 }
 
-.message-input::placeholder {
-    color: black;
+.message-input:focus {
+    outline:none;
 }
 
 .bottom-container {

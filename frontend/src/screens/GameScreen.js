@@ -10,7 +10,7 @@ import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(13); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [beingDraggedCard, setBeingDraggedCard] = useState(null);
@@ -197,14 +197,15 @@ export default function GameScreen() {
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
                 <div className="chat-container">
                     <div className="chat">
-                        <p>
-                            <span style={{ color: "grey" }}>Welcome to the chat! </span>
-                        </p>
+                        
 
                         <div className="message-container" ref={chatMessagesEndRef}>
+                            <p>
+                                <span style={{ color: "grey"}}>Welcome to the chat! </span>
+                            </p>
                             {chatMessages.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
-                                    {chatMessage.sender}: <span className="message-content">{chatMessage.text}</span>
+                                    [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
                                 </div>
                             ))}
                         </div>
