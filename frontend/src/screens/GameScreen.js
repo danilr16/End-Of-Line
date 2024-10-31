@@ -10,7 +10,7 @@ import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(13); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [beingDraggedCard, setBeingDraggedCard] = useState(null);
