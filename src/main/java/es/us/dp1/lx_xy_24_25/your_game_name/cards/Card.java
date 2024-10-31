@@ -3,6 +3,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.cards;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -12,6 +14,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
+
+import org.hibernate.validator.constraints.Range;
 
 import java.util.ArrayList;
 
@@ -25,12 +29,6 @@ public class Card extends BaseEntity{
         TYPE_1,TYPE_2_IZQ,TYPE_2_DER,TYPE_3_IZQ,TYPE_3_DER,TYPE_4,TYPE_5,TYPE_0,INICIO
     }
 
-    TypeCard type;
-
-    Integer iniciative;
-
-    Integer rotation;
-
     public static record Output(List<Integer> outputs, Integer input) {
 
         public static Output of(List<Integer> outputs, Integer input) {
@@ -38,6 +36,17 @@ public class Card extends BaseEntity{
         }
 
     }
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    TypeCard type;
+
+    @Range(min = 0, max = 5)
+    Integer iniciative;
+
+    @Range(min = 0, max = 3)
+    @NotNull
+    Integer rotation;
 
     @NotNull
     @ManyToOne(optional = false)

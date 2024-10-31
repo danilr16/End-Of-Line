@@ -13,12 +13,15 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
+import org.hibernate.validator.constraints.Range;
+
 @Entity
 @Getter
 @Setter
 @Table(name="appHands")
 public class Hand extends BaseEntity{
 
+    @Range(min = 0)
     Integer numCards;
 
     @OneToMany(cascade = CascadeType.REMOVE)
