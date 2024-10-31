@@ -10,10 +10,18 @@ import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(13); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(7);
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
-    const [beingDraggedCard, setBeingDraggedCard] = useState(null);
+    const [isDragging, setDragging] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(-1);
+    const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
+    const gridRef = useRef(null);
+    const beingDraggedCardRef = useRef(beingDraggedCard);
+    const setBeingDraggedCard = (card) => {
+        _setBeingDraggedCard(card);
+        beingDraggedCardRef.current = card; 
+    };
     const { colors, updateColors } = useColors();
     const { gameCode } = useParams();
     const [game, setGame] = useFetchState(
@@ -24,48 +32,57 @@ export default function GameScreen() {
         setVisible
     );
 
-    document.body.style.overflow = "hidden";
-
-    const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
-    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))); // Estado para el tablero
+    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
+    
+    // New state to track used cards
+    const [usedCards, setUsedCards] = useState(new Set());
 
+    const handCards = [
+        { key: 0, iconName: "t_rl_4_card" },
+        { key: 1, iconName: "t_fr_3_card" },
+        { key: 2, iconName: "forward_1_card" },
+        { key: 3, iconName: "l_r_2_card" }
+    ].map(card => (
+        <GameCard
+            key={card.key}
+            size={gridItemSize}
+            iconName={card.iconName}
+            setBeingDraggedCard={setBeingDraggedCard}
+            index={card.key}
+            beingDraggedCard={beingDraggedCard}
+            setDragging={setDragging}
+            // Pass usedCards to the GameCard to determine if it should be displayed
+            isUsed={usedCards.has(card.key)}
+        />
+    ));
 
+    const onDrop = (index) => {
+        if (beingDraggedCardRef.current !== null) {
+            const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
+            const iconName = handCards[droppedCardIndex].props.iconName;
+            const rowIndex = Math.floor(index / gridSize);
+            const colIndex = index % gridSize;
 
+            setBoardItems(prevBoardItems => {
+                const newBoardItems = [...prevBoardItems];
+                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />;
+                return newBoardItems;
+            });
 
+            // Add the card to usedCards set
+            setUsedCards(prev => new Set(prev).add(droppedCardIndex));
 
-    useEffect(() => {
-            // Function to update grid item size
-
-    const updateGridItemSize = () => {
-        if (gridRef.current) {
-            const itemSize = gridRef.current.clientWidth / gridSize;
-            setGridItemSize(itemSize * 0.9);
+            setBeingDraggedCard(null); // Reset the dragged card
         }
     };
 
-        updateGridItemSize();
-
-        const handleResize = () => {
-            updateGridItemSize();
-        };
-
-        /*const animate = () => {
-            updateGridItemSize();
-            requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);*/
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [gridSize,game]);
-
-
     useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
     useEffect(() => {
+        
         if (!game) return;
+
+        document.body.style.overflow = "hidden";
 
         const gameMode = game.gameMode;
 
@@ -101,26 +118,25 @@ export default function GameScreen() {
                 break;
         }
     }, [game, updateColors]);
-    
-    const handCards =[<GameCard  key = {0} size={gridItemSize} iconName = "t_rl_4_card" setBeingDraggedCard = {setBeingDraggedCard} index = {0} beingDraggedCard={beingDraggedCard} />,
-        <GameCard key = {1}  size={gridItemSize} iconName = "t_fr_3_card" setBeingDraggedCard = {setBeingDraggedCard} index = {1} beingDraggedCard={beingDraggedCard}/>,
-        <GameCard  key = {2} size={gridItemSize} iconName = "forward_1_card" setBeingDraggedCard = {setBeingDraggedCard} index = {2} beingDraggedCard={beingDraggedCard}/>,
-        <GameCard  key = {3} size={gridItemSize} iconName = "l_r_2_card" setBeingDraggedCard = {setBeingDraggedCard} index = {3} beingDraggedCard={beingDraggedCard}/>]
 
-    const onDrop = (index) => {
-            if (beingDraggedCard !== null) {
-                const iconName = handCards[beingDraggedCard].props.iconName;
-                const rowIndex = Math.floor(index / gridSize);
-                const colIndex = index % gridSize;
-        
-                setBoardItems(prevBoardItems => {
-                    const newBoardItems = [...prevBoardItems];
-                    newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />; // Almacena el icono en el tablero
-                    return newBoardItems;
-                });
-                setBeingDraggedCard(null); // Resetea el icono arrastrado
+    useEffect(() => {
+        const updateGridItemSize = () => {
+            if (gridRef.current) {
+                const itemSize = gridRef.current.clientWidth / gridSize;
+                setGridItemSize(itemSize * 0.9);
             }
         };
+
+        updateGridItemSize();
+        const handleResize = () => {
+            updateGridItemSize();
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [gridSize, game]);
 
     if (!game) {
         return (
@@ -129,7 +145,9 @@ export default function GameScreen() {
             </div>
         );
     }
-    console.log(game)
+
+    
+
     return (
         <div className="full-screen">
             <div className="half-screen">
@@ -139,16 +157,16 @@ export default function GameScreen() {
                             Players:
                         </h5>
                         <ul className="myGames-td">
-                        {game.players.map((item, index) => (
-                        <div   key={index}>
-                            <p className="myGames-tr">User: {item.user.username}</p>
-                            <p className="myGames-tr">Score: {item.score}</p>
-                        </div>
-      ))}
+                            {game.players.map((item, index) => (
+                                <div key={index}>
+                                    <p className="myGames-tr">User: {item.user.username}</p>
+                                    <p className="myGames-tr">Score: {item.score}</p>
+                                </div>
+                            ))}
                         </ul>
                     </div>
                 </div>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop = {onDrop} boardItems = {boardItems} />
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
                 <div className="chat-container">
                     <div className="chat">
                         <p>
@@ -163,7 +181,7 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-                    {handCards}
+                    {handCards.filter((_, index) => !usedCards.has(index))}
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>

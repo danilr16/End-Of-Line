@@ -1,42 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const DropZone = ({index,size,onDrop,cardIcon}) => {
+const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, setHoveredIndex }) => {
     const [showDrop, setShowDrop] = useState(false);
-    const [isHovered, setIsHovered] = useState(true);
+    const [isHovered, setIsHovered] = useState(false);
+    
+    const isHoveredRef = useRef(isHovered);
+    const hoveredIndexRef = useRef(hoveredIndex);
+    const isDraggingRef = useRef(isDragging);
+
+    useEffect(() => {
+        isHoveredRef.current = isHovered;
+    }, [isHovered]);
+
+    useEffect(() => {
+        hoveredIndexRef.current = hoveredIndex;
+    }, [hoveredIndex]);
+
+    // Sync isDraggingRef with isDragging prop
+    useEffect(() => {
+        isDraggingRef.current = isDragging;
+    }, [isDragging]);
 
     const handleMouseEnter = () => {
-      setIsHovered(false)
-      console.log(isHovered)
+        setIsHovered(true);
+        setHoveredIndex(index);
     };
-  
+
     const handleMouseLeave = () => {
-      setIsHovered(true)
-      console.log(isHovered)
-
+        setIsHovered(false);
+        if (hoveredIndex === index) {
+            setHoveredIndex(-1);
+        }
     };
 
-    const canDropHere = () => {return true;}
-    const handleDragEnter = () => {
-        if(canDropHere()){ setShowDrop(true)}
-    }
-    const handleDragLeave = () => {setShowDrop(false)}
-    const handleDrop = ()=> {
-        setShowDrop(false)
-        onDrop(index)
-    }
+    const handleMouseUp = () => {
+        if (isDraggingRef.current && isHoveredRef.current) {
+            handleDrop();
+        }
+    };
     
-    return(
-        <div key={index} className={showDrop?"drop-zone-show":"drop-zone-hide"} style={{ minWidth: `${size}px`, minHeight: `${size}px`, position:"relative" }}
-            onDragEnter={handleDragEnter} 
-            onDragLeave={handleDragLeave}
-            onDrop = {handleDrop}
-            onDragOver={(e) => e.preventDefault()}
+    useEffect(() => {
+        window.addEventListener('mouseup', handleMouseUp);
+        
+        return () => {
+          window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, []);
+
+    const canDropHere = () => true;
+
+    const handleDrop = () => {
+        handleMouseLeave();
+        onDrop(index); 
+    };
+    
+    return (
+        <div 
+            key={index} 
+            className={(hoveredIndex === index && isDraggingRef.current) ? "drop-zone-show" : "drop-zone-hide"}
+            style={{ minWidth: `${size}px`, minHeight: `${size}px`, position: "relative" }}
             onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}>
+            onMouseLeave={handleMouseLeave}
+        >
             {cardIcon}
         </div>
     );
+};
 
-}
-
-export default DropZone
+export default DropZone;
