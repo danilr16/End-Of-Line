@@ -784,8 +784,6 @@ span.page-link:hover {
 }
 
 .game-card-container.dragging{
-    opacity: 1;
-    border: 3px solid #fff;
     cursor: grab;
 }
 
@@ -797,10 +795,20 @@ span.page-link:hover {
     background-color: var(--br-c-normal);
 
 }
+
+.no-select {
+    user-select: none; 
+  }
 .card-overlay{
     transition: transform 0.3s ease;
-
+    pointer-events: none;
+    border-radius: 15%; 
 }
+
+.card-overlay.dragging{
+    box-shadow: 0 0 0 2px #fff;
+}
+
 .card-overlay:hover {
     transform: translateY(-10px);
 }
