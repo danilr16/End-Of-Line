@@ -178,20 +178,20 @@ export default function GameScreen() {
         <div className="full-screen">
             <div className="half-screen">
                 <div className="player-list-container">
-                    <div className="player-list">
+                    <ul className="player-list">
                         <h5 style={{ color: "white" }}>
                             Players:
                         </h5>
 
-                        <ul className="player-container">
                         {players.map((player, index) => (
-                        <div   key={index}>
-                            <p className="player-container-text">{player.user.username}</p>
-                        </div>
+                            <div className="player-container" key={index}>
+                                <div>
+                                    <p className="player-container-text">{player.user.username}</p>
+                                </div>
+                            </div>
                         ))}
-                        </ul>
 
-                    </div>
+                    </ul>
                 </div>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
                 <div className="chat-container">

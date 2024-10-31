@@ -642,25 +642,29 @@ span.page-link:hover {
     justify-content: top;
     align-items:center;
     width: 100%;
-    height: 100%
+    height: 100%;
+    gap:10px
 }
 
 .player-container {
+    display: flex;             
+    align-items: center;    
     background-color: var(--br-trans-grey); 
     color: white; 
     padding: 15px;
-    margin: 10px;
     border-radius: 10px; 
     width: 100%;
-    text-align: left;
 }
-  
+
 .player-container-text {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     width: 100%;
-    color:var(--br-c-normal)
-  }
+    color: var(--br-c-normal);
+    text-align: center;
+    margin: auto;              
+}
 
 .chat-container{
     display: flex;
