@@ -48,20 +48,34 @@ export default function Profile() {
         console.log("Username:", newUsername);
         console.log("New Password:", newPassword || user.password);
         try {
+            /*
             const updatedUser = {
                 ...user,
-                username: newUsername,
-                password: newPassword || user.password, 
+                ...(newUsername && newUsername !== user.username ? { username: newUsername } : {}),
+                ...(newPassword ? { password: newPassword } : {}),
             };
             console.log("Updated User Data:", updatedUser);
+          
 
-            const response = await fetch(`/api/v1/users/update/${user.id}`, {
-                method: 'PUT',
+            const response = await fetch(`/api/v1/users/myProfile"`, {
+                method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': `newUsername=${updatedUser.username}&newPassword=${updatedUser.password}&newImage=${null}`,
                     'Authorization': `Bearer ${jwt}`,
                 },
                 body: JSON.stringify(updatedUser),
+            });
+            */
+            const params = new URLSearchParams();
+            if (newUsername && newUsername !== user.username) params.append("newUsername", newUsername);
+            if (newPassword) params.append("newPassword", newPassword);
+            if (newImage) params.append("newImage", newImage);
+
+            const response = await fetch(`/api/v1/users/myProfile?${params.toString()}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
             });
 
             if (response.ok) {
@@ -76,6 +90,7 @@ export default function Profile() {
             setMessage('Error al conectar con el servidor');
         }
     };
+
     
     // Pantalla de carga (cambiar)
 
