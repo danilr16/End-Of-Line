@@ -2,12 +2,16 @@ package es.us.dp1.lx_xy_24_25.your_game_name.player;
 
 import java.util.List;
 
+import org.hibernate.validator.constraints.Range;
+
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -26,23 +30,25 @@ import java.util.ArrayList;
 @Table(name = "appPlayers")
 public class Player extends BaseEntity{
 
+    public enum PlayerState {
+        PLAYING, WON, LOST
+    }
+
+    @Range(min = 0)
     Integer score;
 
+    @Range(min = 0, max = 3)
+    @NotNull
     Integer energy;
+
+    @Enumerated(EnumType.STRING)
+    PlayerState state;
 
     @NotNull
     @ManyToOne(optional = false)
     User user;
 
     List<Integer> playedCards;
-
-    public Boolean canUseEnergy() {
-        if (this.energy > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
@@ -52,12 +58,6 @@ public class Player extends BaseEntity{
     @NotNull
     @JoinColumn(name = "player_id")
     List<PackCard> packCards;
-
-    public enum PlayerState {
-        PLAYING, WON, LOST
-    }
-
-    PlayerState state;
 
     @PrePersist
     @PreUpdate
@@ -79,4 +79,11 @@ public class Player extends BaseEntity{
         }
     }
 
+    public Boolean canUseEnergy() {
+        if (this.energy > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
