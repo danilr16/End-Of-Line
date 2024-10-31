@@ -2,6 +2,18 @@ import React, { useState } from "react";
 
 const DropZone = ({index,size,onDrop,cardIcon}) => {
     const [showDrop, setShowDrop] = useState(false);
+    const [isHovered, setIsHovered] = useState(true);
+
+    const handleMouseEnter = () => {
+      setIsHovered(false)
+      console.log(isHovered)
+    };
+  
+    const handleMouseLeave = () => {
+      setIsHovered(true)
+      console.log(isHovered)
+
+    };
 
     const canDropHere = () => {return true;}
     const handleDragEnter = () => {
@@ -18,7 +30,9 @@ const DropZone = ({index,size,onDrop,cardIcon}) => {
             onDragEnter={handleDragEnter} 
             onDragLeave={handleDragLeave}
             onDrop = {handleDrop}
-            onDragOver={(e) => e.preventDefault()}>
+            onDragOver={(e) => e.preventDefault()}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}>
             {cardIcon}
         </div>
     );
