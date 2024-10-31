@@ -563,6 +563,7 @@ span.page-link:hover {
     display: flex; /* Set to flex for horizontal alignment */
     align-items: center; /* Center vertically */
     background-color: #fde77c; /* Background color */
+    justify-content: space-between;
     color: black; /* Text color */
     padding: 15px;
     margin: 10px;
@@ -571,13 +572,14 @@ span.page-link:hover {
 }
 
   
-  /* Asegura que los componentes se muestren de manera vertical */
+
 .myGames-tr {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
+    font-size: 0.9em;
   }
-  
+
+.score-td {
+    text-align: right;
+}
   /* Para un mejor aspecto visual */
 .myGames-td:not(:last-child) {
     margin-bottom: 10px; /* Espaciado entre celdas */

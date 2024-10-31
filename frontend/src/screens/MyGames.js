@@ -23,7 +23,11 @@ export default function MyGames(){
     if(!games) { 
         return <p className="myGames-title">Cargando partidas...</p>
     }
+
     
+    const playerData = games.map((item, index) => 
+        item.players.find(player => player.username === item.host.username)
+    );
 
   return (
     <div className="myGames-container">
@@ -34,8 +38,8 @@ export default function MyGames(){
             <ul className="myGames-table">
                 {games.map((item, index) => (
             <div className="myGames-td" key={index}>
-                <p className="myGames-tr">GameCode: {item.gameCode}</p>
-                <p className="myGames-tr">Host: {item.host.username}</p>
+                <span className="myGames-tr">GameMode: {item.gameMode}</span>
+                <span className="myGames-tr">Score: { playerData[index]? playerData[index].score:"N/A" }</span>
         </div>
       ))}
             </ul>
