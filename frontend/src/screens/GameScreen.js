@@ -200,9 +200,7 @@ export default function GameScreen() {
                         
 
                         <div className="message-container" ref={chatMessagesEndRef}>
-                            <p>
-                                <span style={{ color: "grey"}}>Welcome to the chat! </span>
-                            </p>
+                            <span style={{ color: "grey"}}>Welcome to the chat! </span>
                             {chatMessages.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
                                     [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
@@ -215,6 +213,7 @@ export default function GameScreen() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={handlePressKey} //aunque aparezca tachado hace falta
+                            maxLength={500}
                         />
                     </div>
                 </div>
