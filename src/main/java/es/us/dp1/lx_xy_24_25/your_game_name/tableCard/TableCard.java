@@ -3,6 +3,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -11,6 +13,8 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import java.util.Map;
+
+import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Getter
@@ -22,10 +26,13 @@ public class TableCard extends BaseEntity{
         JUGADORES_1,JUGADORES_2,JUGADORES_3,JUGADORES_4,JUGADORES_5,JUGADORES_6,JUGADORES_7,JUGADORES_8
     }
 
+    @Enumerated(EnumType.STRING)
     TypeTable type;
 
+    @Range(min = 5, max = 13)
     Integer numRow;
 
+    @Range(min = 5, max = 13)
     Integer numColum;
 
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)

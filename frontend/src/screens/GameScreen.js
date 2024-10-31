@@ -5,12 +5,12 @@ import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
 import { ColorProvider, useColors } from "../ColorContext";
 import Board from "../components/Board";
-import GameCard from "../components/GameCard"; 
+import GameCard from "../components/GameCard";
 import { GameCardIcon } from '../components/GameCardIcon';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
-    const [gridSize, setGridSize] = useState(7);
+    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [isDragging, setDragging] = useState(false);
@@ -31,6 +31,12 @@ export default function GameScreen() {
         setMessage,
         setVisible
     );
+    const [user, setUser] = useFetchState(
+        null,
+        '/api/v1/users/currentUser',
+        jwt
+    );
+    const [players, setPlayers] = useState([]);
 
     const [gridItemSize, setGridItemSize] = useState(0);
     const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
@@ -84,6 +90,50 @@ export default function GameScreen() {
 
         document.body.style.overflow = "hidden";
 
+    const [input, setInput] = useState('');
+    const [chatMessages, setChatMessages] = useState([]);
+    const chatMessagesEndRef = useRef(null);
+    const MAX_MESSAGES = 75; //Numero maximo de mensajes que se mostrarán en el chat
+
+    useEffect(() => {
+        if (user) {
+            setUser(user)
+        }
+    }, [user])
+
+    useEffect(() => {
+        if(chatMessagesEndRef.current) {
+            chatMessagesEndRef.current.scrollTop = chatMessagesEndRef.current.scrollHeight;
+        }
+    }, [chatMessages]) //Esto es para que cuando se envíe un mensaje es scroll se vaya para abajo automáticamente
+
+
+    const handleSendMessage = () => {
+
+        if (input.trim() === '') {
+            return; //Para que no se envíen mensajes vacíos
+        }
+
+        setChatMessages((chatMessages) => {
+            const chatMessagesArray = [...chatMessages, { text: input, sender: user.username }];
+            return chatMessagesArray.slice(-MAX_MESSAGES); //Se queda con los ultimos mensajes que indique esa variable
+        });
+        setInput('');
+    }
+
+    const handlePressKey = (e) => {
+        if (e.key === 'Enter') {
+            handleSendMessage();
+        }
+    }
+
+    useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])
+    useEffect(() => {
+        if (!game) return;
+        
+        if (game.players) {
+            setPlayers(game.players);
+        }
         const gameMode = game.gameMode;
 
         switch (gameMode) {
@@ -126,7 +176,7 @@ export default function GameScreen() {
                 setGridItemSize(itemSize * 0.9);
             }
         };
-
+      
         updateGridItemSize();
         const handleResize = () => {
             updateGridItemSize();
@@ -146,36 +196,49 @@ export default function GameScreen() {
         );
     }
 
+
     
 
     return (
         <div className="full-screen">
             <div className="half-screen">
                 <div className="player-list-container">
-                    <div className="player-list">
+                    <ul className="player-list">
                         <h5 style={{ color: "white" }}>
                             Players:
                         </h5>
-                        <ul className="myGames-td">
-                            {game.players.map((item, index) => (
-                                <div key={index}>
-                                    <p className="myGames-tr">User: {item.user.username}</p>
-                                    <p className="myGames-tr">Score: {item.score}</p>
+
+                        {players.map((player, index) => (
+                            <div className="player-container" key={index}>
+                                <div>
+                                    <p className="player-container-text">{player.user.username}</p>
                                 </div>
-                            ))}
-                        </ul>
-                    </div>
+                            </div>
+                        ))}
+
+                    </ul>
                 </div>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
                 <div className="chat-container">
                     <div className="chat">
-                        <p>
-                            <span style={{ color: "grey" }}>Welcome to the chat! </span>
-                        </p>
-                        <p>
-                            <span style={{ color: `var(--br-c-normal)` }}>{"[renfe_lover]: "} </span>
-                            <span style={{ color: `white` }}>{"Hola!"} </span>
-                        </p>
+                        
+
+                        <div className="message-container" ref={chatMessagesEndRef}>
+                            <span style={{ color: "grey"}}>Welcome to the chat! </span>
+                            {chatMessages.map((chatMessage, index) => (
+                                <div key={index} className="chat-message">
+                                    [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <input className="message-input"
+                            type="text"
+                            placeholder="Send your message..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handlePressKey} //aunque aparezca tachado hace falta
+                            maxLength={500}
+                        />
                     </div>
                 </div>
             </div>

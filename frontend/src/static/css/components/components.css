@@ -185,7 +185,7 @@ span.page-link:hover {
 }
 
 .curgames-options-div{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -572,7 +572,7 @@ span.page-link:hover {
 
 
   .hero-div{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 2rem;
     border-radius: 25px;
     backdrop-filter: blur(10px);
@@ -634,7 +634,7 @@ span.page-link:hover {
 }
 
 .player-list{
-    background-color: #ffffff0a;
+    background-color: var(--br-trans-grey);
     padding: 5%;
     border-radius: 25px;
     display: flex;
@@ -642,7 +642,28 @@ span.page-link:hover {
     justify-content: top;
     align-items:center;
     width: 100%;
-    height: 100%
+    height: 100%;
+    gap:10px
+}
+
+.player-container {
+    display: flex;             
+    align-items: center;    
+    background-color: var(--br-trans-grey); 
+    color: white; 
+    padding: 15px;
+    border-radius: 10px; 
+    width: 100%;
+}
+
+.player-container-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    color: var(--br-c-normal);
+    text-align: center;
+    margin: auto;              
 }
 
 .chat-container{
@@ -650,19 +671,74 @@ span.page-link:hover {
     flex-direction: column;
     justify-content: top;
     width: 25%;
-    height: 100%
+    height: 100%;
 }
 
-.chat{
-    background-color: #ffffff0a;
+.chat {
+    background-color: var(--br-trans-grey);
     padding: 5%;
     border-radius: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: top;
-    align-items:left;
+    justify-content: flex-start; 
+    align-items: flex-start;
     width: 100%;
-    height: 100%
+    height: 100%;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 15px;
+    margin-right: 50px;
+}
+
+.message-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.message-container::-webkit-scrollbar-track {
+    background: var(--br-dark); 
+    border-radius: 4px;/* Dark track */
+}
+
+.message-container::-webkit-scrollbar-thumb {
+    background-color: var(--br-trans-grey-light); /* Darker thumb */
+    border-radius: 4px;
+}
+
+
+.chat-message {
+    color: var(--br-c-normal);
+}
+
+.message-content {
+    color: white;
+}
+
+.message-input {
+    margin-top: auto;
+    background-color: var(--br-trans-grey);
+    border: 0;
+    padding: 5px;
+    outline: none;
+    box-shadow: none;
+    border-radius: 5px;
+    color: white;
+    width: 100%;
+}
+.message-input::placeholder {
+    color: "grey";
+}
+
+.message-input:focus {
+    outline:none;
 }
 
 .bottom-container {
@@ -771,3 +847,4 @@ span.page-link:hover {
         0px -11px 0px var(--br-c-normal),  
         0px -12px 0px var(--br-c-dark);
 }
+
