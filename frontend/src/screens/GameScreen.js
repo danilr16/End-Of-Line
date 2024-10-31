@@ -197,14 +197,15 @@ export default function GameScreen() {
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
                 <div className="chat-container">
                     <div className="chat">
-                        <p>
-                            <span style={{ color: "grey" }}>Welcome to the chat! </span>
-                        </p>
+                        
 
                         <div className="message-container" ref={chatMessagesEndRef}>
+                            <p>
+                                <span style={{ color: "grey"}}>Welcome to the chat! </span>
+                            </p>
                             {chatMessages.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
-                                    {chatMessage.sender}: <span className="message-content">{chatMessage.text}</span>
+                                    [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
                                 </div>
                             ))}
                         </div>
