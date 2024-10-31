@@ -58,6 +58,7 @@ export default function GameScreen() {
             index={card.key}
             beingDraggedCard={beingDraggedCard}
             setDragging={setDragging}
+            dropIndex={hoveredIndex}
             // Pass usedCards to the GameCard to determine if it should be displayed
             isUsed={usedCards.has(card.key)}
         />
@@ -89,6 +90,7 @@ export default function GameScreen() {
         if (!game) return;
 
         document.body.style.overflow = "hidden";
+    });
 
     const [input, setInput] = useState('');
     const [chatMessages, setChatMessages] = useState([]);
@@ -218,7 +220,7 @@ export default function GameScreen() {
 
                     </ul>
                 </div>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
                 <div className="chat-container">
                     <div className="chat">
                         
@@ -236,7 +238,7 @@ export default function GameScreen() {
                             placeholder="Send your message..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={handlePressKey} //aunque aparezca tachado hace falta
+                            onKeyDown={handlePressKey}
                             maxLength={500}
                         />
                     </div>
