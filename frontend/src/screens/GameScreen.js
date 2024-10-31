@@ -178,21 +178,20 @@ export default function GameScreen() {
         <div className="full-screen">
             <div className="half-screen">
                 <div className="player-list-container">
-                    <div className="player-list">
+                    <ul className="player-list">
                         <h5 style={{ color: "white" }}>
                             Players:
                         </h5>
 
-                        <ul className="myGames-td">
                         {players.map((player, index) => (
-                        <div   key={index}>
-                            <p className="myGames-tr">User: {player.user.username}</p>
-                            <p className="myGames-tr">Score: {player.score}</p>
-                        </div>
+                            <div className="player-container" key={index}>
+                                <div>
+                                    <p className="player-container-text">{player.user.username}</p>
+                                </div>
+                            </div>
                         ))}
-                        </ul>
 
-                    </div>
+                    </ul>
                 </div>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
                 <div className="chat-container">
@@ -200,9 +199,7 @@ export default function GameScreen() {
                         
 
                         <div className="message-container" ref={chatMessagesEndRef}>
-                            <p>
-                                <span style={{ color: "grey"}}>Welcome to the chat! </span>
-                            </p>
+                            <span style={{ color: "grey"}}>Welcome to the chat! </span>
                             {chatMessages.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
                                     [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
@@ -215,6 +212,7 @@ export default function GameScreen() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={handlePressKey} //aunque aparezca tachado hace falta
+                            maxLength={500}
                         />
                     </div>
                 </div>
