@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { GameCardIcon } from "./GameCardIcon";
 
-export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex }) => {
+export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,index}) => {
     const [currentPosition, setCurrentPosition] = useState(position);
     const [currentRotation, setCurrentRotation] = useState(0);
     const animationFrameRef = useRef(null);
     const lastUpdateTimeRef = useRef(Date.now());
+
+    const speed = 0.2;
 
     // Linear interpolation function
     const lerp = (start, end, factor) => start + (end - start) * factor;
@@ -14,8 +16,8 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex })
     // Function to update position and rotation based on the target position
     const updatePosition = () => {
         setCurrentPosition((prevPosition) => ({
-            top: lerp(prevPosition.top, position.top, 0.2),
-            left: lerp(prevPosition.left, position.left, 0.2),
+            top: lerp(prevPosition.top, position.top, speed),
+            left: lerp(prevPosition.left, position.left, speed),
         }));
         setCurrentRotation((dropIndex === 13 && isDragging) ? 90 : 0);
         lastUpdateTimeRef.current = Date.now();
