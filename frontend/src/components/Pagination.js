@@ -1,4 +1,4 @@
-import "../static/css/components/components.css";
+import "../static/css/components/pagination.css";
 import classNames from "classnames";
 
 

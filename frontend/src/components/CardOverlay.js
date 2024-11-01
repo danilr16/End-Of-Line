@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import classNames from "classnames";
 import { GameCardIcon } from "./GameCardIcon";
+import "../static/css/components/cardOverlay.css"
+
 
 export const CardOverlay = ({ iconName, position, size , isDragging,dropIndex}) => {
     const [currentPosition, setCurrentPosition] = useState(position);

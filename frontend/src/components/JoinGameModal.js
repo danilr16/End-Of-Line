@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import "../static/css/components/components.css";
-import tokenService from "../services/token.service"
+import "../static/css/components/modal.css";
 
 export default function JoinGameModal({gameCode, setGameCode,closeModal}){
     const [loading, setLoading] = useState(false);

@@ -1,5 +1,6 @@
 import React from 'react';
 import DropZone from './DropZone';
+import "../static/css/components/board.css"
 
 export default function Board({ gridSize, size, gridRef,onDrop,boardItems,isDragging,hoveredIndex,setHoveredIndex }) {
     return (

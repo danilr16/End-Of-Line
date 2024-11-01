@@ -1,0 +1,9 @@
+@import "../colors.css";
+
+.game-card-icon{
+    position: absolute;
+    border-radius: 15%; 
+    font-weight: bold;
+    background-color: var(--br-c-normal);
+
+}
