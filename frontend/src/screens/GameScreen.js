@@ -1,12 +1,12 @@
-import jwt_decode from "jwt-decode";
-import { useDebugValue, useEffect, useState, useRef } from "react";
+import {  useEffect, useState, useRef } from "react";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
-import { ColorProvider, useColors } from "../ColorContext";
+import { useColors } from "../ColorContext";
 import Board from "../components/Board";
 import GameCard from "../components/GameCard";
 import { GameCardIcon } from '../components/GameCardIcon';
+import "../static/css/screens/GameScreen.css"
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();

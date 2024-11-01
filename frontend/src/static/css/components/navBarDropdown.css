@@ -1,0 +1,14 @@
+@import "../colors.css";
+
+.custom-dropdown-item:hover {
+    background-color:rgba(82, 82, 82, 0.3) !important;  
+}
+.dropdown-toggle{
+    background-color: var(--br-c-normal) !important;
+    color:var(--br-dark) !important;
+    border: 0 !important;
+}
+.dropdown-toggle:hover{
+    background-color: var(--br-c-dark) !important;
+    color:white !important;
+}

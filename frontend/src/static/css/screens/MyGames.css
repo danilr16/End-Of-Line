@@ -1,0 +1,72 @@
+@import "../colors.css";
+
+.myGames-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+  
+}
+
+.myGames-title {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+/* Estilos para la tabla */
+.myGames-table {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  /* Estilos para las celdas */
+.myGames-td {
+    background-color: #fde77c; /* Color de fondo  */
+    color: black; /* Color de las letras */
+    padding: 15px;
+    margin: 10px;
+    border-radius: 10px; /* Bordes redondeados */
+    text-align: left;
+}
+  
+  /* Asegura que los componentes se muestren de manera vertical */
+.myGames-tr {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  /* Para un mejor aspecto visual */
+.myGames-td:not(:last-child) {
+    margin-bottom: 10px; /* Espaciado entre celdas */
+  }
+
+
+
+  .hero-div{
+    background-color: var(--br-trans-grey);
+    padding: 2rem;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.hero-div h1{
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+}
+
+.hero-div h3{
+    text-align: center;
+}
+

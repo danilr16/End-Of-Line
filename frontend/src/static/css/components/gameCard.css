@@ -1,0 +1,23 @@
+@import "../colors.css";
+
+.game-card-container {
+    display: flex;
+    margin-bottom: 50px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15%; 
+    transition: transform 0.3s ease;
+    opacity: 0.3; 
+    cursor: grab; 
+    z-index: 60;
+}
+.game-card-container.dragging{
+    cursor: grab;
+}
+.non-hoverable {
+    cursor: default; 
+}
+
+.non-hoverable:hover {
+    transform: none;
+}

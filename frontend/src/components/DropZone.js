@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import "../static/css/components/dropZone.css"
+
 
 const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, setHoveredIndex }) => {
     const [showDrop, setShowDrop] = useState(false);

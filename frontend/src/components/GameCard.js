@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import classNames from "classnames";
 import { CardOverlay } from './CardOverlay';
+import "../static/css/components/gameCard.css"
+
 
 const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex }) => {
     const cardRef = useRef(null);

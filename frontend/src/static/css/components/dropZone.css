@@ -1,0 +1,10 @@
+@import "../colors.css";
+
+.drop-zone-hide {
+    border: 1px solid var(--br-c-dark);     
+    border-radius: 15%;            
+}
+.drop-zone-show {
+    border: 1px solid #fff ;   
+    border-radius: 15%;            
+}
