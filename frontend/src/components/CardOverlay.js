@@ -4,78 +4,60 @@ import { GameCardIcon } from "./GameCardIcon";
 import "../static/css/components/cardOverlay.css"
 
 
-export const CardOverlay = ({ iconName, position, size , isDragging,dropIndex}) => {
+export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,index}) => {
     const [currentPosition, setCurrentPosition] = useState(position);
     const [currentRotation, setCurrentRotation] = useState(0);
-    const intervalRef = useRef(null);
-    const remainingTimeRef = useRef(16); // Duration of each interval in ms (16 milliseconds)
+    const animationFrameRef = useRef(null);
     const lastUpdateTimeRef = useRef(Date.now());
+
+    const speed = 0.2;
 
     // Linear interpolation function
     const lerp = (start, end, factor) => start + (end - start) * factor;
 
-    // Function to update the position
+    // Function to update position and rotation based on the target position
     const updatePosition = () => {
         setCurrentPosition((prevPosition) => ({
-            top: lerp(prevPosition.top, position.top, 0.2),
-            left: lerp(prevPosition.left, position.left, 0.2),
+            top: lerp(prevPosition.top, position.top, speed),
+            left: lerp(prevPosition.left, position.left, speed),
         }));
-        setCurrentRotation((dropIndex === 13 && isDragging) ? 90 : 0, 1)
-    
-        lastUpdateTimeRef.current = Date.now(); // Reset last update time
+        setCurrentRotation((dropIndex === 13 && isDragging) ? 90 : 0);
+        lastUpdateTimeRef.current = Date.now();
     };
 
-    // Function to start or restart the interval
-    const startInterval = (remainingTime) => {
-        if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-        }
+    // Animation loop function
+    const animate = () => {
+        updatePosition();
 
-        intervalRef.current = setInterval(() => {
-            const now = Date.now();
-            const timeSinceLastUpdate = now - lastUpdateTimeRef.current;
-
-            if (timeSinceLastUpdate >= remainingTime) {
-                updatePosition(); // Update the position
-            } else {
-                // Update remaining time
-                remainingTimeRef.current = remainingTime - timeSinceLastUpdate;
-            }
-        }, 16); // Check every 16 ms
+        // Continue the animation loop
+        animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     useEffect(() => {
-        // Calculate the time left when the position changes
-        const timeLeft = remainingTimeRef.current - (Date.now() - lastUpdateTimeRef.current);
-
-        // If time left is 1 ms or less, immediately update the position
-        if (timeLeft <= 1) {
-            updatePosition();
-            remainingTimeRef.current = 16; // Reset remaining time to 16 ms
-        }
-
-        startInterval(timeLeft < 0 ? 16 : timeLeft); // Start with 16 ms if negative
+        // Start the animation loop when component mounts or `position` changes
+        animationFrameRef.current = requestAnimationFrame(animate);
 
         return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
+            // Clean up the animation frame on component unmount
+            if (animationFrameRef.current) {
+                cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [position]); // Run on position change
+    }, [position, isDragging, dropIndex]); // Re-run animation when position, isDragging, or dropIndex changes
 
     return (
         <div
             className={classNames({
-                "card-overlay" : true,
-                'dragging': isDragging
+                "card-overlay": true,
+                "dragging": isDragging
             })}
             style={{
-                position: 'fixed',
+                position: "fixed",
                 top: currentPosition.top,
                 left: currentPosition.left,
                 minWidth: `${size}px`,
                 minHeight: `${size}px`,
-                zIndex: isDragging? 2: 1,
+                zIndex: isDragging ? 2 : 1,
                 transform: `rotate(${currentRotation}deg)`
             }}
         >

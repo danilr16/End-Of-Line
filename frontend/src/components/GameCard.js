@@ -86,7 +86,7 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
                 })}
                 style={{ minWidth: `${size}px`, minHeight: `${size+10}px` }}
             />
-            <CardOverlay iconName={iconName} size={size} position={position} isDragging={beingDraggedCard === index} dropIndex = {dropIndex} />
+            <CardOverlay iconName={iconName} size={size} position={position} isDragging={beingDraggedCard === index} dropIndex = {dropIndex} index={index} />
         </React.Fragment>
     );
 };

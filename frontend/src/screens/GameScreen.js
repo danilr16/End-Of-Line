@@ -45,22 +45,22 @@ export default function GameScreen() {
     const [usedCards, setUsedCards] = useState(new Set());
 
     const handCards = [
-        { key: 0, iconName: "t_rl_4_card" },
-        { key: 1, iconName: "t_fr_3_card" },
-        { key: 2, iconName: "forward_1_card" },
-        { key: 3, iconName: "l_r_2_card" }
-    ].map(card => (
+        { iconName: "t_rl_4_card" },
+        { iconName: "t_fr_3_card" },
+        { iconName: "forward_1_card" },
+        { iconName: "l_r_2_card" },
+        { iconName: "t_fl_3_card" },
+    ].map((card, index) => (
         <GameCard
-            key={card.key}
+            key={index}
             size={gridItemSize}
             iconName={card.iconName}
             setBeingDraggedCard={setBeingDraggedCard}
-            index={card.key}
+            index={index}
             beingDraggedCard={beingDraggedCard}
             setDragging={setDragging}
             dropIndex={hoveredIndex}
-            // Pass usedCards to the GameCard to determine if it should be displayed
-            isUsed={usedCards.has(card.key)}
+            isUsed={usedCards.has(index)}
         />
     ));
 
