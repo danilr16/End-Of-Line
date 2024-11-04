@@ -57,11 +57,21 @@ public class Card extends BaseEntity{
     @Transient
     Output output;
 
+    List<Integer> outputs;
+
+    Integer input;
+
     @PrePersist
     @PreUpdate
     public void prePersist() {
         if (rotation == null) {
             rotation = 0;
+        }
+        if (outputs == null) {
+            outputs = output.outputs();
+        }
+        if (input == null) {
+            input = output.input();
         }
     }
 
