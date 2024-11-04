@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import jakarta.validation.Valid;
 
 @Service
@@ -85,7 +87,62 @@ public class CardService {
         saveCard(c9);
         cards.add(c9);
         return cards;
-
     }
-    
+
+    public Boolean checkLineToPlaceCard(Card card, TableCard tableCard, Player player, Integer f, Integer c) { //Comprueba que donde quieres colocar la carta tiene una carta de línea que sigue la línea
+        Cell cell = tableCard.getRows().get(f-1).getCells().get(c-1);
+        if (cell.getIsFull()) {
+            return false;
+        }
+        Integer rotation = card.getRotation() % 4;
+        Card placedCard;
+        switch (rotation) {
+            case 0:
+                placedCard = tableCard.getRows().get(f).getCells().get(c-1).getCard();
+                if (!placedCard.getPlayer().equals(player)) {
+                    return false;
+                } else {
+                    if (placedCard.getOutputs().contains(2)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            case 1:
+                placedCard = tableCard.getRows().get(f-1).getCells().get(c-2).getCard();
+                if (!placedCard.getPlayer().equals(player)) {
+                    return false;
+                } else {
+                    if (placedCard.getOutputs().contains(3)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            case 2:
+                placedCard = tableCard.getRows().get(f - 2).getCells().get(c - 1).getCard();
+                if (!placedCard.getPlayer().equals(player)) {
+                    return false;
+                } else {
+                    if (placedCard.getOutputs().contains(0)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            case 3:
+                placedCard = tableCard.getRows().get(f-1).getCells().get(c).getCard();
+                if (!placedCard.getPlayer().equals(player)) {
+                    return false;
+                } else {
+                    if (placedCard.getOutputs().contains(1)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            default:
+                return false;
+        }
+    }  
 }

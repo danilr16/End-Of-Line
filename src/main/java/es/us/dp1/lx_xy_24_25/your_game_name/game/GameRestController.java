@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
@@ -23,6 +26,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import java.util.ArrayList;
@@ -44,17 +49,22 @@ class GameRestController {
     private final HandService handService;
     private final TableCardService tableService;
     private final PackCardService packCardService;
+    private final CardService cardService;
+    private final CellService cellService;
 
     @Autowired
     public GameRestController(GameService gameService, UserService userService, 
         PlayerService playerService, HandService handService, 
-        TableCardService tableService, PackCardService packCardService){
+        TableCardService tableService, PackCardService packCardService, CardService cardService,
+        CellService cellService){
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
         this.handService = handService;
         this.tableService = tableService;
         this.packCardService = packCardService;
+        this.cardService = cardService;
+        this.cellService = cellService;
     }
 
     @InitBinder("game")
@@ -184,12 +194,53 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/placeCard")
-    public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, @Valid Card card, Integer f, Integer c) {
-        return null;
+    public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer f, Integer c) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
+        Card savedCard = cardService.findCard(cardId);
+        Game game = gameService.findGameByGameCode(gameCode);
+        TableCard tableCard = game.getTable();
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+        Hand hand = player.getHand();
+        if (f > tableCard.getNumRow() || f < 1) {
+            throw new InvalidIndexOfTableCard("f is the number of rows and must be in range 1 to " + tableCard.getNumRow());
+        }
+        if (c > tableCard.getNumColum() || c < 1) {
+            throw new InvalidIndexOfTableCard("c is the number of columns and must be in range 1 to " + tableCard.getNumColum());
+        }
+        Cell cell = tableCard.getRows().get(f-1).getCells().get(c-1);
+        if (!savedCard.getPlayer().equals(player) || !player.getHand().getCards().contains(savedCard)) {
+            throw new AccessDeniedException("You can't place this card at this moment");
+        }
+        if (!cardService.checkLineToPlaceCard(savedCard, game.getTable(), player, f, c)) {
+            throw new UnfeasibleToPlaceCard();
+        }
+        hand.getCards().remove(savedCard);
+        hand.setNumCards(hand.getNumCards() - 1);
+        handService.updateHand(hand, hand.getId());
+        player.getPlayedCards().add(savedCard.getId());
+        playerService.updatePlayer(player, player.getId());
+        cell.setCard(savedCard);
+        cell.setIsFull(true);
+        cellService.updateCell(cell, cell.getId());
+        return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{gameCode}/useEnergy")
     public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode) {
         return null;
+    }
+
+    @PatchMapping("/{gameCode}/rotateCard")
+    public ResponseEntity<MessageResponse> rotateCard(@PathVariable("gameCode") @Valid String gameCode, Integer rotation) {
+        return null;
+    }
+
+    @PatchMapping("/{gameCode}/robarCartaProvisional")//Metodo provisional para probar backend, hay que borrarlo
+    public ResponseEntity<MessageResponse> takeCard(@PathVariable("gameCode") @Valid String gameCode) {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+        gameService.takeACard(player);
+        return new ResponseEntity<>(new MessageResponse("You have taken a card successfully"), HttpStatus.ACCEPTED);
     }
 }
