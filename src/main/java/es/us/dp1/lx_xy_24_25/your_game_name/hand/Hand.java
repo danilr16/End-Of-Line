@@ -9,11 +9,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
-
-import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Getter
@@ -21,7 +20,7 @@ import org.hibernate.validator.constraints.Range;
 @Table(name="appHands")
 public class Hand extends BaseEntity{
 
-    @Range(min = 0)
+    @Min(0)
     Integer numCards;
 
     @OneToMany(cascade = CascadeType.REMOVE)

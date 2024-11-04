@@ -71,12 +71,16 @@ class GameRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Game> create(@RequestBody @Valid Game game) {
+        Game newGame = new Game();
         User currentUser = userService.findCurrentUser();
         Hand initialUserHand = handService.saveVoidHand();
         Player userPlayer = playerService.saveUserPlayerbyUser(currentUser,initialUserHand);
-        game.setHost(currentUser);
-        game.setPlayers(new ArrayList<>(List.of(userPlayer)));
-        Game savedGame = gameService.saveGame(game);
+        newGame.setHost(currentUser);
+        newGame.setPlayers(new ArrayList<>(List.of(userPlayer)));
+        newGame.setIsPublic(game.getIsPublic());
+        newGame.setNumPlayers(game.getNumPlayers());
+        newGame.setGameMode(game.getGameMode());
+        Game savedGame = gameService.saveGame(newGame);
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
     

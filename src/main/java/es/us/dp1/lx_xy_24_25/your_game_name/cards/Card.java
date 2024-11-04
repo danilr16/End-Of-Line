@@ -10,12 +10,12 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
-
-import org.hibernate.validator.constraints.Range;
 
 import java.util.ArrayList;
 
@@ -41,10 +41,12 @@ public class Card extends BaseEntity{
     @Enumerated(EnumType.STRING)
     TypeCard type;
 
-    @Range(min = 0, max = 5)
+    @Min(0)
+    @Max(5)
     Integer iniciative;
 
-    @Range(min = 0, max = 3)
+    @Min(0)
+    @Max(3)
     @NotNull
     Integer rotation;
 

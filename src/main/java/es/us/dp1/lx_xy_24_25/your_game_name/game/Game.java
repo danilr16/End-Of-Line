@@ -17,19 +17,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import org.hibernate.validator.constraints.Length;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -41,39 +34,26 @@ import lombok.Setter;
 public class Game extends BaseEntity {
 
     @Column(unique = true)
-    @NotBlank
-    @NotNull
-    @Length(min = 5, max = 5)
     String gameCode;
 
     @ManyToOne
-    @NotNull
     User host;
 
-    @NotNull
     Boolean isPublic;
 
-    @NotNull
-    @Min(1)
-    @Max(8)
     Integer numPlayers;
 
     String chat; 
 
-    @Min(0)
     Integer nTurn;
 
-    @Min(0)
     Integer duration;
 
-    @PastOrPresent
     LocalDateTime started;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     GameMode gameMode;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     GameState gameState;
 

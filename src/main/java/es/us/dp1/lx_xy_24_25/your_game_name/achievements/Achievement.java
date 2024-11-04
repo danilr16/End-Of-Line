@@ -1,12 +1,11 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
-import org.hibernate.validator.constraints.Range;
-
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -30,7 +29,7 @@ public class Achievement extends BaseEntity{
 
     String image;
 
-    @Range(min = 1)
+    @Min(1)
     Integer threshold;
 
     @Enumerated(EnumType.STRING)
