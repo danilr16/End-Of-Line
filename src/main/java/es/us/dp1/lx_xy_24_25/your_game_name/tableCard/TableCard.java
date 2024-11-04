@@ -8,13 +8,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 import java.util.Map;
-
-import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Getter
@@ -29,10 +29,12 @@ public class TableCard extends BaseEntity{
     @Enumerated(EnumType.STRING)
     TypeTable type;
 
-    @Range(min = 5, max = 13)
+    @Min(5)
+    @Max(13)
     Integer numRow;
 
-    @Range(min = 5, max = 13)
+    @Min(5)
+    @Max(13)
     Integer numColum;
 
     @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)

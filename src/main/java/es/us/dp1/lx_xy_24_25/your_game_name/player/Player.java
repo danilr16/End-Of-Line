@@ -2,8 +2,6 @@ package es.us.dp1.lx_xy_24_25.your_game_name.player;
 
 import java.util.List;
 
-import org.hibernate.validator.constraints.Range;
-
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
@@ -19,6 +17,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,10 +34,11 @@ public class Player extends BaseEntity{
         PLAYING, WON, LOST
     }
 
-    @Range(min = 0)
+    @Min(0)
     Integer score;
 
-    @Range(min = 0, max = 3)
+    @Min(0)
+    @Max(3)
     @NotNull
     Integer energy;
 

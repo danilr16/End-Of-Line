@@ -9,11 +9,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
-
-import org.hibernate.validator.constraints.Range;
 
 @Entity
 @Getter
@@ -21,7 +21,8 @@ import org.hibernate.validator.constraints.Range;
 @Table(name="appPackCards")
 public class PackCard extends BaseEntity{
 
-    @Range(min = 0, max = 25)
+    @Min(0)
+    @Max(25)
     Integer numCards;
 
     @OneToMany(cascade = CascadeType.REMOVE)
