@@ -89,17 +89,25 @@ public class CardService {
         return cards;
     }
 
-    public Boolean checkLineToPlaceCard(Card card, TableCard tableCard, Player player, Integer f, Integer c) { //Comprueba que donde quieres colocar la carta tiene una carta de línea que sigue la línea
+    public Boolean checkLineToPlaceCard(Card card, Card lastPlacedCard,TableCard tableCard, Player player, Integer f, Integer c) { //Comprueba que donde quieres colocar la carta tiene una carta de línea que sigue la línea
         Cell cell = tableCard.getRows().get(f-1).getCells().get(c-1);
         if (cell.getIsFull()) {
             return false;
         }
         Integer rotation = card.getRotation() % 4;
         Card placedCard;
+        Integer fila;
+        Integer columna;
+        Integer dimension = tableCard.getNumRow();
         switch (rotation) {
             case 0:
-                placedCard = tableCard.getRows().get(f).getCells().get(c-1).getCard();
-                if (!placedCard.getPlayer().equals(player)) {
+                fila = Math.floorMod(f, dimension); //Esta expresión y las otras dan como resultado el indice de la fila o columna a seleccionar en las listas 
+                columna = c - 1; //De tal forma que si estas en el borde del area de juego esta comprobación se hace de forma simétrica en el otro extremo del tablero
+                placedCard = tableCard.getRows().get(fila).getCells().get(columna).getCard();
+                if (placedCard == null) {
+                    return false;
+                }
+                if (!placedCard.getPlayer().equals(player) || !placedCard.equals(lastPlacedCard)) {
                     return false;
                 } else {
                     if (placedCard.getOutputs().contains(2)) {
@@ -109,8 +117,10 @@ public class CardService {
                     }
                 }
             case 1:
-                placedCard = tableCard.getRows().get(f-1).getCells().get(c-2).getCard();
-                if (!placedCard.getPlayer().equals(player)) {
+                fila = f - 1;
+                columna = Math.floorMod(c - 2, dimension);
+                placedCard = tableCard.getRows().get(fila).getCells().get(columna).getCard();
+                if (!placedCard.getPlayer().equals(player) || !placedCard.equals(lastPlacedCard)) {
                     return false;
                 } else {
                     if (placedCard.getOutputs().contains(3)) {
@@ -120,8 +130,10 @@ public class CardService {
                     }
                 }
             case 2:
-                placedCard = tableCard.getRows().get(f - 2).getCells().get(c - 1).getCard();
-                if (!placedCard.getPlayer().equals(player)) {
+                fila = Math.floorMod(f - 2, dimension);
+                columna = c - 1;
+                placedCard = tableCard.getRows().get(fila).getCells().get(columna).getCard();
+                if (!placedCard.getPlayer().equals(player) || !placedCard.equals(lastPlacedCard)) {
                     return false;
                 } else {
                     if (placedCard.getOutputs().contains(0)) {
@@ -131,8 +143,10 @@ public class CardService {
                     }
                 }
             case 3:
-                placedCard = tableCard.getRows().get(f-1).getCells().get(c).getCard();
-                if (!placedCard.getPlayer().equals(player)) {
+                fila = f - 1;
+                columna = Math.floorMod(c, dimension);
+                placedCard = tableCard.getRows().get(fila).getCells().get(columna).getCard();
+                if (!placedCard.getPlayer().equals(player) || !placedCard.equals(lastPlacedCard)) {
                     return false;
                 } else {
                     if (placedCard.getOutputs().contains(1)) {

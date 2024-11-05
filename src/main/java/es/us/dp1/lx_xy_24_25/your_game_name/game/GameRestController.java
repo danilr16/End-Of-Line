@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidRotation;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
@@ -37,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/games")
@@ -193,13 +196,16 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/placeCard")
+    @PatchMapping("/{gameCode}/placeCard")// Falta por añadir una comprobación para no poder colocar una carta en cualquier momento, solo en tu turno
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer f, Integer c) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
         Card savedCard = cardService.findCard(cardId);
         Game game = gameService.findGameByGameCode(gameCode);
         TableCard tableCard = game.getTable();
         User user = userService.findCurrentUser();
-        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't place this card, because you aren't in this game");
+        }
         Hand hand = player.getHand();
         if (f > tableCard.getNumRow() || f < 1) {
             throw new InvalidIndexOfTableCard("f is the number of rows and must be in range 1 to " + tableCard.getNumRow());
@@ -208,10 +214,12 @@ class GameRestController {
             throw new InvalidIndexOfTableCard("c is the number of columns and must be in range 1 to " + tableCard.getNumColum());
         }
         Cell cell = tableCard.getRows().get(f-1).getCells().get(c-1);
-        if (!savedCard.getPlayer().equals(player) || !player.getHand().getCards().contains(savedCard)) {
-            throw new AccessDeniedException("You can't place this card at this moment");
+        if (!savedCard.getPlayer().equals(player) || !player.getHand().getCards().contains(savedCard) 
+            || !game.getGameState().equals(GameState.IN_PROCESS) || !player.getState().equals(PlayerState.PLAYING)) {
+            throw new AccessDeniedException("You can't place this card");
         }
-        if (!cardService.checkLineToPlaceCard(savedCard, game.getTable(), player, f, c)) {
+        Card lastPlacedCard = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size()-1));
+        if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }
         hand.getCards().remove(savedCard);
@@ -227,12 +235,34 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/useEnergy")
     public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode) {
-        return null;
+        return null; //Aquí se añade el uso de poderes
     }
 
     @PatchMapping("/{gameCode}/rotateCard")
-    public ResponseEntity<MessageResponse> rotateCard(@PathVariable("gameCode") @Valid String gameCode, Integer rotation) {
-        return null;
+    public ResponseEntity<MessageResponse> rotateCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer rotation) throws InvalidRotation {
+        if (rotation < 0) {
+            throw new InvalidRotation();
+        }
+        Card savedCard = cardService.findCard(cardId);
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't place this card, because you aren't in this game");
+        }
+        if (!savedCard.getPlayer().equals(player) || !player.getHand().getCards().contains(savedCard) 
+            || !game.getGameState().equals(GameState.IN_PROCESS) || !player.getState().equals(PlayerState.PLAYING)) {
+            throw new AccessDeniedException("You can't rotate this card");
+        }
+        List<Integer> newOutputs = savedCard.getOutputs().stream()
+            .map(o -> (o + rotation) % 4).collect(Collectors.toList());
+        Integer newInput = rotation + savedCard.getRotation();
+        savedCard.setRotation((rotation + savedCard.getRotation()) % 4);
+        savedCard.setOutput(Output.of(newOutputs, newInput));
+        savedCard.setOutputs(newOutputs);
+        savedCard.setInput(newInput);
+        cardService.updateCard(savedCard, savedCard.getId());
+        return new ResponseEntity<>(new MessageResponse("You have rotated the card successfully"), HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{gameCode}/robarCartaProvisional")//Metodo provisional para probar backend, hay que borrarlo
