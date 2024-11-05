@@ -71,16 +71,20 @@ public class GameService {
     @Transactional
     public Card takeACard(Player player) {
         PackCard packCard = player.getPackCards().stream().findFirst().get();
-        SecureRandom rand = new SecureRandom();
-        Integer i = rand.nextInt(packCard.getNumCards());
-        Card card = packCard.getCards().get(i);
-        packCard.getCards().remove(card);
-        packCard.setNumCards(packCard.getNumCards() - 1);
-        packCardService.updatePackCard(packCard, packCard.getId());
-        Hand hand = player.getHand();
-        hand.getCards().add(card);
-        hand.setNumCards(hand.getNumCards() + 1);
-        handService.updateHand(hand, hand.getId());
-        return card;
+        if (packCard.getNumCards() != 0) {
+            SecureRandom rand = new SecureRandom();
+            Integer i = rand.nextInt(packCard.getNumCards());
+            Card card = packCard.getCards().get(i);
+            packCard.getCards().remove(card);
+            packCard.setNumCards(packCard.getNumCards() - 1);
+            packCardService.updatePackCard(packCard, packCard.getId());
+            Hand hand = player.getHand();
+            hand.getCards().add(card);
+            hand.setNumCards(hand.getNumCards() + 1);
+            handService.updateHand(hand, hand.getId());
+            return card;
+        } else {
+            return null;
+        }
     }
 }
