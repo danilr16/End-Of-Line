@@ -70,7 +70,7 @@ public class Game extends BaseEntity {
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (gameCode == null) {
             String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Random random = new Random();

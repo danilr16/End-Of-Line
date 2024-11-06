@@ -28,7 +28,7 @@ public class Cell extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (isFull == null) {
             isFull = false;
         }

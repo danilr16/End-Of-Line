@@ -258,14 +258,15 @@ classDiagram
     Usuario "*" -- "*" Usuario: "esAmigo"
     Jugador *-- "1" Mano
     Jugador "1" -- "*" Carta
-    Jugador "1" -- "1..*" Mazo
+    Jugador *-- "1..*" Mazo
     Carta "0..1" -- "0..1" Celda
     Mazo "0..1" -- "*" Carta
     Mano "0..1" -- "*" Carta
     Tablero *-- "1..*" Celda
-    Carta *-- "1..*" Output
+    Carta *-- "1" Output
     Usuario "*" -- "*" Logro
     Usuario "1" -- "*" Jugador
+    Partida "*" -- "1" Usuario
 ```
 
 ## Reglas de Negocio

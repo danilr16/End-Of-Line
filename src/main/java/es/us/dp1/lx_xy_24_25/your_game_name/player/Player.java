@@ -62,7 +62,7 @@ public class Player extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (score == null) {
             score = 0;
         }

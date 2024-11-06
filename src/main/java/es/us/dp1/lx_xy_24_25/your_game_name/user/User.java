@@ -45,7 +45,7 @@ public class User extends BaseEntity {
 
 	@PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (image == null ) {
             this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
         }
