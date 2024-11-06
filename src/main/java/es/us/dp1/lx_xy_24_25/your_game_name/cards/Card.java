@@ -63,7 +63,7 @@ public class Card extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (rotation == null) {
             rotation = 0;
         }

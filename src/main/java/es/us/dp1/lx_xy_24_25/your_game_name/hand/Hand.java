@@ -29,7 +29,7 @@ public class Hand extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (numCards == null) {
             numCards = 0;
         }
