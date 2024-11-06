@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -124,7 +125,29 @@ class UserRestController {
 	}
 	
 	@PatchMapping("/myProfile")
-	public ResponseEntity<MessageResponse> updateMyProfile(String newUsername, String newPassword, String newImage) {
+	public ResponseEntity<MessageResponse> updateMyProfile(@RequestBody UserProfileUpdateDTO userUpdateDTO) {
+		User toUpdate = userService.findCurrentUser();
+		int id = toUpdate.getId();
+
+		String newUsername = userUpdateDTO.getNewUsername();
+		String newImage = userUpdateDTO.getNewImage();
+		
+		if (newUsername != null && !newUsername.strip().isEmpty()) {
+			if (!userService.existsUser(newUsername)) {
+				toUpdate.setUsername(newUsername);
+			} else {
+				throw new AccessDeniedException("There already is a user with that username!");
+			}
+		}
+		if (newImage != null) {
+			toUpdate.setImage(newImage);
+		}
+		userService.updateUser(toUpdate, id);
+		userService.saveUser(toUpdate);
+		return new ResponseEntity<>(new MessageResponse("User profile updated!"), HttpStatus.ACCEPTED);
+	}
+	@PatchMapping("/myProfile/update-password")
+	public ResponseEntity<MessageResponse> updateMyPassword(String newUsername, String newPassword, String newImage) {
 		User toUpdate = userService.findCurrentUser();
 		int id = toUpdate.getId();
 		if (newUsername != null && !newUsername.strip().isEmpty()) {

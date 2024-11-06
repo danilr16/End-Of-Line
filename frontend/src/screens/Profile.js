@@ -29,55 +29,53 @@ export default function Profile() {
         setVisible
     );
 
+    const [allAchievements, setAllAchievements] = useFetchState(
+        [],
+        `/api/v1/achievements`,
+        jwt,
+        setMessage,
+        setVisible
+    );
+
 
     const handleImageChange = (e) => {
+        
         const file = e.target.files[0];
         if (file && file.type === 'image/png') {
             const imageUrl = URL.createObjectURL(file);
             setNewImage(imageUrl);
         }
     };
-
     const handleEditClick = () => {
         setIsEditing(!isEditing);
-        setNewPassword('');
+        if (isEditing) {
+            setNewUsername(''); 
+        } else {
+            setNewUsername(user.username); 
+        }
     };
 
     const handleSave = async () => {
         console.log("Saving user profile...");
         console.log("Username:", newUsername);
-        console.log("New Password:", newPassword || user.password);
         try {
-            /*
+            
+            
             const updatedUser = {
-                ...user,
                 ...(newUsername && newUsername !== user.username ? { username: newUsername } : {}),
-                ...(newPassword ? { password: newPassword } : {}),
+                ...(newImage ? { newImage } : {}),
             };
             console.log("Updated User Data:", updatedUser);
           
-
-            const response = await fetch(`/api/v1/users/myProfile"`, {
+            const response = await fetch(`/api/v1/users/myProfile`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': `newUsername=${updatedUser.username}&newPassword=${updatedUser.password}&newImage=${null}`,
+                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwt}`,
                 },
                 body: JSON.stringify(updatedUser),
             });
-            */
-            const params = new URLSearchParams();
-            if (newUsername && newUsername !== user.username) params.append("newUsername", newUsername);
-            if (newPassword) params.append("newPassword", newPassword);
-            if (newImage) params.append("newImage", newImage);
-
-            const response = await fetch(`/api/v1/users/myProfile?${params.toString()}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                }
-            });
-
+            
             if (response.ok) {
                 const updatedUserData = await response.json();
                 setUser(updatedUserData);
@@ -90,11 +88,25 @@ export default function Profile() {
             setMessage('Error al conectar con el servidor');
         }
     };
-
+    const renderAchievement = (achievement) => {
+        const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
+        return (
+            <div 
+                key={achievement.id} 
+                className={`achievement-item ${isAchieved ? 'achieved' : ''}`} // Clase 'achieved' para logros conseguidos
+            >
+                <img src={achievement.image} alt={achievement.name} className="achievement-image" />
+                <div className="achievement-details">
+                    <h4>{achievement.name}</h4>
+                    <p>{achievement.description}</p>
+                </div>
+            </div>
+        );
+    };
     
     // Pantalla de carga (cambiar)
 
-    if (!user || !achievements) {
+    if (!user || !achievements || !allAchievements) {
         return <h3 className="myGames-title">loading...</h3>
     }
 
@@ -105,67 +117,60 @@ export default function Profile() {
                     <h3>Profile</h3>
                 </div>
                 <div className="profile-data">
-                    <div className="image-wrapper" onClick={() => document.getElementById('profileImageInput').click()}>
-                        <img src={newImage || user.image} className="profile-image" />
-                        <input
-                            type="file"
-                            id="profileImageInput"
-                            accept="image/png"
-                            style={{ display: 'none' }}
-                            onChange={handleImageChange}
-                        />
+                <div 
+                        className={`image-wrapper ${isEditing ? 'editing' : ''}`} 
+                        onClick={isEditing ? () => document.getElementById('profileImageInput').click() : null} 
+                    >
+                        <img src={newImage || user.image} className="profile-image" alt="Profile" />
+                        {isEditing && (
+                            <input
+                                type="file"
+                                id="profileImageInput"
+                                accept="image/png"
+                                style={{ display: 'none' }}
+                                onChange={handleImageChange}
+                            />
+                        )}
                     </div>
+
     
                     <div className="profile-details">
                         {isEditing ? (
                             <>
                                 <input 
                                     type="text" 
-                                    defaultValue={user.username}
+                                    value={newUsername}
                                     placeholder="new username"
                                     onChange={(e) => setNewUsername(e.target.value)} 
                                     className="editable-input" 
                                 />
-
-                                <input 
-                                    type="password" 
-                                    value={newPassword} 
-                                    placeholder="new password"
-                                    onChange={(e) => setNewPassword(e.target.value)} 
-                                    className="editable-input" 
-                                />
+                                <p>Contraseña: {'*'.repeat(8)}</p>
                                 
-                                <button className='button-profile' onClick={handleSave}>Guardar</button>
+                                <button className='button-save' onClick={handleSave}>Guardar</button>
                             </>
                         ) : (
                             <>
                                 <p>Usuario: {user.username}</p>
                                 <p>Contraseña: {'*'.repeat(8)}</p>
-                                <button className='button-profile' onClick={handleEditClick}>Editar</button>
+                                
                             </>
                         )}
                     </div>
+
+                    <button className='button-edit' onClick={handleEditClick}> {isEditing ? 'Cancelar' : 'Editar'} </button>
+                    
                 </div>
             </div>
             <div className="achievements-container">
-                <div className="profile-text">
-                    <h3>Logros</h3>
-                </div>
-                {achievements && achievements.length > 0 ? (
-                    achievements.map((achievement) => (
-                        <div key={achievement.id} className="achievement-item">
-                            <img src={achievement.image} alt={achievement.name} className="achievement-image" />
-                            <div className="achievement-details">
-                                <h4>{achievement.name}</h4>
-                                <p>{achievement.description}</p>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No hay logros disponibles.</p>
-                )}
-               
-            </div>
+        <div className="profile-text">
+            <h3>Logros</h3>
+        </div>
+        {allAchievements && allAchievements.length > 0 ? (
+            allAchievements.map(renderAchievement) 
+        ) : (
+            <p>No hay logros disponibles.</p>
+        )}
+    </div>
         </div>
     );
 }    
