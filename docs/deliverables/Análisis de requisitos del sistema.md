@@ -355,6 +355,3 @@ El objetivo es cubrir la totalidad del área de juego que dependerá del número
 
 ### R29 - Restricciones de espectador
 Todos los participantes de una partida deben ser amigos de un usuario para que este pueda unirse a esa partida como espectador.
-
-
-
