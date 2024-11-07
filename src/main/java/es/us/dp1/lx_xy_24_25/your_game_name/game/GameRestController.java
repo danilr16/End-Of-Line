@@ -39,11 +39,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/games")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Game", description = "The Game API based on JWT")
 class GameRestController {
 
     private final GameService gameService;
