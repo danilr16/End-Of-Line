@@ -57,16 +57,14 @@ export default function Profile() {
 
     const handleSave = async () => {
         console.log("Saving user profile...");
-        console.log("Username:", newUsername);
+        console.log("New Username:", newUsername);
         try {
-            
-            
             const updatedUser = {
-                ...(newUsername && newUsername !== user.username ? { username: newUsername } : {}),
-                ...(newImage ? { newImage } : {}),
+                ...(newUsername && newUsername !== user.username ? { newUsername: newUsername } : {}),
+                ...(newImage && newImage !== user.image  ? { newImage: newImage } : {}),
             };
             console.log("Updated User Data:", updatedUser);
-          
+            
             const response = await fetch(`/api/v1/users/myProfile`, {
                 method: 'PATCH',
                 headers: {
@@ -76,26 +74,35 @@ export default function Profile() {
                 body: JSON.stringify(updatedUser),
             });
             
+            console.log("Response", response);
             if (response.ok) {
                 const updatedUserData = await response.json();
+                //const newJwt = response.headers.get("Authorization").replace("Bearer ", "");
+                //localStorage.setItem("jwt", newJwt);
+                //tokenService.updateLocalAccessToken(newJwt);
                 setUser(updatedUserData);
+                window.location.reload(); 
                 setMessage('Perfil actualizado con éxito');
                 setIsEditing(false);
-            } else {
-                setMessage('Error al actualizar el perfil');
+            }
+             else {
+                const errorData = await response.json();
+                setMessage(`Error al actualizar el perfil: ${errorData.message || 'Desconocido'}`);
+                console.error("Error Response:", errorData);
             }
         } catch (error) {
             setMessage('Error al conectar con el servidor');
+            console.error("Fetch Error:", error);
         }
     };
+    
+    
     const renderAchievement = (achievement) => {
         const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
         return (
-            <div 
-                key={achievement.id} 
-                className={`achievement-item ${isAchieved ? 'achieved' : ''}`} // Clase 'achieved' para logros conseguidos
+            <div key={achievement.id} className={`achievement-item ${isAchieved ? '-achieved' : ''}`} 
             >
-                <img src={achievement.image} alt={achievement.name} className="achievement-image" />
+                <img src={achievement.image} className="achievement-image" />
                 <div className="achievement-details">
                     <h4>{achievement.name}</h4>
                     <p>{achievement.description}</p>

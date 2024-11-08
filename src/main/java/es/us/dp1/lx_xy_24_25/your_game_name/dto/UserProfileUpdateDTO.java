@@ -9,6 +9,4 @@ public class UserProfileUpdateDTO {
 
     private String newUsername;
     private String newImage;
-    private String newPassword;
-
 }

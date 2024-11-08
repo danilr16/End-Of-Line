@@ -534,6 +534,13 @@ span.page-link:hover {
     align-items: center;
     margin: 8px 0;
 }
+.achievement-item-achieved{
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    border: 10px solid var(--br-green);
+
+}
 
 .achievement-image {
     width: 50px;
