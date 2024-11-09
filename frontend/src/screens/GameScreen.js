@@ -7,6 +7,7 @@ import Board from "../components/Board";
 import GameCard from "../components/GameCard";
 import { GameCardIcon } from '../components/GameCardIcon';
 import "../static/css/screens/GameScreen.css"
+import request from "../util/request";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -93,8 +94,12 @@ export default function GameScreen() {
     });
 
     const [input, setInput] = useState('');
-    const [chatMessages, setChatMessages] = useState([]);
-    const chatMessagesEndRef = useRef(null);
+    const [chat, setChat] = useFetchState(
+        [],
+        `/api/v1/games/${gameCode}/chat`,
+        jwt
+    );
+    const chatEndRef = useRef(null);
     const MAX_MESSAGES = 75; //Numero maximo de mensajes que se mostrarán en el chat
 
     useEffect(() => {
@@ -104,22 +109,32 @@ export default function GameScreen() {
     }, [user])
 
     useEffect(() => {
-        if(chatMessagesEndRef.current) {
-            chatMessagesEndRef.current.scrollTop = chatMessagesEndRef.current.scrollHeight;
+        if(chatEndRef.current) {
+            chatEndRef.current.scrollTop = chatEndRef.current.scrollHeight;
         }
-    }, [chatMessages]) //Esto es para que cuando se envíe un mensaje es scroll se vaya para abajo automáticamente
+    }, [chat]) //Esto es para que cuando se envíe un mensaje es scroll se vaya para abajo automáticamente
 
 
-    const handleSendMessage = () => {
-
+    const handleSendMessage = async () => {
         if (input.trim() === '') {
             return; //Para que no se envíen mensajes vacíos
         }
+        console.log(JSON.stringify({userName: user.username, messageString:input}))
 
-        setChatMessages((chatMessages) => {
-            const chatMessagesArray = [...chatMessages, { text: input, sender: user.username }];
-            return chatMessagesArray.slice(-MAX_MESSAGES); //Se queda con los ultimos mensajes que indique esa variable
-        });
+        const newChat = (await request(`/api/v1/games/${gameCode}/chat`,'PATCH',{userName:user.username, messageString:input},jwt)).resContent;
+
+        try{
+            setChat(newChat.slice(-MAX_MESSAGES))
+        }
+        catch(e){
+            return;
+        } 
+        
+
+        /*setChat((chat) => {
+            const chatArray = [...chat, { text: input, userName: user.username }];
+            return chatArray.slice(-MAX_MESSAGES); //Se queda con los ultimos mensajes que indique esa variable
+        });*/
         setInput('');
     }
 
@@ -225,11 +240,11 @@ export default function GameScreen() {
                     <div className="chat">
                         
 
-                        <div className="message-container" ref={chatMessagesEndRef}>
+                        <div className="message-container" ref={chatEndRef}>
                             <span style={{ color: "grey"}}>Welcome to the chat! </span>
-                            {chatMessages.map((chatMessage, index) => (
+                            {chat.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
-                                    [{chatMessage.sender}]: <span className="message-content">{chatMessage.text}</span>
+                                    [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>
                                 </div>
                             ))}
                         </div>

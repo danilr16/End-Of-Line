@@ -13,4 +13,7 @@ public interface GameRepository extends CrudRepository<Game,Integer>{
 
     @Query("SELECT g FROM Game g WHERE g.gameCode = :gameCode")
     Optional<Game> findGameByGameCode(String gameCode);
+
+    @Query("SELECT g.chat FROM Game g WHERE g.gameCode = ?1")
+    Optional<List<ChatMessage>> findGameChat( String gameCode);
 }
