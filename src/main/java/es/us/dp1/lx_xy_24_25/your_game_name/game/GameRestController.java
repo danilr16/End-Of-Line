@@ -245,7 +245,6 @@ class GameRestController {
         if (!turnOfPlayer.equals(player) || !(player.getCardsPlayedThisTurn() < 2)) {
             throw new AccessDeniedException("You can't place this card, because it's not your turn");
         }
-        Card lastPlacedCard = cardService.getLastPlaced(player);
         if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }
