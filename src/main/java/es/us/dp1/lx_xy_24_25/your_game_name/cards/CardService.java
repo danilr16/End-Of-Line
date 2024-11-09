@@ -54,6 +54,10 @@ public class CardService {
 		this.repository.delete(toDelete);
 	}
 
+    public Card getLastPlaced(Player player) {
+        return findCard(player.getPlayedCards().get(player.getPlayedCards().size()-1));
+    }
+
     @Transactional
     public List<Card> create25Cards(Player player) {
         List<Card> cards = new ArrayList<>();
@@ -94,6 +98,7 @@ public class CardService {
         if (cell.getIsFull()) {
             return false;
         }
+
         Integer rotation = card.getRotation() % 4;
         Card placedCard;
         Integer fila;

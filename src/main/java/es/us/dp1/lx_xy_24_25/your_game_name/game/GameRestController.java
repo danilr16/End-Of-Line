@@ -221,7 +221,8 @@ class GameRestController {
             || !game.getGameState().equals(GameState.IN_PROCESS) || !player.getState().equals(PlayerState.PLAYING)) {
             throw new AccessDeniedException("You can't place this card");
         }
-        Card lastPlacedCard = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size()-1));
+        
+        Card lastPlacedCard = cardService.getLastPlaced(player);
         if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }

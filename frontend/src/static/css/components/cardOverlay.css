@@ -1,7 +1,7 @@
 @import "../colors.css";
 
 .card-overlay{
-    transition: transform 0.3s ease;
+    transition: transform 0.25s ease;
     pointer-events: none;
     border-radius: 15%; 
 }
