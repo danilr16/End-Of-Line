@@ -51,6 +51,12 @@ public class Game extends BaseEntity {
 
     LocalDateTime started;
 
+    Integer turn;
+
+    List<Integer> orderTurn;
+
+    List<Integer> initialTurn;
+
     @Enumerated(EnumType.STRING)
     GameMode gameMode;
 
@@ -98,6 +104,9 @@ public class Game extends BaseEntity {
         }
         if (nTurn == null) {
             nTurn = 0;
+        }
+        if (orderTurn == null) {
+            orderTurn = new ArrayList<>();
         }
     }
 }

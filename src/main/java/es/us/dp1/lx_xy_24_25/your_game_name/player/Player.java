@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -51,6 +52,12 @@ public class Player extends BaseEntity{
 
     List<Integer> playedCards;
 
+    LocalDateTime turnStarted;
+
+    Boolean handChanged;
+
+    Integer cardsPlayedThisTurn;
+
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
     Hand hand;
@@ -77,6 +84,12 @@ public class Player extends BaseEntity{
         }
         if (packCards == null) {
             packCards = new ArrayList<>();
+        }
+        if (handChanged == null) {
+            handChanged = false;
+        }
+        if (cardsPlayedThisTurn == null) {
+            cardsPlayedThisTurn = 0;
         }
     }
 
