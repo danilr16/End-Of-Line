@@ -10,10 +10,10 @@ public class RotationVectors {
     public static List<Map<String, Integer>> createRotationToVector() {
         List<Map<String, Integer>> rotationToVector = new ArrayList<>();
 
-        // 0: (0, -1)
+        // 0: (0, 1)
         Map<String, Integer> vector0 = new HashMap<>();
         vector0.put("x", 0);
-        vector0.put("y", -1);
+        vector0.put("y", 1);
         rotationToVector.add(vector0);
 
         // 1: (-1, 0)
@@ -22,16 +22,16 @@ public class RotationVectors {
         vector1.put("y", 0);
         rotationToVector.add(vector1);
 
-        // 2: (1, 0)
+        // 2: (0, -1)
         Map<String, Integer> vector2 = new HashMap<>();
-        vector2.put("x", 1);
-        vector2.put("y", 0);
+        vector2.put("x", 0);
+        vector2.put("y", -1);
         rotationToVector.add(vector2);
 
-        // 3: (0, 1)
+        // 3: (1, 0)
         Map<String, Integer> vector3 = new HashMap<>();
-        vector3.put("x", 0);
-        vector3.put("y", 1);
+        vector3.put("x", 1);
+        vector3.put("y", 0);
         rotationToVector.add(vector3);
 
         return rotationToVector;
