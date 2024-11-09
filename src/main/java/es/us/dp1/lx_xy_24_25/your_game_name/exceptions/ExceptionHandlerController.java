@@ -75,4 +75,30 @@ public class ExceptionHandlerController {
 		return new ResponseEntity<>(message, HttpStatus.FORBIDDEN);
 	}
 
+	@ExceptionHandler(UnfeasibleToPlaceCard.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ErrorMessage> unfeasibleProductUpdateException(UnfeasibleToPlaceCard ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), "You can't place this card in that cell",
+				request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(InvalidIndexOfTableCard.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ErrorMessage> invalidIndexOfTableCardException(InvalidIndexOfTableCard ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(InvalidRotation.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ErrorMessage> invalidRotationException(InvalidRotation ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), "The rotation must be a number bigger than 0",
+				request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+	}
 }

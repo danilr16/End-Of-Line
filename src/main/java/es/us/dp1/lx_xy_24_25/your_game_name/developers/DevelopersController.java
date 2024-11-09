@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.model.Person;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/developers")
+@Tag(name = "Developers", description = "The Developers API based on JWT")
 public class DevelopersController {
     List<Developer> developers;
 

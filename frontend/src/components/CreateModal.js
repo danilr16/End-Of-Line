@@ -1,5 +1,5 @@
 import React, { useCallback, useState,useEffect } from 'react';
-import "../static/css/components/components.css";
+import "../static/css/components/modal.css";
 import tokenService from "../services/token.service"
 import { useNavigate } from 'react-router-dom';
 

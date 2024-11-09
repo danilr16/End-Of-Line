@@ -1,19 +1,27 @@
-import jwt_decode from "jwt-decode";
-import { useDebugValue, useEffect, useState, useRef } from "react";
+import {  useEffect, useState, useRef } from "react";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
 import { useParams } from "react-router-dom";
-import { ColorProvider, useColors } from "../ColorContext";
+import { useColors } from "../ColorContext";
 import Board from "../components/Board";
 import GameCard from "../components/GameCard";
 import { GameCardIcon } from '../components/GameCardIcon';
+import "../static/css/screens/GameScreen.css"
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
     const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
-    const [beingDraggedCard, setBeingDraggedCard] = useState(null);
+    const [isDragging, setDragging] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(-1);
+    const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
+    const gridRef = useRef(null);
+    const beingDraggedCardRef = useRef(beingDraggedCard);
+    const setBeingDraggedCard = (card) => {
+        _setBeingDraggedCard(card);
+        beingDraggedCardRef.current = card; 
+    };
     const { colors, updateColors } = useColors();
     const { gameCode } = useParams();
     const [game, setGame] = useFetchState(
@@ -30,45 +38,64 @@ export default function GameScreen() {
     );
     const [players, setPlayers] = useState([]);
 
-    document.body.style.overflow = "hidden";
-
-    const gridRef = useRef(null);
     const [gridItemSize, setGridItemSize] = useState(0);
-    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))); // Estado para el tablero
+    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
+    
+    // New state to track used cards
+    const [usedCards, setUsedCards] = useState(new Set());
+
+    const handCards = [
+        { iconName: "t_rl_4_card" },
+        { iconName: "t_fr_3_card" },
+        { iconName: "forward_1_card" },
+        { iconName: "l_r_2_card" },
+        { iconName: "t_fl_3_card" },
+    ].map((card, index) => (
+        <GameCard
+            key={index}
+            size={gridItemSize}
+            iconName={card.iconName}
+            setBeingDraggedCard={setBeingDraggedCard}
+            index={index}
+            beingDraggedCard={beingDraggedCard}
+            setDragging={setDragging}
+            dropIndex={hoveredIndex}
+            isUsed={usedCards.has(index)}
+        />
+    ));
+
+    const onDrop = (index) => {
+        if (beingDraggedCardRef.current !== null) {
+            const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
+            const iconName = handCards[droppedCardIndex].props.iconName;
+            const rowIndex = Math.floor(index / gridSize);
+            const colIndex = index % gridSize;
+
+            setBoardItems(prevBoardItems => {
+                const newBoardItems = [...prevBoardItems];
+                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />;
+                return newBoardItems;
+            });
+
+            // Add the card to usedCards set
+            setUsedCards(prev => new Set(prev).add(droppedCardIndex));
+
+            setBeingDraggedCard(null); // Reset the dragged card
+        }
+    };
+
+    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
+    useEffect(() => {
+        
+        if (!game) return;
+
+        document.body.style.overflow = "hidden";
+    });
+
     const [input, setInput] = useState('');
     const [chatMessages, setChatMessages] = useState([]);
     const chatMessagesEndRef = useRef(null);
     const MAX_MESSAGES = 75; //Numero maximo de mensajes que se mostrarán en el chat
-
-
-
-    useEffect(() => {
-        // Function to update grid item size
-
-        const updateGridItemSize = () => {
-            if (gridRef.current) {
-                const itemSize = gridRef.current.clientWidth / gridSize;
-                setGridItemSize(itemSize * 0.9);
-            }
-        };
-
-        updateGridItemSize();
-
-        const handleResize = () => {
-            updateGridItemSize();
-        };
-
-        /*const animate = () => {
-            updateGridItemSize();
-            requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);*/
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [gridSize, game]);
 
     useEffect(() => {
         if (user) {
@@ -144,27 +171,24 @@ export default function GameScreen() {
         }
     }, [game, updateColors]);
 
-    const handCards = [<GameCard key={0} size={gridItemSize} iconName="t_rl_4_card" setBeingDraggedCard={setBeingDraggedCard} index={0} beingDraggedCard={beingDraggedCard} />,
-    <GameCard key={1} size={gridItemSize} iconName="t_fr_3_card" setBeingDraggedCard={setBeingDraggedCard} index={1} beingDraggedCard={beingDraggedCard} />,
-    <GameCard key={2} size={gridItemSize} iconName="forward_1_card" setBeingDraggedCard={setBeingDraggedCard} index={2} beingDraggedCard={beingDraggedCard} />,
-    <GameCard key={3} size={gridItemSize} iconName="l_r_2_card" setBeingDraggedCard={setBeingDraggedCard} index={3} beingDraggedCard={beingDraggedCard} />,
-    <GameCard key={4} size={gridItemSize} iconName="l_l_2_card" setBeingDraggedCard={setBeingDraggedCard} index={4} beingDraggedCard={beingDraggedCard} />,
-    ]
+    useEffect(() => {
+        const updateGridItemSize = () => {
+            if (gridRef.current) {
+                const itemSize = gridRef.current.clientWidth / gridSize;
+                setGridItemSize(itemSize * 0.9);
+            }
+        };
+      
+        updateGridItemSize();
+        const handleResize = () => {
+            updateGridItemSize();
+        };
 
-    const onDrop = (index) => {
-        if (beingDraggedCard !== null) {
-            const iconName = handCards[beingDraggedCard].props.iconName;
-            const rowIndex = Math.floor(index / gridSize);
-            const colIndex = index % gridSize;
-
-            setBoardItems(prevBoardItems => {
-                const newBoardItems = [...prevBoardItems];
-                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />; // Almacena el icono en el tablero
-                return newBoardItems;
-            });
-            setBeingDraggedCard(null); // Resetea el icono arrastrado
-        }
-    };
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [gridSize, game]);
 
     if (!game) {
         return (
@@ -173,7 +197,10 @@ export default function GameScreen() {
             </div>
         );
     }
-    console.log(game)
+
+
+    
+
     return (
         <div className="full-screen">
             <div className="half-screen">
@@ -193,7 +220,7 @@ export default function GameScreen() {
 
                     </ul>
                 </div>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} />
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
                 <div className="chat-container">
                     <div className="chat">
                         
@@ -211,7 +238,7 @@ export default function GameScreen() {
                             placeholder="Send your message..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={handlePressKey} //aunque aparezca tachado hace falta
+                            onKeyDown={handlePressKey}
                             maxLength={500}
                         />
                     </div>
@@ -219,7 +246,7 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-                    {handCards}
+                    {handCards.filter((_, index) => !usedCards.has(index))}
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>

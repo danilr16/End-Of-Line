@@ -1,51 +1,328 @@
 # Documento de diseño del sistema
 
-_Esta es una plantilla que sirve como guía para realizar este entregable. Por favor, mantén las mismas secciones y los contenidos que se indican para poder hacer su revisión más ágil._ 
-
 ## Introducción
 
-_En esta sección debes describir de manera general cual es la funcionalidad del proyecto a rasgos generales. ¿Qué valor puede aportar? ¿Qué objetivos pretendemos alcanzar con su implementación? ¿Cuántos jugadores pueden intervenir en una partida como máximo y como mínimo? ¿Cómo se desarrolla normalmente una partida?¿Cuánto suelen durar?¿Cuando termina la partida?¿Cuantos puntos gana cada jugador o cual es el criterio para elegir al vencedor?_
+Este proyecto trata de la implementación web del juego End of Line, con el objetivo de ofrecer una versión accesible y entretenida del juego de mesa. End of Line es un juego de estrategia por turnos de 1 a 8 jugadores en el que la duración de las partidas varía según el número de jugadores y el modo de juego, pero suelen rondar los 5-15 minutos. El objetivo es simple, cortar la línea del rival antes de que él corte la tuya. 
 
-[Enlace al vídeo de explicación de las reglas del juego / partida jugada por el grupo](http://youtube.com)
+En una partida cada jugador empieza con un mazo cuyo tamaño depende del número de jugadores que haya en la partida, y una mano en la que normalmente habrá 5 cartas. En la primera ronda cada jugador coloca una sola carta en su turno, en todas las rondas posteriores cada jugador está obligado a colocar dos cartas que continúen el flujo desde la última carta que colocaron (salvo que se usen poderes de los cuales se habla más adelante). 
+
+Para decidir el orden de los turnos en la primera ronda cada jugador debe ver el número de iniciativa que tiene la primera carta de su mazo (el número que aparece en la esquina superior derecha de cada carta), el jugador que tenga el **menor** número de iniciativa será el primero en poner cartas, si hay empate se repite este proceso hasta resolverlo. En las rondas posteriores se compararán las iniciativas de la última carta que cada jugador haya colocado, de nuevo el jugador que tenga el número de iniciativa **más bajo** será el primero en jugar sus cartas en la siguiente ronda, si hay empate se va comparando la iniciativa de la última carta que colocó cada jugador en las rondas anteriores. Una ronda acaba cuando todos los jugadores han colocado sus dos cartas.
+
+Cuando uno de los jugadores no puede colocar alguna de las dos cartas, se considera que su línea se ha cortado y pierde la partida. Existen numerosos modos de juego, de los cuales se van a implementar:
+
+* **Versus/Battle Royale:** es el modo de juego clásico, se juega en un tablero de 7x7 en el que los límites están conectados, es decir, si el flujo de un jugador se sale por la derecha del tablero, puede continuar por la izquierda. El jugador que no pueda continuar su línea queda eliminado de la partida.
+* **Team Battle:** sigue la misma dinámica que el modo versus, pero los jugadores están divididos en dos equipos, cada equipo debe cortar la línea de todos los miembros del equipo rival. Este modo además añade una nueva mecánica, utilizando 1 punto de energía los jugadores pueden saltar **una carta de línea** del flujo que haya formado cualquier miembro de su equipo. Es importante destacar que aunque sea por equipos, cada jugador tiene su propia línea y no puede continuar la de sus compañeros de equipo.
+* **Puzle solitario:** este es un modo de juego para un solo jugador que consiste en rellenar un tablero de 5x5 (en cuanto a los límites pasa igual que en el modo versus) sin cortar tu propia línea, el objetivo es alcanzar la máxima puntuación posible. La puntuación se calcula sumando las iniciativas de las cartas colocadas al final de la partida más los puntos de energía no consumidos. También existen tableros predefinidos con casillas bloqueadas por las que no se puede pasar, para añadir dificultad al reto.
+
+Los jugadores disponen de 3 puntos de energía, los cuales no se podrán utilizar hasta la cuarta ronda. Estos puntos de energía permiten utilizar poderes que proporcionarán al jugador cierta ventaja estratégica durante la ronda en la que se activen, solo se puede gastar un punto de energía por ronda, los poderes quedan recogidos en el siguiente listado:
+
+* **Acelerón:** permite colocar tres cartas en lugar de una
+* **Frenazo:** permite colocar una carta en lugar de dos
+* **Marcha atrás:** permite continuar el flujo por la penúltima carta que se colocó, en lugar de por la última carta
+* **Gas extra:** permite añadir una carta más a la mano del jugador durante una ronda
+
+Cada jugador dispone de una carta que muestra cuántos puntos de energía le quedan, deben girarla 90 grados cada vez que se use un poder.
+Una partida finaliza cuando todos los jugadores han sido eliminados, o lo que es lo mismo, no han podido continuar su línea durante su turno.
+
+[Enlace al vídeo de explicación de las reglas del juego / partida jugada por el grupo](https://www.youtube.com/watch?v=BimBk3iC7rs)
 
 ## Diagrama(s) UML:
 
 ### Diagrama de Dominio/Diseño
 
-_En esta sección debe proporcionar un diagrama UML de clases que describa el modelo de dominio, recuerda que debe estar basado en el diagrama conceptual del documento de análisis de requisitos del sistema pero que debe:_
-•	_Especificar la direccionalidad de las relaciones (a no ser que sean bidireccionales)_
-•	_Especificar la cardinalidad de las relaciones_
-•	_Especificar el tipo de los atributos_
-•	_Especificar las restricciones simples aplicadas a cada atributo de cada clase de domino_
-•	_Incluir las clases específicas de la tecnología usada, como por ejemplo BaseEntity, NamedEntity, etc._
-•	_Incluir los validadores específicos creados para las distintas clases de dominio (indicando en su caso una relación de uso con el estereotipo <<validates>>._
-
-_Un ejemplo de diagrama para los ejercicios planteados en los boletines de laboratorio sería (hemos omitido las generalizaciones hacia BaseEntity para simplificar el diagrama):_
-
-
-_Ej:_
-
 ```mermaid
+---
+title: End Of Line
+---
 classDiagram
-    note "From Duck till Zebra"
-    Animal <|-- Duck
-    note for Duck "can fly\ncan swim\ncan dive\ncan help in debugging"
-    Animal <|-- Fish
-    Animal <|-- Zebra
-    Animal : age
-    Animal : gender
-    class Duck{
-        beakColor        
+    class BaseEntity {
+        <<abstract>>
+        #id Integer
+        +getId() Integer
+        +setId(Integer id)
+        +isNew() Boolean
     }
-    class Fish{
-       sizeInFeet
+    class Authorities {
+        +authority String (Length(20))
+        +getAuthority() String
+        +setAuthority(String authority)
     }
-    class Zebra{
-        is_wild
-        
+    class Metric {
+        +GAMES_PLAYED
+        +VICTORIES
     }
+    <<enumeration>> Metric
+    class Achievement {
+        +name String (NotNull, NotBlank)
+        +description String
+        +image String
+        +threshold Integer (Min(0))
+        +metric Metric
+    }
+    class User {
+        +username String
+        +password String
+        +image String
+        +authority Authorities (NotNull)
+        +achievements List~Achievement~ (NotNull)
+        +friends List~User~ (NotNull)
+        +getUserName() String
+        +getPassword() String
+        +getImage() String
+        +getAuthority() Authorities
+        +getAchievements() List~Achievement~
+        +getFriends() List~User~
+        +setUserName(String username)
+        +setPassword(String password)
+        +setImage(String image)
+        +setAuthority(Authorities authority)
+        +setAchievements(List~Achievement~ achievements)
+        +setFriends(List~User~ friends)
+        -prePersist()
+        +hasAuthority(String auth) Boolean
+        +hasAnyAuthority(String... authorities) Boolean
+    }
+    class Hand {
+        +numCards Integer (Min(0))
+        +cards List~Card~
+        +getNumCards() Integer
+        +getCards() List~Card~
+        +setNumCards(Integer numCards)
+        +setCards(List~Card~ cards)
+        -prePersist()
+    }
+    class TypeCard {
+        TIPO_1
+        TIPO_2_IZQ
+        TIPO_2_DER
+        TIPO_3_IZQ
+        TIPO_3_DER
+        TIPO_4
+        TIPO_5
+        TIPO_0
+        INICIO
+    }
+    <<enumeration>> TypeCard
+    class Card {
+        +type TypeCard (NotNull)
+        +iniciative Integer (Min(0), Max(5))
+        +rotation Integer (Min(0), Max(3), NotNull)
+        +player Player (NotNull)
+        +output Output
+        +outputs List~Integer~
+        +input Integer
+        +getType() TypeCard
+        +getIniciative() Integer
+        +getRotation() Integer
+        +getPlayer() Player
+        +getOutput() Output
+        +getOutputs() List~Integer~
+        +getInput() Integer
+        +setType(TypeCard type)
+        +setIniciative(Integer iniciative)
+        +setRotation(Integer rotation)
+        +setPlayer(Player player)
+        +setOutput(Output output)
+        +setOutputs(List~Integer~ outputs)
+        +setInput(Integer input)
+        -prePersist()
+        +createByType(TypeCard type, Player player) Card$
+    }
+    class PackCard {
+        +numCards Integer (Min(0), Max(25))
+        +cards List~Card~
+        +getNumCards() Integer
+        +getCards() List~Card~
+        +setNumCards(Integer numCards)
+        +setCards(List~Card~ cards)
+        -prePersist()
+    }
+    class PlayerState {
+        PLAYING
+        WON
+        LOST
+    }
+    <<enumeration>> PlayerState
+    class Player {
+        +score Integer (Min(0))
+        +energy Integer (Min(0), Max(3), NotNull)
+        +state PlayerState
+        +user User (NotNull)
+        +playedCards List~Integer~
+        +hand Hand (NotNull)
+        +packCards List~PackCard~ (NotNull)
+        +getScore() Integer
+        +getEnergy() Integer
+        +getState() PlayerState
+        +getUser() User
+        +getPlayedCards() List~Integer~
+        +gettHand() Hand
+        +getPackCards() List~PackCard~
+        +setScore(Integer score)
+        +setEnergy(Integer energy)
+        +setState(PlayerState state)
+        +setUser(User user)
+        +setPlayedCards( List~Integer~ playedCards)
+        +settHand(Hand hand)
+        +setPackCards(List~PackCard~ packCards)
+        +canUseEnergy() Boolean
+        -prePersist()
+    }
+    class Cell {
+        +isFull Boolean (NotNull)
+        +card Card
+        +getIsFull() Boolean
+        +getCard() Card
+        +setIsFull(Boolean isFull)
+        +setCard(Card card)
+        -prePersist()
+    }
+    class Row {
+        +cells List~Cell~ (NotNull)
+        +getCells() List~Cell~
+        +setCells(List~Cell~ cells)
+    }
+    class TypeTable {
+        JUGADORES_1
+        JUGADORES_2
+        JUGADORES_3
+        JUGADORES_4
+        JUGADORES_5
+        JUGADORES_6
+        JUGADORES_7
+        JUGADORES_8
+    }
+    <<enumeration>> TypeTable
+    class TableCard {
+        +type TypeTable
+        +numRow Integer (Min(5), Max(13))
+        +numColum Integer (Min(5), Max(13))
+        +rows List~Row~ (NotNull)
+        +getType() TypeTable
+        +getNumRow() Integer
+        +getNumColum() Integer
+        +getRows() List~Row~
+        +setType(TypeTable type)
+        +setNumRow(Integer numRow)
+        +setNumColum(Integer numColum)
+        +setRows(List~Row~ rows)
+        +homeNodes() Map~Integer,List~nodeCoordinates~~$
+    }
+    class GameState {
+        WAITING
+        IN_PROCESS
+        END
+        +value int
+        +getValue() int
+    }
+    <<enumeration>> GameState
+    class GameMode {
+        VERSUS
+        PUZZLE_SINGLE
+        PUZZLE_COOP
+        TEAM_BATTLE
+        +value int
+        +getValue() int
+    }
+    <<enumeration>> GameMode
+    class Game {
+        +gameCode String (Unique)
+        +host User
+        +isPublic Boolean (NotNull)
+        +numPlayers Integer (NotNull, Min(1), Max(8))
+        +chat String
+        +nTurn Integer
+        +duration Integer
+        +started LocalDateTime
+        +gameMode GameMode (NotNull)
+        +gameState GameState
+        +spectators List~Player~
+        +players List~Player~
+        +table TableCard
+        +getGameCode() String
+        +getHost() User
+        +getIsPublic() Boolean
+        +getNumPlayers() Integer
+        +getChat() String
+        +getNTurn() Integer
+        +getDuration() Integer
+        +getStarted() LocalDateTime
+        +getGameMode() GameMode
+        +getGameState() GameState
+        +getSpectators() List~Player~
+        +getPlayers() List~Player~
+        +getTable() TableCard
+        +setGameCode(String gameCode)
+        +setHost(User host)
+        +setIsPublic(Boolean isPublic)
+        +setNumPlayers(Integer numPlayers)
+        +setChat(String chat)
+        +setNTurn(Integer nTurn)
+        +setDuration(Integer duration)
+        +setStarted(LocalDateTime started)
+        +setGameMode(GameMode gameMode)
+        +setGameState(GameState gameState)
+        +setSpectators(List~Player~ spectators)
+        +setPlayers(List~Player~ players)
+        +setTable(TableCard table)
+        -prePersist()
+    }
+    class nodeCoordinates {
+        +f Integer
+        +c Integer
+        +rotation Integer
+        +f() Integer
+        +c() Integer
+        +rotation() Integer
+        +of(Integer f, Integer c, Integer rotation) nodeCoordinates
+    }
+    <<record>> nodeCoordinates
+    class Output {
+        +outputs List~Integer~
+        +input Integer
+        +outputs() List~Integer~
+        +input() Integer
+        +of(List~Integer~ outputs, Integer input) Output$
+    }
+    <<record>> Output
+    class Validator {
+        +validate(Object obj, Errors errors)
+    }
+    <<interface>> Validator
+    class GameValidator {
+        +validate(Object obj, Errors errors)
+    }
+
+    BaseEntity <|-- Authorities
+    BaseEntity <|-- Achievement
+    BaseEntity <|-- User
+    BaseEntity <|-- Player
+    BaseEntity <|-- Hand
+    BaseEntity <|-- PackCard
+    BaseEntity <|-- Card
+    BaseEntity <|-- Cell
+    BaseEntity <|-- Row
+    BaseEntity <|-- TableCard
+    BaseEntity <|-- Game
+    User "*" --> "*" Achievement
+    User "*" --> "1" Authorities
+    User "*" <--> "*" User: isFriend
+    Player *--> "1" Hand
+    Player *--> "1..*" PackCard
+    Hand "0..1" --> "*" Card
+    PackCard "0..1" --> "*" Card
+    Card "*" --> "1" Player
+    Card *--> "1" Output
+    Cell "0..1" --> "0..1" Card
+    Row *--> "1..*" Cell
+    TableCard *--> "1..*" Row
+    Game "*" --> "1" User
+    Game "1" --> "1..*" Player
+    Game *--> "1" TableCard
+    Player "*" --> "1" User
+    Validator <|-- GameValidator
+    GameValidator -- Game: validates
 ```
-_En este caso hemos vuelto a usar mermaid para crear el diagrama de dominio/diseño, pero recuerda que puedes usar cualquier otra herramienta que consideres oportuno para crear tus diagramas e inclurlos en este document como imagen tal y como se explica en [este tutorial](https://www.baeldung.com/ops/github-readme-insert-image)_
 
 ### Diagrama de Capas (incluyendo Controladores, Servicios y Repositorios)
 _En esta sección debe proporcionar un diagrama UML de clases que describa el conjunto de controladores, servicios, y repositorios implementados, incluya la división en capas del sistema como paquetes horizontales tal y como se muestra en el siguiente ejemplo:_

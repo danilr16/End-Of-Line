@@ -1,0 +1,15 @@
+@import "../colors.css";
+
+.card-overlay{
+    transition: transform 0.3s ease;
+    pointer-events: none;
+    border-radius: 15%; 
+}
+
+.card-overlay.dragging{
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.card-overlay:hover {
+    transform: translateY(-10px);
+}

@@ -1,0 +1,100 @@
+@import "../colors.css";
+
+.current-games-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    justify-items: start;
+    max-width: 85vw; 
+    gap: 20px;
+    margin: 20px auto;
+    padding: 16px;
+}
+
+.current-games-container > * {
+    max-width: 600px; 
+}
+
+.curgames-options-div{
+    background-color: var(--br-trans-grey);
+    padding: 2rem;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 85vw;
+    gap: 20px;
+    margin: 20px auto;
+    padding: 16px;
+
+    display: flex;
+    gap: 10px;
+}
+
+
+
+.curgames-button-container {
+    flex: 1;                
+    height: 70px;         
+    border-left: 1px solid #505050; 
+    background-color: transparent; 
+    display: flex;          
+    justify-content: center;  
+    align-items: center;   
+}
+
+.curgames-button-container:first-child {
+    border-left: none; 
+}
+
+.curgames-button-container {
+    box-shadow: none;  
+    margin: 0;       
+}
+
+.curgames-button {
+    font-size: 18px;        
+    margin: 0;               
+    background-color: var(--br-selected-over-bg); 
+    color: #ffffff;     
+    border: none;          
+    border-radius: 5px;      
+    cursor: pointer;          
+    transition: background-color 0.3s;
+    width: 80%;            
+    height: 80%;           
+    box-sizing: border-box;  
+}
+
+.curgames-button:hover {
+    background-color: var(--br-hovered-over-bg);
+    color: white; 
+}
+
+.curgames-options-div .curgames-button-container:last-child .curgames-button{
+    background-color: var(--highlight-blue);
+}
+
+.curgames-options-div .curgames-button-container:last-child .curgames-button:hover {
+    background-color: var(--br-blue);
+}
+
+.full-screen {
+    width: 100vw;
+    height: calc(100vh - 60px);
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.half-screen {
+    width: 100vw;
+    height: 60vh;
+    padding: 20px;
+    margin-top: 2%;
+    display: flex;
+    justify-content: space-between; /* Keeps the elements spaced out horizontally */
+    align-items: flex-start; /* Aligns child elements to the top */
+    flex-direction: row; 
+}

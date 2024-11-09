@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import tokenService from '../services/token.service';
 import useFetchState from "../util/useFetchState";
-import '../static/css/components/components.css'; 
+import '../static/css/screens/Profile.css'; 
 
 export default function Profile() {
     const jwt = tokenService.getLocalAccessToken();
