@@ -30,18 +30,26 @@ public class User extends BaseEntity {
 
 	String image;
 
-    @PrePersist
-    @PreUpdate
-    public void prePersist() {
-        if (image == null ) {
-            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
-        }
-    }
-
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "authority")
 	Authorities authority;
+
+	@ManyToMany
+	@NotNull
+	List<Achievement> achievements;
+
+	@ManyToMany
+	@NotNull
+	List<User> friends;
+
+	@PrePersist
+    @PreUpdate
+    private void prePersist() {
+        if (image == null ) {
+            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+        }
+    }
 
 	public void setImage(String image) {
         if (image == null || image.isEmpty()) {
@@ -63,12 +71,4 @@ public class User extends BaseEntity {
 		}
 		return cond;
 	}
-
-	@ManyToMany
-	@NotNull
-	List<Achievement> achievements;
-
-	@ManyToMany
-	@NotNull
-	List<User> friends;
 }

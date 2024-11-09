@@ -17,6 +17,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageRespons
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/achievements")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Achievement", description = "The Achievement API based on JWT")
 public class AchievementRestController {
 
     private final AchievementService service;

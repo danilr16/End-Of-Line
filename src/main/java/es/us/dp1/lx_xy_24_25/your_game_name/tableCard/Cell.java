@@ -9,6 +9,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ import lombok.Setter;
 @Table(name="appCells")
 public class Cell extends BaseEntity{
 
+    @NotNull
     Boolean isFull;
 
     @OneToOne(cascade = CascadeType.REMOVE)
@@ -26,7 +28,7 @@ public class Cell extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (isFull == null) {
             isFull = false;
         }

@@ -42,10 +42,12 @@ import java.util.stream.Collectors;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "User", description = "The User API based on JWT")
 class UserRestController {
 
 	private final UserService userService;

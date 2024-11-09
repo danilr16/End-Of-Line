@@ -9,6 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @Table(name="appHands")
 public class Hand extends BaseEntity{
 
+    @Min(0)
     Integer numCards;
 
     @OneToMany(cascade = CascadeType.REMOVE)
@@ -27,7 +29,7 @@ public class Hand extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (numCards == null) {
             numCards = 0;
         }

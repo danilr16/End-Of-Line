@@ -12,6 +12,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.nodeCoordinates;
 import jakarta.validation.Valid;
@@ -26,13 +27,16 @@ public class TableCardService {
     private RowService rowService;
     private CellService cellService;
     private CardService cardService;
+    private PlayerService playerService;
 
     @Autowired
-    public TableCardService(TableCardRepository repository, RowService rowService, CellService cellService, CardService cardService){
+    public TableCardService(TableCardRepository repository, RowService rowService, 
+        CellService cellService, CardService cardService, PlayerService playerService){
         this.repository = repository;
         this.rowService = rowService;
         this.cellService = cellService;
         this.cardService = cardService;
+        this.playerService = playerService;
     }
 
     @Transactional(readOnly = true)
@@ -107,6 +111,8 @@ public class TableCardService {
         Card card = Card.createByType(TypeCard.INICIO, player);
         card.setRotation(rotation);
         cardService.saveCard(card);
+        player.getPlayedCards().add(card.getId());
+        playerService.updatePlayer(player, player.getId());
         cell.setCard(card);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());

@@ -9,6 +9,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.List;
 @Table(name="appPackCards")
 public class PackCard extends BaseEntity{
 
+    @Min(0)
+    @Max(25)
     Integer numCards;
 
     @OneToMany(cascade = CascadeType.REMOVE)
@@ -27,7 +31,7 @@ public class PackCard extends BaseEntity{
 
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (numCards == null) {
             numCards = 25;
         }

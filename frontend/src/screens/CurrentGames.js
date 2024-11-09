@@ -1,5 +1,5 @@
 import React from 'react';
-import "../static/css/components/components.css"
+import "../static/css/screens/CurrentGames.css"
 import GameContainer from '../components/GameContainer';
 import tokenService from "../services/token.service";
 import { useState } from 'react';

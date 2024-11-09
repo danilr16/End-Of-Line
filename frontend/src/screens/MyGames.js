@@ -3,6 +3,7 @@ import { useDebugValue, useEffect, useState } from "react";
 import tokenService from "../services/token.service";
 import getErrorModal from "../util/getErrorModal";
 import jwt_decode from "jwt-decode";
+import "../static/css/screens/MyGames.css"
 
 
 

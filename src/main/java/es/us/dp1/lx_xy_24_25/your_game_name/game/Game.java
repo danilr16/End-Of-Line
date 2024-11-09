@@ -8,6 +8,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -15,7 +17,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -39,9 +41,36 @@ public class Game extends BaseEntity {
 
     Boolean isPublic;
 
+    Integer numPlayers;
+
+    String chat; 
+
+    Integer nTurn;
+
+    Integer duration;
+
+    LocalDateTime started;
+
+    @Enumerated(EnumType.STRING)
+    GameMode gameMode;
+
+    @Enumerated(EnumType.STRING)
+    GameState gameState;
+
+    @OneToMany(cascade = CascadeType.REMOVE)
+    @JoinColumn
+    List<Player> spectators;
+
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name="game_id")
+    List<Player> players;
+
+    @OneToOne(cascade = CascadeType.REMOVE)
+    TableCard table;
+
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (gameCode == null) {
             String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Random random = new Random();
@@ -71,31 +100,4 @@ public class Game extends BaseEntity {
             nTurn = 0;
         }
     }
-
-    @NotNull
-    Integer numPlayers;
-
-    String chat; 
-
-    Integer nTurn;
-
-    Integer duration;
-
-    LocalDateTime started;
-
-    GameMode gameMode;
-
-    GameState gameState;
-
-    @OneToMany(cascade = CascadeType.REMOVE)
-    @JoinColumn
-    List<Player> spectators;
-
-    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name="game_id")
-    List<Player> players;
-
-    @OneToOne(cascade = CascadeType.REMOVE)
-    TableCard table;
-
 }

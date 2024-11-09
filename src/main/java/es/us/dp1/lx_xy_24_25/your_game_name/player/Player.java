@@ -8,6 +8,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -15,6 +17,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,23 +30,26 @@ import java.util.ArrayList;
 @Table(name = "appPlayers")
 public class Player extends BaseEntity{
 
+    public enum PlayerState {
+        PLAYING, WON, LOST
+    }
+
+    @Min(0)
     Integer score;
 
+    @Min(0)
+    @Max(3)
+    @NotNull
     Integer energy;
+
+    @Enumerated(EnumType.STRING)
+    PlayerState state;
 
     @NotNull
     @ManyToOne(optional = false)
     User user;
 
     List<Integer> playedCards;
-
-    public Boolean canUseEnergy() {
-        if (this.energy > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
@@ -53,15 +60,9 @@ public class Player extends BaseEntity{
     @JoinColumn(name = "player_id")
     List<PackCard> packCards;
 
-    public enum PlayerState {
-        PLAYING, WON, LOST
-    }
-
-    PlayerState state;
-
     @PrePersist
     @PreUpdate
-    public void prePersist() {
+    private void prePersist() {
         if (score == null) {
             score = 0;
         }
@@ -79,4 +80,11 @@ public class Player extends BaseEntity{
         }
     }
 
+    public Boolean canUseEnergy() {
+        if (this.energy > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

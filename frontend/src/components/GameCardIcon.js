@@ -10,6 +10,7 @@ import { ReactComponent as TFL3Card } from '../static/images/card-icons/t_fl_3_c
 import { ReactComponent as TFR3Card } from '../static/images/card-icons/t_fr_3_card.svg';
 import { ReactComponent as TRL4Card } from '../static/images/card-icons/t_rl_4_card.svg';
 import { ReactComponent as TileCard } from '../static/images/card-icons/tile.svg';
+import "../static/css/components/gameCardIcon.css"
 
 
 //Elemento icono, imagen renderizada sobre overlay y dropzone

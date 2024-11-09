@@ -1,9 +1,10 @@
 import React from 'react';
 import DropZone from './DropZone';
+import "../static/css/components/board.css"
 
-export default function Board({ gridSize, size, gridRef,onDrop,boardItems }) {
+export default function Board({ gridSize, size, gridRef,onDrop,boardItems,isDragging,hoveredIndex,setHoveredIndex }) {
     return (
-        <div className="board-frame" style={{ width: `${(gridSize / 5) * 5 + 24}%` }}>
+        <div className="board-frame" style={{ width: `${(gridSize / 5) * 4 + 24}%` }}>
             <div
                 className="grid-container"
                 ref={gridRef}
@@ -14,7 +15,7 @@ export default function Board({ gridSize, size, gridRef,onDrop,boardItems }) {
                 }}
             >
                 {Array.from({ length: Math.floor((gridSize * gridSize)) }, (_, index) => (
-                    <DropZone key = {index} index = {index} size = {size} onDrop = {onDrop} cardIcon = {boardItems[Math.floor(index / gridSize)][index % gridSize]} />
+                    <DropZone key = {index} index = {index} size = {size} onDrop = {onDrop} cardIcon = {boardItems[Math.floor(index / gridSize)][index % gridSize]} isDragging={isDragging} hoveredIndex = {hoveredIndex} setHoveredIndex = {setHoveredIndex}/>
                         
                 ))}
             </div>
