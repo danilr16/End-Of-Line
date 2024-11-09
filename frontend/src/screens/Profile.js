@@ -144,7 +144,7 @@ export default function Profile() {
             
             console.log("Updated User Data:", updatedUser);
             console.log("Bearer Token:", jwt);
-            const response = await fetch(`/api/v1/users/update-password`, {
+            const response = await fetch(`/api/v1/users/myProfile/update-password`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -166,6 +166,7 @@ export default function Profile() {
             } else {
                 const errorData = await response.json();
                 setMessage(`Error al cambiar la contraseña: ${errorData.message || 'Desconocido'}`);
+                console.error("Error Response Data:", errorData);
             }
         } catch (error) {
             setMessage('Error al conectar con el servidor');
