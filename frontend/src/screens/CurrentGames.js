@@ -25,7 +25,6 @@ export default function CurrentGames(){
         setMessage,
         setVisible
     );
-    console.log(games)
 
     const openCreationModal =  () =>setIsCreationModalOpen(true);
     const openJoinModal =  () =>setIsJoinModalOpen(true);
@@ -63,8 +62,6 @@ export default function CurrentGames(){
 
     const parseGame = (game) =>{
 
-        
-
         return(<GameContainer key = {game.gameCode} 
             gameCode = {game.gameCode} 
             gameMode = {parseGamemode(game.gameMode)}
@@ -86,7 +83,6 @@ export default function CurrentGames(){
     }, []);
 
     
-    console.log(games)
     const gamesToShow = games.map((game)=>parseGame(game))
 
     return (
