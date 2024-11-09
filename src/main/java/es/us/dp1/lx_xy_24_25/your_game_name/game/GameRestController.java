@@ -239,11 +239,13 @@ class GameRestController {
             || !game.getGameState().equals(GameState.IN_PROCESS) || !player.getState().equals(PlayerState.PLAYING)) {
             throw new AccessDeniedException("You can't place this card");
         }
+        
+        Card lastPlacedCard = cardService.getLastPlaced(player);
         Player turnOfPlayer = playerService.findPlayer(game.getTurn());
         if (!turnOfPlayer.equals(player) || !(player.getCardsPlayedThisTurn() < 2)) {
             throw new AccessDeniedException("You can't place this card, because it's not your turn");
         }
-        Card lastPlacedCard = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size()-1));
+        Card lastPlacedCard = cardService.getLastPlaced(player);
         if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }

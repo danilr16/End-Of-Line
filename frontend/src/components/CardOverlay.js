@@ -10,7 +10,7 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,in
     const animationFrameRef = useRef(null);
     const lastUpdateTimeRef = useRef(Date.now());
 
-    const speed = 0.2;
+    const speed = 0.3;
 
     // Linear interpolation function
     const lerp = (start, end, factor) => start + (end - start) * factor;

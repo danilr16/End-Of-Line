@@ -17,6 +17,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.nodeCoordinates;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ public class TableCardService {
     private TableCardRepository repository;
     private RowService rowService;
     private CellService cellService;
+    @Autowired
     private CardService cardService;
     private PlayerService playerService;
 
@@ -116,5 +119,59 @@ public class TableCardService {
         cell.setCard(card);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
+    }
+
+
+    @Transactional
+    public Cell getCellAt(TableCard tableCard, Integer f, Integer c) {
+        return tableCard.getRows().get(f-1).getCells().get(c-1);
+    }
+
+    @Transactional
+    public Map<String, Integer> getPositionOfCard(TableCard tableCard, Card card) {
+        for (int row = 0; row < tableCard.getRows().size(); row++) {
+            List<Cell> cells = tableCard.getRows().get(row).getCells();
+            for (int col = 0; col < cells.size(); col++) {
+                Cell cell = cells.get(col);
+                if (cell.getCard() != null && cell.getCard().getId().equals(card.getId())) {
+                    Map<String, Integer> position = new HashMap<>();
+                    position.put("x", row + 1); 
+                    position.put("y", col + 1); 
+                    return position;
+                }
+            }
+        }
+        return null; 
+    }
+
+    public Integer getCellIndexFromPosition(TableCard tableCard, Integer x, Integer y) {
+        return ((y-1)*tableCard.getNumColum())+(x-1);
+    }
+
+    @Transactional
+    public List<Map<String, Integer>> getPossiblePositionsForPlayer(TableCard tableCard, Player player) {
+        Card lastPlacedCard = cardService.getLastPlaced(player); 
+        
+        Map<String, Integer> lastPlacedPos = getPositionOfCard(tableCard, lastPlacedCard);
+
+        List<Map<String, Integer>> rotationToVector = RotationVectors.createRotationToVector();
+
+        List<Map<String,Integer>> possiblePositions = new ArrayList<>();
+
+        for (Integer outputIndex : lastPlacedCard.getOutputs()) {
+            Map<String, Integer> vector = rotationToVector.get((outputIndex+lastPlacedCard.getRotation())%4);
+    
+            int newX = Math.floorMod(lastPlacedPos.get("x") + vector.get("x")-1,tableCard.getNumRow())+1;
+            int newY = Math.floorMod(lastPlacedPos.get("y") + vector.get("y")-1,tableCard.getNumColum())+1;
+    
+            if (getCellAt(tableCard, newX, newY).getIsFull() == false) {
+                Map<String, Integer> newPosition = new HashMap<>();
+                newPosition.put("position", getCellIndexFromPosition(tableCard, newX, newY));
+                newPosition.put("rotation",(outputIndex+lastPlacedCard.getRotation()+2)%4);
+                possiblePositions.add(newPosition);
+            }
+        }
+    
+        return possiblePositions;
     }
 }
