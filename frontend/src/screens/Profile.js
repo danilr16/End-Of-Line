@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState  } from 'react';
 import tokenService from '../services/token.service';
 import useFetchState from "../util/useFetchState";
-import '../static/css/screens/Profile.css'; 
+import "../static/css/screens/Profile.css";
+import ReactDOM from 'react-dom';
+
+
+
 
 export default function Profile() {
     const jwt = tokenService.getLocalAccessToken();
@@ -11,8 +15,24 @@ export default function Profile() {
     const [newImage, setNewImage] = useState(null);
     const [newUsername, setNewUsername] = useState(null);
     const [newPassword, setNewPassword] = useState(null);
+    const [oldPassword, setOldPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState(''); 
+    const [showPasswordModal, setShowPasswordModal] = useState(false); // Cambiar contraseña
+    const [showImageModal, setShowImageModal] = useState(false); //Cambiar imagen de perfil
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false); //Se confima el cambio de datos/usuario y se cierra sesión
+    
 
-//CAMBIAR update/${user.id} Y QUE SE MUESTREN TODOS LOS LOGROS (LOS CONSEGUIDOS EN VERDE)
+
+    const predefinedImages = [
+        "https://cdn-icons-png.flaticon.com/512/9368/9368199.png",
+        "https://cdn-icons-png.flaticon.com/512/9368/9368199.png",
+        "https://cdn-icons-png.flaticon.com/512/3135/3135768.png",
+        "https://cdn-icons-png.flaticon.com/512/2920/2920072.png",
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9o9d6uNkVAJUTyjn3nIX7ff6fABWy3SOCGU-J6WELR-0d7zcovc0_nxn_ahdERI54_I&usqp=CAU"
+    ];
+    
+
+
     const [user, setUser] = useFetchState(
         [],
         '/api/v1/users/currentUser',
@@ -37,15 +57,11 @@ export default function Profile() {
         setVisible
     );
 
-
-    const handleImageChange = (e) => {
-        
-        const file = e.target.files[0];
-        if (file && file.type === 'image/png') {
-            const imageUrl = URL.createObjectURL(file);
-            setNewImage(imageUrl);
-        }
+    const handleImageClick = () => {
+        setShowImageModal(true); 
     };
+    
+
     const handleEditClick = () => {
         setIsEditing(!isEditing);
         if (isEditing) {
@@ -53,6 +69,11 @@ export default function Profile() {
         } else {
             setNewUsername(user.username); 
         }
+    };
+
+    const handleImageSelect = (image) => {
+        setNewImage(image);  
+        setShowImageModal(false); 
     };
 
     const handleSave = async () => {
@@ -77,13 +98,20 @@ export default function Profile() {
             console.log("Response", response);
             if (response.ok) {
                 const updatedUserData = await response.json();
-                //const newJwt = response.headers.get("Authorization").replace("Bearer ", "");
-                //localStorage.setItem("jwt", newJwt);
-                //tokenService.updateLocalAccessToken(newJwt);
                 setUser(updatedUserData);
-                window.location.reload(); 
                 setMessage('Perfil actualizado con éxito');
                 setIsEditing(false);
+                if (newUsername && newUsername !== user.username) {
+                    setShowConfirmationModal(true);
+
+                    setTimeout(() => {
+                        tokenService.updateLocalAccessToken(null);
+                        localStorage.removeItem('jwt');
+                        window.location.href = "/login";
+                    }, 5000); // Se cierra sesión en 5 segundos
+
+                }
+            
             }
              else {
                 const errorData = await response.json();
@@ -95,14 +123,54 @@ export default function Profile() {
             console.error("Fetch Error:", error);
         }
     };
+/* 
+    const handlePasswordChange = async () => {
+        if (newPassword !== confirmPassword) {
+            setMessage("Las contraseñas no coinciden");
+            setVisible(true);
+            return;
+        }
+        try {
+            const response = await fetch(`/api/v1/users/update-password`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+                body: JSON.stringify({
+                    oldPassword: oldPassword,
+                    newPassword: newPassword
+                }),
+            });
+    
+            if (response.ok) {
+                setShowPasswordModal(false);
+                setShowConfirmationModal(true);
+                //Comprobar si hace falta
+                setTimeout(() => {
+                    tokenService.updateLocalAccessToken(null);
+                    localStorage.removeItem('jwt');
+                    window.location.href = "/login";
+                }, 5000);
+
+            } else {
+                const errorData = await response.json();
+                setMessage(`Error al cambiar la contraseña: ${errorData.message || 'Desconocido'}`);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor');
+            console.error(error);
+        }
+    };
+     */
     
     
     const renderAchievement = (achievement) => {
         const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
         return (
-            <div key={achievement.id} className={`achievement-item ${isAchieved ? '-achieved' : ''}`} 
+            <div key={achievement.id} className={`achievement-item${isAchieved ? '-achieved' : ''}`} 
             >
-                <img src={achievement.image} className="achievement-image" />
+                <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  />
                 <div className="achievement-details">
                     <h4>{achievement.name}</h4>
                     <p>{achievement.description}</p>
@@ -125,22 +193,41 @@ export default function Profile() {
                 </div>
                 <div className="profile-data">
                 <div 
-                        className={`image-wrapper ${isEditing ? 'editing' : ''}`} 
-                        onClick={isEditing ? () => document.getElementById('profileImageInput').click() : null} 
-                    >
-                        <img src={newImage || user.image} className="profile-image" alt="Profile" />
-                        {isEditing && (
-                            <input
-                                type="file"
-                                id="profileImageInput"
-                                accept="image/png"
-                                style={{ display: 'none' }}
-                                onChange={handleImageChange}
-                            />
-                        )}
-                    </div>
+                    className={`image-wrapper ${isEditing ? 'editing' : ''}`} 
+                    onClick={handleImageClick}
+                >
+                <img src={newImage || user.image} className="profile-image" />
 
-    
+                </div>
+                {isEditing && showImageModal && ReactDOM.createPortal(
+                    <div className="modal-profile-overlay">
+                        <div className="modal-profile-container">
+                            <h2>Select a Profile Image</h2>
+                            <div className="image-selector">
+                                {predefinedImages.map((image, index) => (
+                                    <img 
+                                        key={index} 
+                                        src={image} 
+                                        className="image-selector-item" 
+                                        onClick={() => handleImageSelect(image)} 
+                                    />
+                                ))}
+                            </div>
+                            <button className="button-edit" onClick={() => setShowImageModal(false)}>Close</button> 
+                        </div>
+                    </div>,
+                    document.body
+                )}
+                {showConfirmationModal && ReactDOM.createPortal(
+                    <div className="modal-profile-overlay">
+                        <div className="modal-confirmation-container">
+                            <p>Name changed successfully. The session will be closed in 5 seconds.</p>
+                        </div>
+                    </div>,
+                    document.body
+                )}
+
+
                     <div className="profile-details">
                         {isEditing ? (
                             <>
@@ -159,9 +246,14 @@ export default function Profile() {
                             <>
                                 <p>Usuario: {user.username}</p>
                                 <p>Contraseña: {'*'.repeat(8)}</p>
-                                
+                                <div className="change-password">
+                                    <p>¿Quieres cambiar la contraseña?</p>
+                                </div>
+                
                             </>
+                            
                         )}
+
                     </div>
 
                     <button className='button-edit' onClick={handleEditClick}> {isEditing ? 'Cancelar' : 'Editar'} </button>
