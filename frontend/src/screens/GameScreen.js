@@ -130,11 +130,6 @@ export default function GameScreen() {
             return;
         } 
         
-
-        /*setChat((chat) => {
-            const chatArray = [...chat, { text: input, userName: user.username }];
-            return chatArray.slice(-MAX_MESSAGES); //Se queda con los ultimos mensajes que indique esa variable
-        });*/
         setInput('');
     }
 
