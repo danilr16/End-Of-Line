@@ -7,6 +7,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,13 +44,20 @@ public class Game extends BaseEntity {
 
     Integer numPlayers;
 
-    String chat; 
+    @ElementCollection
+    List<ChatMessage> chat; 
 
     Integer nTurn;
 
     Integer duration;
 
     LocalDateTime started;
+
+    Integer turn;
+
+    List<Integer> orderTurn;
+
+    List<Integer> initialTurn;
 
     @Enumerated(EnumType.STRING)
     GameMode gameMode;
@@ -94,10 +102,13 @@ public class Game extends BaseEntity {
             isPublic = true;
         }
         if (chat == null) {
-            chat = "";
+            chat = new ArrayList<>();
         }
         if (nTurn == null) {
             nTurn = 0;
+        }
+        if (orderTurn == null) {
+            orderTurn = new ArrayList<>();
         }
     }
 }

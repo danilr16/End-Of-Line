@@ -106,11 +106,29 @@ class GameRestController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
+    @GetMapping("/{gameCode}/chat")
+    public ResponseEntity<List<ChatMessage>> findGameChat(@PathVariable("gameCode") @Valid String gameCode){
+        List<ChatMessage> res = gameService.getGameChat(gameCode);
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
+
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
-            //Aquí se añade logica de partida (orden,rondas,etc)
+            switch (game.getGameMode()) {
+                case PUZZLE_SINGLE:
+                    gameService.gameInProcessSingle(game);
+                case PUZZLE_COOP:
+                    gameService.gameInProcessCoop(game);
+                case TEAM_BATTLE:
+                    gameService.gameInProcessTeam(game);
+                case VERSUS:
+                    gameService.gameInProcess(game);
+                default:
+                    break;
+            }
         }
         return new ResponseEntity<>(game,HttpStatus.OK);
     }
@@ -223,6 +241,11 @@ class GameRestController {
         }
         
         Card lastPlacedCard = cardService.getLastPlaced(player);
+        Player turnOfPlayer = playerService.findPlayer(game.getTurn());
+        if (!turnOfPlayer.equals(player) || !(player.getCardsPlayedThisTurn() < 2)) {
+            throw new AccessDeniedException("You can't place this card, because it's not your turn");
+        }
+        Card lastPlacedCard = cardService.getLastPlaced(player);
         if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }
@@ -230,6 +253,7 @@ class GameRestController {
         hand.setNumCards(hand.getNumCards() - 1);
         handService.updateHand(hand, hand.getId());
         player.getPlayedCards().add(savedCard.getId());
+        player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() + 1);
         playerService.updatePlayer(player, player.getId());
         cell.setCard(savedCard);
         cell.setIsFull(true);
@@ -277,4 +301,39 @@ class GameRestController {
         gameService.takeACard(player);
         return new ResponseEntity<>(new MessageResponse("You have taken a card successfully"), HttpStatus.ACCEPTED);
     }
+
+    @PatchMapping("/{gameCode}/changeInitialHand")//Permite cambiar tu mano inicial, en tu turno y en la primera ronda
+    public ResponseEntity<MessageResponse> changeInitialHand(@PathVariable("gameCode") @Valid String gameCode) {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't change your hand, because you aren't in this game");
+        }
+        if (game.getGameState().equals(GameState.IN_PROCESS)) {
+            if (game.getNTurn() == 1 && playerService.findPlayer(game.getTurn()).equals(player) 
+                && !player.getState().equals(PlayerState.LOST) && !player.getHandChanged()) {
+                gameService.changeInitialHand(player);
+            } else {
+                throw new AccessDeniedException("You can't change your hand");
+            }
+        } else {
+            throw new AccessDeniedException("You can't change your hand, because this game isn't in process");
+        }
+        return new ResponseEntity<>(new MessageResponse("You have changed your initial hand successfully"), HttpStatus.ACCEPTED);
+    }
+
+    @PatchMapping("/{gameCode}/chat")
+    public ResponseEntity<List<ChatMessage>> sendChatMessage(@PathVariable("gameCode") @Valid String gameCode, @RequestBody ChatMessage cm ) {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        if (game.getPlayers().stream().map(p -> p.getUser()).toList().contains(user) && cm.getUserName().equals(user.getUsername())) {
+                game.getChat().add(cm);
+                List<ChatMessage> newChat = gameService.updateGame(game, game.getId()).getChat();
+                return new ResponseEntity<>(newChat, HttpStatus.ACCEPTED);
+        } else {
+            throw new AccessDeniedException("You can't chat in this room");
+        }
+    }
+
 }
