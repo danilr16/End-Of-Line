@@ -149,6 +149,9 @@ classDiagram
         +state PlayerState
         +user User (NotNull)
         +playedCards List~Integer~
+        +turnStarted LocalDateTime
+        +handChanged Boolean
+        +cardsPlayedThisTurn Integer
         +hand Hand (NotNull)
         +packCards List~PackCard~ (NotNull)
         +getScore() Integer
@@ -156,6 +159,9 @@ classDiagram
         +getState() PlayerState
         +getUser() User
         +getPlayedCards() List~Integer~
+        +getTurnStarted() LocalDateTime
+        +getHandChanged() Boolean
+        +getCardsPlayedThisTurn() Integer
         +gettHand() Hand
         +getPackCards() List~PackCard~
         +setScore(Integer score)
@@ -163,6 +169,9 @@ classDiagram
         +setState(PlayerState state)
         +setUser(User user)
         +setPlayedCards( List~Integer~ playedCards)
+        +setTurnStarted(LocalDateTime turnStarted)
+        +setHandChanged(Boolean handChanged)
+        +setCardsPlayedThisTurn(Integer playedThisTurn)
         +settHand(Hand hand)
         +setPackCards(List~PackCard~ packCards)
         +canUseEnergy() Boolean
@@ -225,15 +234,27 @@ classDiagram
         +getValue() int
     }
     <<enumeration>> GameMode
+    class ChatMessage {
+        -userName String
+        -messageString String
+        +getUserName() String
+        +getMessageString() String
+        +setUserName(String userName)
+        +setMessageString(String userName)
+    }
+    <<embeddable>> ChatMessage
     class Game {
         +gameCode String (Unique)
         +host User
         +isPublic Boolean (NotNull)
         +numPlayers Integer (NotNull, Min(1), Max(8))
-        +chat String
+        +chat List~ChatMessage~
         +nTurn Integer
         +duration Integer
         +started LocalDateTime
+        +turn Integer
+        +orderTurn List~Integer~
+        +initialTurn List~Integer~
         +gameMode GameMode (NotNull)
         +gameState GameState
         +spectators List~Player~
@@ -243,10 +264,13 @@ classDiagram
         +getHost() User
         +getIsPublic() Boolean
         +getNumPlayers() Integer
-        +getChat() String
+        +getChat() List~ChatMessage~
         +getNTurn() Integer
         +getDuration() Integer
         +getStarted() LocalDateTime
+        +getTurn() Integer
+        +getOrderTurn() List~Integer~
+        +getInitialTurn() List~Integer~
         +getGameMode() GameMode
         +getGameState() GameState
         +getSpectators() List~Player~
@@ -256,10 +280,13 @@ classDiagram
         +setHost(User host)
         +setIsPublic(Boolean isPublic)
         +setNumPlayers(Integer numPlayers)
-        +setChat(String chat)
+        +setChat(List~ChatMessage~ chat)
         +setNTurn(Integer nTurn)
         +setDuration(Integer duration)
         +setStarted(LocalDateTime started)
+        +setTurn(Integer turn)
+        +setOrderTurn(List~Integer~ orderTurn)
+        +setInitialTurn(List~Integer~ initialTurn)
         +setGameMode(GameMode gameMode)
         +setGameState(GameState gameState)
         +setSpectators(List~Player~ spectators)
@@ -292,6 +319,20 @@ classDiagram
     class GameValidator {
         +validate(Object obj, Errors errors)
     }
+    class UserProfileUpdateDTO {
+        -newUsername String
+        -newImage String
+        -oldPasswordDTO String
+        -newPasswordDTO String
+        +getNewUserName() String
+        +getNewImage() String
+        +getOldPasswordDTO() String
+        +getNewPasswordDTO() String
+        +setNewUserName() String
+        +setNewImage() String
+        +setOldPasswordDTO(String oldPasswordDTO)
+        +setNewPasswordDTO(String newPasswordDTO)
+    }
 
     BaseEntity <|-- Authorities
     BaseEntity <|-- Achievement
@@ -319,6 +360,7 @@ classDiagram
     Game "*" --> "1" User
     Game "1" --> "1..*" Player
     Game *--> "1" TableCard
+    Game *--> "*" ChatMessage
     Player "*" --> "1" User
     Validator <|-- GameValidator
     GameValidator -- Game: validates

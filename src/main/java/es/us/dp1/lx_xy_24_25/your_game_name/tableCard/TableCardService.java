@@ -17,7 +17,6 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.nodeCoordinates;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ public class TableCardService {
     private TableCardRepository repository;
     private RowService rowService;
     private CellService cellService;
-    @Autowired
     private CardService cardService;
     private PlayerService playerService;
 

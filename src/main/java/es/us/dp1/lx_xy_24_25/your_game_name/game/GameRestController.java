@@ -217,7 +217,7 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/placeCard")// Falta por añadir una comprobación para no poder colocar una carta en cualquier momento, solo en tu turno
+    @PatchMapping("/{gameCode}/placeCard")
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer f, Integer c) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
         Card savedCard = cardService.findCard(cardId);
         Game game = gameService.findGameByGameCode(gameCode);
@@ -265,7 +265,7 @@ class GameRestController {
         return null; //Aquí se añade el uso de poderes
     }
 
-    @PatchMapping("/{gameCode}/rotateCard")
+    @PatchMapping("/{gameCode}/rotateCard")//Si se va a rotar la carta automaticamente esto hay que borrarlo
     public ResponseEntity<MessageResponse> rotateCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer rotation) throws InvalidRotation {
         if (rotation < 0) {
             throw new InvalidRotation();
