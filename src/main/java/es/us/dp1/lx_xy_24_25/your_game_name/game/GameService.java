@@ -81,6 +81,12 @@ public class GameService {
 		return toUpdate;
     }
 
+
+    @Transactional(readOnly = true)
+    public List<ChatMessage> getGameChat(String gameCode){
+        return gameRepository.findGameChat(gameCode).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",gameCode));
+    }
+
     @Transactional
     public Card takeACard(Player player) {
         PackCard packCard = player.getPackCards().stream().findFirst().get();

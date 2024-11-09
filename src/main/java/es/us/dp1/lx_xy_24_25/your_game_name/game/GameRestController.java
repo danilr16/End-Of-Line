@@ -106,6 +106,13 @@ class GameRestController {
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
+    @GetMapping("/{gameCode}/chat")
+    public ResponseEntity<List<ChatMessage>> findGameChat(@PathVariable("gameCode") @Valid String gameCode){
+        List<ChatMessage> res = gameService.getGameChat(gameCode);
+        return new ResponseEntity<>(res,HttpStatus.OK);
+    }
+
+
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
@@ -313,4 +320,18 @@ class GameRestController {
         }
         return new ResponseEntity<>(new MessageResponse("You have changed your initial hand successfully"), HttpStatus.ACCEPTED);
     }
+
+    @PatchMapping("/{gameCode}/chat")
+    public ResponseEntity<List<ChatMessage>> sendChatMessage(@PathVariable("gameCode") @Valid String gameCode, @RequestBody ChatMessage cm ) {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        if (game.getPlayers().stream().map(p -> p.getUser()).toList().contains(user) && cm.getUserName().equals(user.getUsername())) {
+                game.getChat().add(cm);
+                List<ChatMessage> newChat = gameService.updateGame(game, game.getId()).getChat();
+                return new ResponseEntity<>(newChat, HttpStatus.ACCEPTED);
+        } else {
+            throw new AccessDeniedException("You can't chat in this room");
+        }
+    }
+
 }
