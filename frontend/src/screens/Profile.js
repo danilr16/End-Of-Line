@@ -82,7 +82,9 @@ export default function Profile() {
         try {
             const updatedUser = {
                 ...(newUsername && newUsername !== user.username ? { newUsername: newUsername } : {}),
-                ...(newImage && newImage !== user.image  ? { newImage: newImage } : {}),
+                ...(newImage && newImage !== user.image ? { newImage: newImage } : {}),
+                ...(oldPassword ? { oldPasswordDTO: oldPassword } : {}),
+                ...(newPassword ? { newPasswordDTO: newPassword } : {}),
             };
             console.log("Updated User Data:", updatedUser);
             
@@ -123,36 +125,44 @@ export default function Profile() {
             console.error("Fetch Error:", error);
         }
     };
-/* 
+
     const handlePasswordChange = async () => {
+        console.log("Old Password:", oldPassword);
+        console.log("New Password:", newPassword);
+        console.log("Confirm Password:", confirmPassword);
+        
         if (newPassword !== confirmPassword) {
             setMessage("Las contraseñas no coinciden");
             setVisible(true);
             return;
         }
         try {
+            const updatedUser = {
+                ...(oldPassword ? { oldPasswordDTO: oldPassword } : {}),
+                ...(newPassword ? { newPasswordDTO: newPassword } : {}),
+            };
+            
+            console.log("Updated User Data:", updatedUser);
+            console.log("Bearer Token:", jwt);
             const response = await fetch(`/api/v1/users/update-password`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwt}`,
                 },
-                body: JSON.stringify({
-                    oldPassword: oldPassword,
-                    newPassword: newPassword
-                }),
+                body: JSON.stringify(updatedUser),
             });
-    
+            
+            console.log("Response", response);
+            
             if (response.ok) {
                 setShowPasswordModal(false);
                 setShowConfirmationModal(true);
-                //Comprobar si hace falta
                 setTimeout(() => {
                     tokenService.updateLocalAccessToken(null);
                     localStorage.removeItem('jwt');
                     window.location.href = "/login";
                 }, 5000);
-
             } else {
                 const errorData = await response.json();
                 setMessage(`Error al cambiar la contraseña: ${errorData.message || 'Desconocido'}`);
@@ -162,7 +172,8 @@ export default function Profile() {
             console.error(error);
         }
     };
-     */
+    
+    
     
     
     const renderAchievement = (achievement) => {
@@ -246,9 +257,42 @@ export default function Profile() {
                             <>
                                 <p>Usuario: {user.username}</p>
                                 <p>Contraseña: {'*'.repeat(8)}</p>
-                                <div className="change-password">
-                                    <p>¿Quieres cambiar la contraseña?</p>
-                                </div>
+                                <button className="button-change-password" onClick={() => setShowPasswordModal(true)}>
+                                    Cambiar Contraseña
+                                </button>
+                                {showPasswordModal && ReactDOM.createPortal(
+                                    <div className="modal-profile-overlay">
+                                        <div className="modal-profile-container">
+                                            <h2>Cambiar Contraseña</h2>
+                                            <input 
+                                                type="password" 
+                                                placeholder="Contraseña Antigua"
+                                                value={oldPassword}
+                                                onChange={(e) => setOldPassword(e.target.value)}
+                                                className="editable-input"
+                                            />
+                                            <input 
+                                                type="password" 
+                                                placeholder="Nueva Contraseña"
+                                                value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                className="editable-input"
+                                            />
+                                            <input 
+                                                type="password" 
+                                                placeholder="Confirmar Nueva Contraseña"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                className="editable-input"
+                                            />
+                                            <div className="modal-buttons">
+                                                <button className="button-save" onClick={handlePasswordChange}>Guardar</button>
+                                                <button className="button-edit" onClick={() => setShowPasswordModal(false)}>Cancelar</button>
+                                            </div>
+                                        </div>
+                                    </div>,
+                                    document.body
+                                )}
                 
                             </>
                             

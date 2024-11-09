@@ -137,7 +137,6 @@ class UserRestController {
 	public ResponseEntity<User> updateMyProfile(@RequestBody UserProfileUpdateDTO userUpdateDTO) {
 		User toUpdate = userService.findCurrentUser();
 		int id = toUpdate.getId();
-		System.out.println("Current user: " + toUpdate);
 		String newUsername = userUpdateDTO.getNewUsername();
 		String newImage = userUpdateDTO.getNewImage();
 
@@ -157,31 +156,41 @@ class UserRestController {
 
 	}
 
-	/*
-	 * @PatchMapping("/myProfile/update-password")
-	 * public ResponseEntity<MessageResponse> updateMyPassword(String newUsername,
-	 * String newPassword, String newImage) {
-	 * User toUpdate = userService.findCurrentUser();
-	 * int id = toUpdate.getId();
-	 * if (newUsername != null && !newUsername.strip().isEmpty()) {
-	 * if (userService.findUser(newUsername) == null) {
-	 * toUpdate.setUsername(newUsername);
-	 * } else {
-	 * throw new
-	 * AccessDeniedException("There already is a user with that username!");
-	 * }
-	 * }
-	 * if (newPassword != null && !newPassword.strip().isEmpty()) {
-	 * String encodedPassword = encoder.encode(newPassword);
-	 * toUpdate.setPassword(encodedPassword);
-	 * }
-	 * if (newImage != null) {
-	 * toUpdate.setImage(newImage);
-	 * }
-	 * userService.updateUser(toUpdate, id);
-	 * return new ResponseEntity<>(new MessageResponse("User profile updated!"),
-	 * HttpStatus.ACCEPTED);
-	 * }
-	 */
+	
+  @PatchMapping("/myProfile/update-password")
+     public ResponseEntity<User> updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
+         User toUpdate = userService.findCurrentUser();
+		 if (toUpdate == null) {
+			throw new AccessDeniedException("User not authenticated");
+		}
+         int id = toUpdate.getId();
+		 String oldPassword = userUpdateDTO.getOldPasswordDTO();
+		 String newPassword = userUpdateDTO.getNewPasswordDTO();
+		 //Comprobamos que la antigua contraseña sea correcta
+         if (oldPassword != null && !oldPassword.strip().isEmpty()) {
+			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {
+                 throw new AccessDeniedException("The old password is incorrect!");
+             }
+         }
+		 //Comprobamos que la nueva contraseña sea diferente a la antigua
+		 if (!newPassword.equals(oldPassword)) {
+			//Comprobamos que la nueva contraseña sea válida
+			if(newPassword!= null &&!newPassword.strip().isEmpty()){
+				String encodePassword = encoder.encode(newPassword);
+				toUpdate.setPassword(encodePassword);
+			}else{
+				throw new AccessDeniedException("The new password is not valid");
+			}
+             
+         } else {
+             throw new AccessDeniedException("The new password can't be the same as the old password!");
+         }
+         userService.updateUser(toUpdate, id);
+         userService.saveUser(toUpdate);
+         return new ResponseEntity<>(toUpdate, HttpStatus.OK);
+
+     }
+	}
+	 
 
 }
