@@ -16,7 +16,7 @@ Cuando uno de los jugadores no puede colocar alguna de las dos cartas, se consid
 
 Los jugadores disponen de 3 puntos de energía, los cuales no se podrán utilizar hasta la cuarta ronda. Estos puntos de energía permiten utilizar poderes que proporcionarán al jugador cierta ventaja estratégica durante la ronda en la que se activen, solo se puede gastar un punto de energía por ronda, los poderes quedan recogidos en el siguiente listado:
 
-* **Acelerón:** permite colocar tres cartas en lugar de una
+* **Acelerón:** permite colocar tres cartas en lugar de dos
 * **Frenazo:** permite colocar una carta en lugar de dos
 * **Marcha atrás:** permite continuar el flujo por la penúltima carta que se colocó, en lugar de por la última carta
 * **Gas extra:** permite añadir una carta más a la mano del jugador durante una ronda
@@ -40,7 +40,7 @@ A continuación se definen  todas las historias de usuario a implementar:
 |Como administrador quiero que el sistema liste las partidas en curso, incluyendo el creador y participantes de dicha partida, para poder llevar un seguimiento de las partidas que se están jugando.| 
 |-----|
 |![alt text](mockups/image-2.png)  ![alt text](mockups/image-7.png)|
-|En la pantalla principal, click en 'unirse' y seleccionar una de las partidas en curso. |
+|Una vez se inicia sesión esta es la pantalla que se muestra, la pantalla principal, aquí el usuario debe presionar el botón 'Play'. Esto le llevará a una pantalla en la que se distinguen 3 botones, uno para crear partidas, otro para unirse a una partida utilizando un código y por último uno para unirse a una partida de forma rápida. Debajo de estos botones se ofrece una lista de las partidas públicas en curso, además se proporciona cierta información como el modo de juego o el número de jugadores y espectadores en la partida. |
 
  ### HU-2: Lista de partidas jugadas (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/46)
 |Como administrador quiero que el sistema liste todas las partidas jugadas y sus participantes, para poder tener un registro y control de las partidas jugadas del sistema.| 
@@ -52,31 +52,36 @@ A continuación se definen  todas las historias de usuario a implementar:
 |Como jugador quiero que el sistema liste mis partidas creadas y jugadas, para poder llevar un registro de mis partidas.| 
 |-----|
 |![alt text](mockups/image-1.png)   ![alt text](mockups/image.png)|
-|En la pantalla principal, pasa el cursor sobre 'tu nombre de usuario' e interactúa con el desplegable para llevarte al listado de partidas. |
+|Estando en la pantalla principal, el usuario deberá hacer click sobre su nombre en la esquina superior derecha. Esto hará que aparezca un desplegable con varias opciones, entre las que se podrá distinguir 'My Games'. Se deberá seleccionar esa opción para que el usuario sea enviado a una pantalla en la que se mostrará un listado de las partidas en las que ha participado.|
 
  ### HU-4: Autenticación y gestión de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/48)
 |Como jugador, quiero poder registrarme (sign-up) añadiendo un nombre de usuario y una contraseña, así como iniciar sesión (login) y cerrar sesión (logout).| 
 |-----|
 |![alt text](mockups/image-2.png) ![alt text](mockups/image-3.png) ![alt text](mockups/image-1.png)|
-|Click en 'login' o 'sign up' para llevarte a la pantalla de inicio de sesión, para cerrar sesión, ir a la pantalla principal y selecciona 'logout' desde el desplegable.  |
+|Para registrarse el usuario debe hacer click en la opción 'Register' de la barra de navegación, esto le llevará a una pantalla en la que deberá especificar si su cuenta va a ser de jugador o de administrador. Tras eso se mostrará un formulario, que será el mismo tanto para una cuenta de jugador como para una de administrador, el usuario deberá rellenarlo con los siguiente datos: nombre de usuario, contraseña, nombre y apellidos. Tras rellenar todos los datos se presiona el botón 'Save' y el usuario habrá creado su cuenta exitosamente. 
+Para iniciar sesión en su cuenta el usuario debe seleccionar la opción 'Login' de la barra de navegación, esto le llevará a un formulario en el que se le preguntará su nombre de usuario y contraseña, el usuario deberá rellenar estos campos con los datos correspondiente y presionar el botón 'Login' para que se inicie su sesión. 
+Para cerrar sesión el usuario deberá hacer click sobre su nombre en la esuqina superior derecha, esto abrirá un desplegable cuya última opción es 'Logout', al seleccionar esa opción se llevará al usuario a una pantalla de confirmación de cierre de sesión, se deberá hacer click en el botón 'Yes' para que se cierre la sesión.|
 
  ### HU-5: Edición de perfil (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/49)
 |Como jugador quiero editar mi perfil personal, cambiando mi foto de perfil y nombre de usuario.| 
 |-----|
 |![alt text](mockups/image-1.png)  ![alt text](mockups/image-4.png)|
-|Abrir desplegable y click en 'perfil'. |
+|Habiendo iniciado sesión el usuario debe hacer click en su nombre en la esquina superior izquierda y seleccionar la opción 'Profile'. Se le llevará a una pantalla en la que el usuario podrá cambiar la imagen de su perfil, su nombre o incluso su contraseña. Para cambiar el nombre o la imagen de su perfil el usuario debe hacer click en el botón 'Editar', esto hará que tanto el nombre como la imagen del perfil sean modificables, al terminar de hacer los cambios el usuario debe pulsar el botón 'Guardar' para que los cambios tengan efecto y su perfil quede editado. Si el usuario desea cambiar la contraseña debe hacer click sobre 'Cambiar contraseña', esto hará que aparezca un modal en el que se pide la contraseña actual, la nueva y una confirmación de la nueva, al pulsar sobre 'Guardar' los cambios tomarán efecto y la contraseña se habrá actualizado satisfactoriamente.|
   
 ### HU-6: Listado de usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/50)
 |Como administrador quiero poder acceder a un listado de usuarios paginado.| 
 | ---- |
 |![alt text](mockups/image-5.png)|
-|Abrir desplegable y click en 'partidas' estando en modo administrador. |
+|Habiendo iniciado sesión como administrador el usuario debe hacer click sobre su nombre arriba a la derecha para abrir un desplegable, en el cual debe seleccionar la opción 'Users', esta opción del desplegable solo está disponible para usuarios con el rol de administrador. Una vez seleccionada, el usuario será enviado a una pantalla donde se muestran los usuarios del sistema y su nivel de autoridad.|
 
  ### HU-7: CRUD usuarios (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/51)
 |Como administrador quiero poder realizar las operaciones básicas en la base de datos de usuarios con comprobación de seguridad y borrado en cascada de datos.| 
 | ---- |
 |![alt text](mockups/image-5.png)|
-|Abrir desplegable y click en 'partidas' estando en modo administrador.|
+|Habiendo iniciado sesión como administrador, este debe hacer click sobre su nombre arriba a la derecha para abrir un desplegable, en el cual debe seleccionar la opción 'Users', esta opción del desplegable solo está disponible para usuarios con el rol de administrador. Una vez seleccionada, el administrador será enviado a una pantalla donde se muestran los usuarios del sistema. 
+Para crear un nuevo usuario el administrador debe hacer click sobre el botón con el texto 'Add user', esto le llevará a un formulario en el que se pide un nombre y contraseña para el nuevo usuario además del nivel de autoridad que tendrá, al terminar, el administrador debe pulsar el botón 'Save' para que el nuevo usuario sea creado.
+Para editar un usuario el administrador deberá pulsar el botón 'Edit', esto abrirá un formulario con los mismos campos que el de creación donde se podrán cambiar los valores de los atributos del usuario a editar, al terminar de hacer los cambios el administrador debe pulsar el botón 'Save' para que dichos cambion se hagan efectivos.
+Para eliminar un usuario el administrador debe pulsar sobre el botón 'Delete', al hacerlo la página mostrará una alerta, si se pulsa 'Aceptar' el usuario será eliminado. |
 
  ### HU-8: Sistema de espectador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/52)
 |Como jugador quiero que el sistema me permita unirme como espectador a una partida de mis amigos (todos los participantes deben ser mis amigos), para poder verlos jugar.| 
@@ -94,7 +99,7 @@ A continuación se definen  todas las historias de usuario a implementar:
 |Como jugador quiero que el sistema tenga un chat durante la partida, para poder comunicarme con el resto de jugadores.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
-|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+|Al unirse o crear una partida, a la derecha de la pantalla se puede apreciar un recuadro con el texto 'Welcome to the chat!' en la parte superior, utilizando el input de la parte inferior del recuadro se pueden enviar mensajes en el chat. |
 
  ### HU-11: Sistema de amistad (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/55)
 |Como jugador quiero que el sistema me permita agregar y gestionar amigos, para poder ver si están en línea.| 
@@ -142,7 +147,7 @@ A continuación se definen  todas las historias de usuario a implementar:
 |Como jugador quiero poder ver los logros que he conseguido, para tener una visión general de mis hazañas en el juego.| 
 |-----|
 |Mockups (prototipos en formato imagen de baja fidelidad) de la interfaz de usuario del sistema|
-|Decripción de las interacciones concretas a realizar con la interfaz de usuario del sistema para lleva a cabo la historia. |
+|Habiendo iniciado sesión, el usuario debe pulsar sobre su nombre en la esquina superior derecha, lo que hará que aparezca un desplegable, seleccionando la opción 'Profile' se mostrará el perfil del usuario y debajo una lista con los logros que posee. |
 
  ### HU-19: Logros de administrador (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/67)
 |Como administrador quiero poder crear y editar logros desde la interfaz.|
@@ -154,13 +159,13 @@ A continuación se definen  todas las historias de usuario a implementar:
 |Como jugador quiero seleccionar el modo de juego para configurar una nueva partida.| 
 |-----|
 |![alt text](mockups/image-6.png)|
-|Abre el desplegable con el cursor y selecciona el modo de juego. |
+|En la pantalla principal el usuario debe presionar el botón 'Play'. Esto le llevará a una pantalla en la que se distinguen 3 botones y el listado de partidas públicas, para crear una partida nueva el usuario debe pulsar el botón 'Create Game', eso hará que se muestre un pop-up en el que se podrán definir los ajustes de la partida. En este punto se puede ver un desplegable con el texto 'Select a Gamemode', si se hace click sobre él se desplegarán los modos de juego disponibles para que el usuario elija.|
 
  ### HU-21: Crear partida (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/69)
 |Como jugador quiero poder crear partidas para jugar a los diferentes modos de juego.| 
 |-----|
 |![alt text](mockups/image-2.png) ![alt text](mockups/image-6.png)|
-|Desde la pantalla principal, haz click en 'crear'. |
+|En la pantalla principal el usuario debe presionar el botón 'Play'. Esto le llevará a una pantalla en la que se distinguen 3 botones y el listado de partidas públicas, para crear una partida nueva el usuario debe pulsar el botón 'Create Game', eso hará que se muestre un pop-up en el que el usuario podrá definir los ajustes de la partida. Una vez haya terminado con ello, debe pulsar el botón 'Create' y será llevado directamente a la pantalla de juego. |
 
  ### HU-22: Jugar partida (https://github.com/gii-is-DP1/DP1-2024-2025--l4-02/issues/103)
 |Como jugador quiero poder empezar y jugar una partida, respetando el orden de turnos, reglas de acción y condiciones de vitoria, para poder disfrutar del juego y aprovechar todas las mecánicas de este para ganar.| 
