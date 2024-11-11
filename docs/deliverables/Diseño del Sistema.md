@@ -430,24 +430,24 @@ Como consideramos que la división en capas es fundamental y no queremos renunci
 
 ## Refactorizaciones aplicadas
 
-Si ha hecho refactorizaciones en su código, puede documentarlas usando el siguiente formato:
-
-### Refactorización X: 
-En esta refactorización añadimos un mapa de parámtros a la partida para ayudar a personalizar la información precalculada de la que partimos en cada fase del juego.
-#### Estado inicial del código
-```Java 
-class Animal
-{
-}
-``` 
-_Puedes añadir información sobre el lenguaje concreto en el que está escrito el código para habilitar el coloreado de sintaxis tal y como se especifica en [este tutorial](https://docs.github.com/es/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks)_
-
-#### Estado del código refactorizado
-
-```
-código fuente en java, jsx o javascript
-```
+### Refactorización 2: 
+En esta refactorización separamos parte del código en componentes.
 #### Problema que nos hizo realizar la refactorización
-_Ej: Era difícil añadir información para implementar la lógica de negocio en cada una de las fases del juego (en nuestro caso varía bastante)_
+_Esta necesidad surgió al empezar a complicar estos componentes, pasando de lo visual a lo funcional, puesto que el código  emnpezaba a resultar ilegible._
 #### Ventajas que presenta la nueva versión del código respecto de la versión original
-_Ej: Ahora podemos añadir arbitrariamente los datos que nos hagan falta al contexto de la partida para que sea más sencillo llevar a cabo los turnos y jugadas_
+_Ahora podmeos más fácilmente ampliar las funcionalidades de los componentes, cosa que hemos ido haciendo, sin perdernos en las líneas de nuestro propio código._
+
+### Refactorización 3: 
+En esta refactorización separamos todos los estilos en diferentes carpetas y archivos css.
+#### Problema que nos hizo realizar la refactorización
+_Al principio, el css de nuestros componenets era bastante corto y simple, por lo que creamos un único archivo para todos ellos. Con el tiempo sin embargo, este archivo llegó a tener varios cientos de líneas de longitud y, aunque estaban searados los componentes por comentarios, empezaba a ser insostenible, antes incluso de añadir todos los estilos necesarios para el proyecto._
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+_Ahora los estilos son más fácilmente editables, sin tener que buscar el componente en el que trabajas entre otros muchos._
+
+### Refactorización 4: 
+En esta refactorización rehicimos por completo el sistema de drag and drop de cartas.
+#### Problema que nos hizo realizar la refactorización
+_Comenzamos creando un sistema basado en la propiedad draggable de html. Este sistema habría funcionado perfectamente si las cartas no tuviesen que rotar al colocarse en el tablero. Sin embargo el "espectro" que se creaba al arrastrar las cartas era completamente inmóvil y era difícilmete modificable, sobre todo si pretendíamos animarlo. Además, no encontramos ninguna librería o tutorial que permitiese hacer lo que queríamos hacer, por lo que nos vimos obligados a crear el sistema desde cerp, controlando todas las interacciones con JavaScript, lo que terminó resultando uno de los mayores retos del frontend de este proyecto, si no el mayor._ 
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+_Podemos animar la rotación de cartas al pasar por encima de una posición del tablero en la que puedan ser colocadas._
+
