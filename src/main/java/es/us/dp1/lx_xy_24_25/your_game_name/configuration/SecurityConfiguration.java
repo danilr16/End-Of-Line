@@ -72,7 +72,6 @@ public class SecurityConfiguration {
 			.requestMatchers(HttpMethod.GET, "/api/v1/users/games").authenticated()
 			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/myProfile").authenticated()
 			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/myProfile/update-password").authenticated()
-			.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUser").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games/**")).authenticated()

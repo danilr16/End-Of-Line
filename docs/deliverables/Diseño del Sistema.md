@@ -16,7 +16,7 @@ Cuando uno de los jugadores no puede colocar alguna de las dos cartas, se consid
 
 Los jugadores disponen de 3 puntos de energía, los cuales no se podrán utilizar hasta la cuarta ronda. Estos puntos de energía permiten utilizar poderes que proporcionarán al jugador cierta ventaja estratégica durante la ronda en la que se activen, solo se puede gastar un punto de energía por ronda, los poderes quedan recogidos en el siguiente listado:
 
-* **Acelerón:** permite colocar tres cartas en lugar de una
+* **Acelerón:** permite colocar tres cartas en lugar de dos
 * **Frenazo:** permite colocar una carta en lugar de dos
 * **Marcha atrás:** permite continuar el flujo por la penúltima carta que se colocó, en lugar de por la última carta
 * **Gas extra:** permite añadir una carta más a la mano del jugador durante una ronda
@@ -525,24 +525,97 @@ De forma **muy resumida**, la parte visual del sistema funciona gracias a un ele
 
 ## Refactorizaciones aplicadas
 
-Si ha hecho refactorizaciones en su código, puede documentarlas usando el siguiente formato:
+### Refactorización 1: 
 
-### Refactorización X: 
-En esta refactorización añadimos un mapa de parámtros a la partida para ayudar a personalizar la información precalculada de la que partimos en cada fase del juego.
+En esta refactorización se eliminaron controladores y funciones innecesarios que se implementaron temporalmente para facilitar la prueba de rutas en el backend y se ajustaron los permisos de las APIs restantes.
+
 #### Estado inicial del código
+
 ```Java 
-class Animal
+class SecurityConfiguration
 {
+    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
+	.requestMatchers(HttpMethod.GET, "/api/v1/users/games").authenticated()
+	.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUser").authenticated()
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
+	.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
+	.requestMatchers(HttpMethod.GET, "/api/v1/games/current").authenticated()
+	.requestMatchers(HttpMethod.GET, "/api/v1/games/createdGame").authenticated()
+	.requestMatchers(HttpMethod.GET, "/api/v1/games/*").authenticated()
+	.requestMatchers(HttpMethod.POST, "/api/v1/games").authenticated()
+	.requestMatchers(HttpMethod.PATCH, "/api/v1/games/{gameCode}/joinAsPlayer").authenticated()
+	.requestMatchers(HttpMethod.PATCH, "/api/v1/games/{gameCode}/joinAsSpectators").authenticated()
+	.requestMatchers(HttpMethod.PATCH, "/api/v1/games/{gameCode}/startGame").authenticated()
+	.requestMatchers(HttpMethod.GET, "/api/v1/achievements/myAchievement").authenticated()
+	.requestMatchers(HttpMethod.PUT, "/api/v1/users/update/{id}").authenticated()
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/players")).authenticated()
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/achievements")).hasAuthority(ADMIN)
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+	.anyRequest().authenticated()
 }
-``` 
-_Puedes añadir información sobre el lenguaje concreto en el que está escrito el código para habilitar el coloreado de sintaxis tal y como se especifica en [este tutorial](https://docs.github.com/es/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks)_
+```
+
+```Java
+class PackCardRestController
+{
+    private final PackCardService service;
+    @Autowired
+	public PackCardRestController(PackCardService packCardService) {
+		this.service = packCardService;
+	}
+    
+    @GetMapping
+	public ResponseEntity<List<PackCard>> findAll() {
+		List<PackCard> res = (List<PackCard>) service.findAll();
+        return new ResponseEntity<>(res,HttpStatus.OK);
+	}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<PackCard> create(@RequestBody @Valid PackCard packCard){
+        PackCard savedPackCard = service.savePackCard(packCard);
+        return new ResponseEntity<>(savedPackCard,HttpStatus.CREATED);
+    }
+    @PutMapping(value = "{packCardId}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<PackCard> update(@PathVariable("packCardId") Integer id, @RequestBody @Valid PackCard packCard) {
+		RestPreconditions.checkNotNull(service.findPackCard(id), "PackCard", "ID", id);
+		return new ResponseEntity<>(this.service.updatePackCard(packCard, id), HttpStatus.OK);
+	}
+    @DeleteMapping(value = "{packCardId}")
+	@ResponseStatus(HttpStatus.OK)
+	public ResponseEntity<MessageResponse> delete(@PathVariable("packCardId") int id) {
+		RestPreconditions.checkNotNull(service.findPackCard(id), "PackCard", "ID", id);
+		service.deletePackCard(id);
+		return new ResponseEntity<>(new MessageResponse("PackCard deleted!"), HttpStatus.OK);
+	}
+}
+```
+Como la clase **PackCardRestController** había otras iguales, con los mismos métodos, para cada una de las entidades.
 
 #### Estado del código refactorizado
 
-```
-código fuente en java, jsx o javascript
+Las clases **RestController** mencionadas fueron eliminadas.
+
+```Java
+class SecurityConfiguration 
+{
+    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
+	.requestMatchers(HttpMethod.GET, "/api/v1/users/games").authenticated()
+    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
+	.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
+    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games/**")).authenticated()
+	.requestMatchers(HttpMethod.GET, "/api/v1/achievements/myAchievement").authenticated()
+    .requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/achievements/**")).hasAuthority(ADMIN)
+	.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+	.anyRequest().authenticated()
+}
 ```
 #### Problema que nos hizo realizar la refactorización
-_Ej: Era difícil añadir información para implementar la lógica de negocio en cada una de las fases del juego (en nuestro caso varía bastante)_
+
+Eran clases y métodos innecesarios que debían ser borrados y los permisos de las rutas se volvieron enrevesados y a veces se pisaban unos con otros.
+
 #### Ventajas que presenta la nueva versión del código respecto de la versión original
-_Ej: Ahora podemos añadir arbitrariamente los datos que nos hagan falta al contexto de la partida para que sea más sencillo llevar a cabo los turnos y jugadas_
+
+Configuración del acceso a las rutas más limpio y por tanto fácil de leer y evitamos tener código inncesario con la eliminación de las clases RestController.

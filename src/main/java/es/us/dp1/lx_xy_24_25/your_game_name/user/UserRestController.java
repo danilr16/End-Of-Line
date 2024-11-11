@@ -20,7 +20,6 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.jwt.JwtUtils;
@@ -60,7 +58,6 @@ class UserRestController {
 	private final AuthoritiesService authService;
 	private final PlayerService playerService;
 	private final PasswordEncoder encoder;
-	private final JwtUtils jwtUtils;
 
 	@Autowired
 	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService,
@@ -69,7 +66,6 @@ class UserRestController {
 		this.authService = authService;
 		this.playerService = playerService;
 		this.encoder = encoder;
-		this.jwtUtils = jwtUtils;
 	}
 
 	@GetMapping
@@ -100,12 +96,6 @@ class UserRestController {
 		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p))
 				.flatMap(List::stream).collect(Collectors.toList());
 		return new ResponseEntity<>(games, HttpStatus.OK);
-	}
-
-	@GetMapping("/currentUser")
-	public ResponseEntity<User> findCurrentUser() {
-		User user = userService.findCurrentUser();
-		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	@PostMapping
