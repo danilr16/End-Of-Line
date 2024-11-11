@@ -369,8 +369,6 @@ classDiagram
 ### Diagrama de Capas (incluyendo Controladores, Servicios y Repositorios)
 _En esta sección debe proporcionar un diagrama UML de clases que describa el conjunto de controladores, servicios, y repositorios implementados, incluya la división en capas del sistema como paquetes horizontales tal y como se muestra en el siguiente ejemplo:_
 
-![your-UML-diagram-name](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/gii-is-DP1/group-project-seed/main/docs/diagrams/LayerDiagramUMLEOL.iuml)
-
 ![Diagrama-de-capas](http://www.plantuml.com/plantuml/png/ZPLTRjim3CVVTGgkBqiViXCCHPkWw084NP5q1z1iDXKcIu4ajpE6tdqX57kCGqVhGoDBFrhy-9E-ZKc7r3PMVQhnnJY4pVto-UxnONqFbTKnAhNNrI-zGxXw2XZH9PsCTx3M7OOh-AC0WDayw0Ot6DFIknIyjHX6m8-8uI9mLxqQVCC6NHfn7yoNHHkDmnXXxNUckkJD5iERgL2yfK67Bid4KeTQFlcctSJ9qy6zQRidIrxAPy_wfyLfqoLQAvzGFYT2RDEh3oOPZ3AmyU_z0K_j1gDlGuNn9AjP3SVoxNqqoOUEZev_S_Y-9s5e-vMO6pY8gLvqj7QwmTas1UDsq1wVhvdXmdkBsW7-DZ75eitqPQjwjd89TnZ0r9nU9GoKO4RVMRle-XHr_LNwi24QKksOQNxChixe7v2JsVA3fOlLe9GrXlRnFB8awDxLyqj8vQMt4rDCqzh4T4BIUfjqmfMR3OUqSI1s_J9UNxwGLlbLIryFyUoEpqBE-01WKPs1r2uN2UhK0d7is0ALoyqPIID3oAIG77KsdEKVsDEFe9AX-GlnehKN2Ufe0Q3k_WnBxnnML9q8By4tS3xE8NcG1giwd-em_pA_uVDrag7kA36Kdp95rImmGogBO2vycViVXazdHV4MyZ39y97DqMBA56iQWPO-TzoauAya7r4e9A3HvqCnZS2yzkykwuPDB3NsZg72D2XPaECCPGKS4DfZ21FMWD0UGxXS62RC3yKgmy2yop2kL4vAqq1HJ8KucNR693jY1eDg6Kbx33dCan5nEc986FGf2KvRMH3LFzc8IXZbLMHutuzuNj42CseP8Vyi1sM8zafGuKAMKjPeszHPZEeMNTqszYy0)
 
 _El diagrama debe especificar además las relaciones de uso entre controladores y servicios, entre servicios y servicios, y entre servicios y repositorios._
