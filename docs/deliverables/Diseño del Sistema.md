@@ -367,14 +367,8 @@ classDiagram
 ```
 
 ### Diagrama de Capas (incluyendo Controladores, Servicios y Repositorios)
-_En esta sección debe proporcionar un diagrama UML de clases que describa el conjunto de controladores, servicios, y repositorios implementados, incluya la división en capas del sistema como paquetes horizontales tal y como se muestra en el siguiente ejemplo:_
 
-![your-UML-diagram-name](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/gii-is-DP1/group-project-seed/main/docs/diagrams/LayersUMLPackageDiagram.iuml)
-
-_El diagrama debe especificar además las relaciones de uso entre controladores y servicios, entre servicios y servicios, y entre servicios y repositorios._
-_Tal y como se muestra en el diagrama de ejemplo, para el caso de los repositorios se deben especificar las consultas personalizadas creadas (usando la signatura de su método asociado)._
-
-_En este caso, como mermaid no soporta la definición de paquetes, hemos usado una [herramienta muy similar llamada plantUML}(https://www.plantuml.com/). Esta otra herramienta tiene un formulario para visualizar los diagramas previamente disponible en [https://www.plantuml.com/plantuml/uml/}(https://www.plantuml.com/plantuml/uml/). Lo que hemos hecho es preparar el diagrama en ese formulario, y una vez teníamos el diagrama lista, grabarlo en un fichero aparte dentro del propio repositorio, y enlazarlo con el formulario para que éste nos genera la imagen del diagrama usando una funcionalizad que nos permite especificar el código del diagrama a partir de una url. Por ejemplo, si accedes a esta url verás el editor con el código cargado a partir del fichero del repositorio original: [http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/gii-is-DP1/group-project-seed/main/docs/diagrams/LayersUMLPackageDiagram.iuml](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/gii-is-DP1/group-project-seed/main/docs/diagrams/LayersUMLPackageDiagram.iuml)._
+![Diagrama-de-capas](http://www.plantuml.com/plantuml/png/ZPLTRjim3CVVTGgkBqiViXCCHPkWw084NP5q1z1iDXKcIu4ajpE6tdqX57kCGqVhGoDBFrhy-9E-ZKc7r3PMVQhnnJY4pVto-UxnONqFbTKnAhNNrI-zGxXw2XZH9PsCTx3M7OOh-AC0WDayw0Ot6DFIknIyjHX6m8-8uI9mLxqQVCC6NHfn7yoNHHkDmnXXxNUckkJD5iERgL2yfK67Bid4KeTQFlcctSJ9qy6zQRidIrxAPy_wfyLfqoLQAvzGFYT2RDEh3oOPZ3AmyU_z0K_j1gDlGuNn9AjP3SVoxNqqoOUEZev_S_Y-9s5e-vMO6pY8gLvqj7QwmTas1UDsq1wVhvdXmdkBsW7-DZ75eitqPQjwjd89TnZ0r9nU9GoKO4RVMRle-XHr_LNwi24QKksOQNxChixe7v2JsVA3fOlLe9GrXlRnFB8awDxLyqj8vQMt4rDCqzh4T4BIUfjqmfMR3OUqSI1s_J9UNxwGLlbLIryFyUoEpqBE-01WKPs1r2uN2UhK0d7is0ALoyqPIID3oAIG77KsdEKVsDEFe9AX-GlnehKN2Ufe0Q3k_WnBxnnML9q8By4tS3xE8NcG1giwd-em_pA_uVDrag7kA36Kdp95rImmGogBO2vycViVXazdHV4MyZ39y97DqMBA56iQWPO-TzoauAya7r4e9A3HvqCnZS2yzkykwuPDB3NsZg72D2XPaECCPGKS4DfZ21FMWD0UGxXS62RC3yKgmy2yop2kL4vAqq1HJ8KucNR693jY1eDg6Kbx33dCan5nEc986FGf2KvRMH3LFzc8IXZbLMHutuzuNj42CseP8Vyi1sM8zafGuKAMKjPeszHPZEeMNTqszYy0)
 
 ## Descomposición del mockups del tablero de juego en componentes
 
@@ -419,7 +413,7 @@ Describir porqué era interesante aplicar el patrón.
 ## Decisiones de diseño
 _En esta sección describiremos las decisiones de diseño que se han tomado a lo largo del desarrollo de la aplicación que vayan más allá de la mera aplicación de patrones de diseño o arquitectónicos._
 
-### Decisión X
+### Sistema de rotación de carta
 #### Descripción del problema:*
 
 Describir el problema de diseño que se detectó, o el porqué era necesario plantearse las posibilidades de diseño disponibles para implementar la funcionalidad asociada a esta decisión de diseño.
@@ -432,43 +426,102 @@ Especificar las distintas alternativas que se evaluaron antes de seleccionar el 
 Describir porqué se escogió la solución adoptada. Si se considera oportuno puede hacerse en función de qué  ventajas/inconvenientes de cada una de las soluciones consideramos más importantes.
 Os recordamos que la decisión sobre cómo implementar las distintas reglas de negocio, cómo informar de los errores en el frontend, y qué datos devolver u obtener a través de las APIs y cómo personalizar su representación en caso de que sea necesario son decisiones de diseño relevantes.
 
-_Ejemplos de uso de la plantilla con otras decisiones de diseño:_
-
-### Decisión 1: Importación de datos reales para demostración
+### Decisión 1: Sistema de rotación de cartas:
 #### Descripción del problema:
 
-Como grupo nos gustaría poder hacer pruebas con un conjunto de datos reales suficientes, porque resulta más motivador. El problema es al incluir todos esos datos como parte del script de inicialización de la base de datos, el arranque del sistema para desarrollo y pruebas resulta muy tedioso.
+Este es el aspecto de una carta cualquiera de End of Line:
+
+![Carta](./images/image-1.png)
+
+Para la lógica de juego era esencial pensar un sistema para determinar cómo una carta se puede conectar a la siguiente según su rotación. Decidimos llamar a estas posiciones Inputs (si la flecha apunta hacia el centro de la carta) y Outputs (si la flecha apunta hacia fuera de la carta). Tras analizar las cartas del juego, observamos que todas las cartas tienen sólo una Input que se sitúa en la posición de abajo.
 
 #### Alternativas de solución evaluadas:
 
-*Alternativa 1.a*: Incluir los datos en el propio script de inicialización de la BD (data.sql).
+*Alternativa 1.a*: Definir Inputs y Outputs como coordenadas absolutas
 
 *Ventajas:*
-•	Simple, no requiere nada más que escribir el SQL que genere los datos.
-*Inconvenientes:*
-•	Ralentiza todo el trabajo con el sistema para el desarrollo. 
-•	Tenemos que buscar nosotros los datos reales
+Permitiría una interpretación directa de las posiciones de conexión de cada carta sin depender de su rotación, simplificando el cálculo de conexiones.
 
-*Alternativa 1.b*: Crear un script con los datos adicionales a incluir (extra-data.sql) y un controlador que se encargue de leerlo y lanzar las consultas a petición cuando queramos tener más datos para mostrar.
-*Ventajas:*
-•	Podemos reutilizar parte de los datos que ya tenemos especificados en (data.sql).
-•	No afecta al trabajo diario de desarrollo y pruebas de la aplicación
 *Inconvenientes:*
-•	Puede suponer saltarnos hasta cierto punto la división en capas si no creamos un servicio de carga de datos. 
-•	Tenemos que buscar nosotros los datos reales adicionales
+Requiere almacenar todas las posiciones posibles en un estado "sin rotación" y recalcular todas al aplicar cualquier giro, lo cual consume recursos innecesarios y complica el diseño.
 
-*Alternativa 1.c*: Crear un controlador que llame a un servicio de importación de datos, que a su vez invoca a un cliente REST de la API de datos oficiales de XXXX para traerse los datos, procesarlos y poder grabarlos desde el servicio de importación.
+*Alternativa 1.b*: Usar una lista para Inputs y Outputs, con ajuste dinámico mediante un atributo de rotación
 
 *Ventajas:*
-•	No necesitamos inventarnos ni buscar nosotros lo datos.
-•	Cumple 100% con la división en capas de la aplicación.
-•	No afecta al trabajo diario de desarrollo y pruebas de la aplicación
-*Inconvenientes:*
-•	Supone mucho más trabajo. 
-•	Añade cierta complejidad al proyecto
+Reduce la información necesaria a almacenar en cada carta al limitar los datos a una lista de Outputs y un Input fijo. Al aplicar la rotación, es posible recalcular dinámicamente las conexiones sin alterar la base de datos.
 
-*Justificación de la solución adoptada*
-Como consideramos que la división en capas es fundamental y no queremos renunciar a un trabajo ágil durante el desarrollo de la aplicación, seleccionamos la alternativa de diseño 1.c.
+*Inconvenientes:*
+Requiere realizar operaciones de rotación cada vez que se consultan las conexiones, lo que introduce un cálculo adicional, aunque mínimo.
+
+*Alternativa 1.c*: Incluir un mapeo predefinido de conexiones para cada posible rotación de carta
+
+*Ventajas:*
+Facilitaría el acceso rápido a las posiciones de Input y Output en función de la rotación, evitando cálculos dinámicos.
+
+*Inconvenientes:*
+Necesita más espacio de almacenamiento, ya que habría que predefinir y guardar todas las posiciones posibles para cada rotación, resultando en una mayor complejidad en la configuración inicial.
+
+*Justificación de la solución adoptada:*
+Tras varias lluvias de ideas, determinamos que la forma más eficiente de organizar este sistema sería colocando sólo una lista para Outputs en los atributos de cada carta (“outputs”), puesto que el Input siempre se situará en la misma posición. Cada Output es un número entero del 0 al 3, ordenándose en cada una de las direcciones cardinales de la carta en sentido horario, estando el 0 en la posición de abajo. Esta lista tomaría la forma de [2, 3] para la carta del ejemplo. Como las cartas pueden ser rotadas, también tenemos un atributo “rotation” cuyo rango también es del 0 al 3, representando cada incremento de éste un giro de 90º. Para calcular los outputs y el input final de cada carta basta simplemente con sumarle a cada Input y Output el atributo rotation, y hacerle el módulo en base 4. Este cálculo es dinámico y no se guarda en la base de datos, puesto que con tener el atributo de rotation siempre se podrá calcular.
+
+Aquí se muestra una representación visual completa del sistema explicado:
+
+![Diagrama](./images/image-0.png)
+
+### Decisión 2: Cálculo posiciones posibles:
+#### Descripción del problema:
+
+Inicialmente, el diseño preveía una solicitud `PATCH` desde el cliente al backend cada vez que un jugador intentaba colocar una carta en el tablero. En este flujo, el cliente proporcionaba la posición deseada de la carta y el backend verificaba si esta era legal. Si la posición no era válida, se rechazaba la solicitud con un error y se solicitaba al cliente otro intento.
+
+Este enfoque presentaba varios inconvenientes. La verificación de cada posición desde el backend generaba latencia en la respuesta, lo que impactaba negativamente la experiencia del usuario. Idealmente, el cliente debería ser capaz de identificar de antemano si una posición es válida, evitando enviar solicitudes erróneas al backend. Sin embargo, para implementar esta funcionalidad, se requeriría realizar cálculos de posiciones válidas directamente en el frontend, en un entorno bidimensional. Esto implicaría una refactorización significativa del componente `Board`, dado que actualmente solo funciona con índices y no con coordenadas. Además, React no está optimizado para realizar cálculos de esta naturaleza.
+
+#### Alternativas de solución evaluadas:
+
+*Alternativa 1.a*: Mantener la validación en el backend con solicitudes `PATCH` para cada intento de colocación
+
+*Ventajas:*
+Evita la necesidad de refactorizar el frontend y el backend.
+
+*Inconvenientes:*
+Todas las previamente mencionadas.
+
+*Alternativa 1.b*: Implementar cálculos de posiciones válidas en el frontend
+
+*Ventajas:*
+El cliente podría identificar inmediatamente si un movimiento es válido, mejorando la experiencia del usuario.
+
+*Inconvenientes:*
+Exige una refactorización importante del componente `Board`, además de sobrecargar al frontend con cálculos en 2D para los que React no está optimizado.
+
+*Alternativa 1.c*: Calcular posiciones posibles en el backend y enviar una lista de posiciones válidas al frontend
+
+Esta alternativa surgió al continuar el desarrollo y percatarnos de que el backend necesita una función para calcular **todos** los movimientos posibles de un jugador.
+
+*Ventajas:*
+Optimiza la comunicación entre frontend y backend al permitir que el cliente conozca de antemano las posiciones legales para el siguiente turno. Esto reduce las solicitudes innecesarias y permite resaltar visualmente las posiciones válidas en la interfaz de usuario. Además facilita la validación del `PATCH`.
+
+*Inconvenientes:*
+Requiere almacenar y actualizar la lista de posiciones posibles para cada jugador en cada turno, lo cual añade un paso adicional en el cálculo de posibles movimientos.
+
+*Justificación de la solución adoptada:*
+Conforme continuó el desarrollo del proyecto caímos en cuenta que es necesaria una función en el backend que calcule los movimientos posibles de un jugador para, si no tuviera movimientos posibles, marcarlo como que ha perdido la partida. Esta función fue la clave para resolver el problema. Sólo sería necesario tener un atributo por jugador, una lista de “posiciones posibles” para el siguiente turno, y pasarle esta información al frontend para que éste no realice peticiones PATCH con posiciones que no se encuentren en la lista. Y así en el backend, para determinar si la posición es válida, sólo tenemos que comprobar si la posición enviada por el frontend se encuentra en la lista de posiciones posibles. Además podemos usar esta lista para resaltar de forma visual las posiciones posibles en la interfaz de usuario.
+
+_Ejemplos de uso de la plantilla con otras decisiones de diseño:_
+
+### Decisión 3: Sistema de drag and drop
+#### Descripción del problema:
+
+*(Para este problema no se escogió entre alternativas como tal. Simplemente, a falta de confianza en nuestras habilidades, se implementaron todas las alternativas de más simple a más compleja, hasta que fueramos incapaces de mejorar más el sistema o implementáramos el objetivo final, que era la funcionalidad completa de drag and drop.)*
+
+Inicialmente, hubo un debate dentro del equipo sobre si implementar o no una funcionalidad de drag and drop para que los jugadores pudieran arrastrar y soltar las cartas en el tablero. Algunos miembros expresaron su desacuerdo, sugiriendo que sería mejor un enfoque en el cual las cartas se seleccionaran y rotaran manualmente, y luego se colocaran mediante un click en la posición deseada. Estos miembros argumentaban que drag and drop podía ser demasiado complejo de implementar y que agregar rotación al proceso de arrastre podría ser problemático a nivel técnico puesto que ninguno de los miembros tenemos experiencia previa real con React.
+
+A pesar de estas preocupaciones, el equipo decidió probar un drag and drop básico utilizando el atributo draggable de HTML. Esta implementación inicial logró que las cartas pudieran moverse, pero tenía demasiadas limitaciones. En primer lugar, el diseño no se integraba bien visualmente con el resto de la interfaz de usuario y no cumplía con las expectativas en términos de experiencia de usuario. Además, la rotación de las cartas durante el arrastre, que es una funcionalidad esencial para la experiencia del juego, era imposible de añadir con esta implementación.
+
+Finalmente, se logró implementar una funcionalidad de drag and drop visualmente atractiva y funcional sin recurrir a ninguna librería externa, que permite que las cartas roten automáticamente al arrastrarse sobre las casillas, creando una experiencia de usuario intuitiva y fluida. 
+
+De forma **muy resumida**, la parte visual del sistema funciona gracias a un elemento por cada carta llamado ``CardOverlay`` de posición ``fixed``, que se encarga de toda la representación visual de la carta. A este elemento, cuando no se está arrastrando su carta correspondiente, se le pasa la posición absoluta en el *viewport* de la carta real (que es invisible) dentro de la mano del jugador. Cuando se arrastra, la posición que se le pasa cambia a la posición del ratón, y mediante una serie de complejos cálculos y uso de *animationFrames* se le aplica una animación suave y satisfactoria. 
+
+*(Este sistema se explicará con más detenimiento en el documento de diseño completo, en la sección para propuestas de A+)* 
 
 ## Refactorizaciones aplicadas
 
