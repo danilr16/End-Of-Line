@@ -117,7 +117,18 @@ class GameRestController {
     public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
-            //Aquí se añade logica de partida (orden,rondas,etc)
+            switch (game.getGameMode()) {
+                case PUZZLE_SINGLE:
+                    gameService.gameInProcessSingle(game);
+                case PUZZLE_COOP:
+                    gameService.gameInProcessCoop(game);
+                case TEAM_BATTLE:
+                    gameService.gameInProcessTeam(game);
+                case VERSUS:
+                    gameService.gameInProcess(game);
+                default:
+                    break;
+            }
         }
         return new ResponseEntity<>(game,HttpStatus.OK);
     }
@@ -206,7 +217,7 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/placeCard")// Falta por añadir una comprobación para no poder colocar una carta en cualquier momento, solo en tu turno
+    @PatchMapping("/{gameCode}/placeCard")
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer f, Integer c) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
         Card savedCard = cardService.findCard(cardId);
         Game game = gameService.findGameByGameCode(gameCode);
@@ -228,7 +239,12 @@ class GameRestController {
             || !game.getGameState().equals(GameState.IN_PROCESS) || !player.getState().equals(PlayerState.PLAYING)) {
             throw new AccessDeniedException("You can't place this card");
         }
-        Card lastPlacedCard = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size()-1));
+        
+        Card lastPlacedCard = cardService.getLastPlaced(player);
+        Player turnOfPlayer = playerService.findPlayer(game.getTurn());
+        if (!turnOfPlayer.equals(player) || !(player.getCardsPlayedThisTurn() < 2)) {
+            throw new AccessDeniedException("You can't place this card, because it's not your turn");
+        }
         if (!cardService.checkLineToPlaceCard(savedCard, lastPlacedCard, game.getTable(), player, f, c)) {
             throw new UnfeasibleToPlaceCard();
         }
@@ -236,6 +252,7 @@ class GameRestController {
         hand.setNumCards(hand.getNumCards() - 1);
         handService.updateHand(hand, hand.getId());
         player.getPlayedCards().add(savedCard.getId());
+        player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() + 1);
         playerService.updatePlayer(player, player.getId());
         cell.setCard(savedCard);
         cell.setIsFull(true);
@@ -248,7 +265,7 @@ class GameRestController {
         return null; //Aquí se añade el uso de poderes
     }
 
-    @PatchMapping("/{gameCode}/rotateCard")
+    @PatchMapping("/{gameCode}/rotateCard")//Si se va a rotar la carta automaticamente esto hay que borrarlo
     public ResponseEntity<MessageResponse> rotateCard(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer rotation) throws InvalidRotation {
         if (rotation < 0) {
             throw new InvalidRotation();
@@ -282,6 +299,27 @@ class GameRestController {
         Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
         gameService.takeACard(player);
         return new ResponseEntity<>(new MessageResponse("You have taken a card successfully"), HttpStatus.ACCEPTED);
+    }
+
+    @PatchMapping("/{gameCode}/changeInitialHand")//Permite cambiar tu mano inicial, en tu turno y en la primera ronda
+    public ResponseEntity<MessageResponse> changeInitialHand(@PathVariable("gameCode") @Valid String gameCode) {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't change your hand, because you aren't in this game");
+        }
+        if (game.getGameState().equals(GameState.IN_PROCESS)) {
+            if (game.getNTurn() == 1 && playerService.findPlayer(game.getTurn()).equals(player) 
+                && !player.getState().equals(PlayerState.LOST) && !player.getHandChanged()) {
+                gameService.changeInitialHand(player);
+            } else {
+                throw new AccessDeniedException("You can't change your hand");
+            }
+        } else {
+            throw new AccessDeniedException("You can't change your hand, because this game isn't in process");
+        }
+        return new ResponseEntity<>(new MessageResponse("You have changed your initial hand successfully"), HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{gameCode}/chat")
