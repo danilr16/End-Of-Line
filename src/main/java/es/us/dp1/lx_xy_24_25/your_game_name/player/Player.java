@@ -52,11 +52,11 @@ public class Player extends BaseEntity{
 
     List<Integer> playedCards;
 
-    LocalDateTime turnStarted;
+    LocalDateTime turnStarted; //Fecha de inicio de mi turno
 
-    Boolean handChanged;
+    Boolean handChanged; //Cambio inicial de la mano
 
-    Integer cardsPlayedThisTurn;
+    Integer cardsPlayedThisTurn; //Numero de cartas jugadas esta ronda
 
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
