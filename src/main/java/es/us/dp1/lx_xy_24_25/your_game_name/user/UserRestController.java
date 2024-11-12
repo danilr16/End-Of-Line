@@ -146,6 +146,11 @@ class UserRestController {
 
 	}
 
+	@GetMapping("/currentUser")
+	public ResponseEntity<User> findCurrentUser() {
+		User user = userService.findCurrentUser();
+		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
 	
   @PatchMapping("/myProfile/update-password")
      public ResponseEntity<User> updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {

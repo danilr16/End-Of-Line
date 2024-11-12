@@ -33,7 +33,13 @@ export default function Profile() {
     
 
 
-    const user = tokenService.getUser();
+    const [user, setUser] = useFetchState(
+        [],
+        '/api/v1/users/currentUser',
+        jwt,
+        setMessage,
+        setVisible
+    );
 
     const [achievements,setAchievements] = useFetchState(
         [],
@@ -94,7 +100,7 @@ export default function Profile() {
             console.log("Response", response);
             if (response.ok) {
                 const updatedUserData = await response.json();
-                tokenService.setUser(updatedUserData);
+                setUser(updatedUserData);
                 setMessage('Perfil actualizado con éxito');
                 setIsEditing(false);
                 if (newUsername && newUsername !== user.username) {
