@@ -53,11 +53,11 @@ public class Game extends BaseEntity {
 
     LocalDateTime started;
 
-    Integer turn;
+    Integer turn; //Id del jugador que tiene el turno
 
-    List<Integer> orderTurn;
+    List<Integer> orderTurn; //Lista de ids de jugadores, representa el orden de los turnos de la ronda actual
 
-    List<Integer> initialTurn;
+    List<Integer> initialTurn; //Lista de ids de jugadores, representa el orden de los turnos de la primera ronda
 
     @Enumerated(EnumType.STRING)
     GameMode gameMode;

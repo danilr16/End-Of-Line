@@ -151,7 +151,7 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/joinAsSpectator")
+    @PatchMapping("/{gameCode}/joinAsSpectator")// No comprueba ahora mismo que seas amigo de todos los players
     public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode") @Valid String gameCode) {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
@@ -283,7 +283,7 @@ class GameRestController {
         }
         List<Integer> newOutputs = savedCard.getOutputs().stream()
             .map(o -> (o + rotation) % 4).collect(Collectors.toList());
-        Integer newInput = rotation + savedCard.getRotation();
+        Integer newInput = (rotation + savedCard.getRotation()) % 4;
         savedCard.setRotation((rotation + savedCard.getRotation()) % 4);
         savedCard.setOutput(Output.of(newOutputs, newInput));
         savedCard.setOutputs(newOutputs);
