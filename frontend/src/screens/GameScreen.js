@@ -67,10 +67,7 @@ export default function GameScreen() {
 
     const onDrop = (index) => {
         if (beingDraggedCardRef.current !== null) {
-            const dropSound = new Audio('/sounds/anvil.mp3');
-            dropSound.play().catch(error => {
-                console.error("Error playing sound:", error);
-            });
+            
             
     
             const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
