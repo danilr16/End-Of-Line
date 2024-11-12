@@ -67,20 +67,23 @@ export default function GameScreen() {
 
     const onDrop = (index) => {
         if (beingDraggedCardRef.current !== null) {
+            
+            
+    
             const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
             const iconName = handCards[droppedCardIndex].props.iconName;
             const rowIndex = Math.floor(index / gridSize);
             const colIndex = index % gridSize;
-
+    
             setBoardItems(prevBoardItems => {
                 const newBoardItems = [...prevBoardItems];
                 newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />;
                 return newBoardItems;
             });
-
+    
             // Add the card to usedCards set
             setUsedCards(prev => new Set(prev).add(droppedCardIndex));
-
+    
             setBeingDraggedCard(null); // Reset the dragged card
         }
     };
