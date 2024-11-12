@@ -592,9 +592,6 @@ class PackCardRestController
 }
 ```
 Como la clase **PackCardRestController** había otras iguales, con los mismos métodos, para cada una de las entidades.
-
-#### Estado del código refactorizado
-
 Las clases **RestController** mencionadas fueron eliminadas.
 
 ```Java
@@ -619,3 +616,25 @@ Eran clases y métodos innecesarios que debían ser borrados y los permisos de l
 #### Ventajas que presenta la nueva versión del código respecto de la versión original
 
 Configuración del acceso a las rutas más limpio y por tanto fácil de leer y evitamos tener código inncesario con la eliminación de las clases RestController.
+
+
+### Refactorización 2: 
+En esta refactorización separamos parte del código en componentes.
+#### Problema que nos hizo realizar la refactorización
+_Esta necesidad surgió al empezar a complicar estos componentes, pasando de lo visual a lo funcional, puesto que el código  emnpezaba a resultar ilegible._
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+_Ahora podmeos más fácilmente ampliar las funcionalidades de los componentes, cosa que hemos ido haciendo, sin perdernos en las líneas de nuestro propio código._
+
+### Refactorización 3: 
+En esta refactorización separamos todos los estilos en diferentes carpetas y archivos css.
+#### Problema que nos hizo realizar la refactorización
+_Al principio, el css de nuestros componenets era bastante corto y simple, por lo que creamos un único archivo para todos ellos. Con el tiempo sin embargo, este archivo llegó a tener varios cientos de líneas de longitud y, aunque estaban searados los componentes por comentarios, empezaba a ser insostenible, antes incluso de añadir todos los estilos necesarios para el proyecto._
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+_Ahora los estilos son más fácilmente editables, sin tener que buscar el componente en el que trabajas entre otros muchos._
+
+### Refactorización 4: 
+En esta refactorización rehicimos por completo el sistema de drag and drop de cartas.
+#### Problema que nos hizo realizar la refactorización
+_Comenzamos creando un sistema basado en la propiedad draggable de html. Este sistema habría funcionado perfectamente si las cartas no tuviesen que rotar al colocarse en el tablero. Sin embargo el "espectro" que se creaba al arrastrar las cartas era completamente inmóvil y era difícilmete modificable, sobre todo si pretendíamos animarlo. Además, no encontramos ninguna librería o tutorial que permitiese hacer lo que queríamos hacer, por lo que nos vimos obligados a crear el sistema desde cerp, controlando todas las interacciones con JavaScript, lo que terminó resultando uno de los mayores retos del frontend de este proyecto, si no el mayor._ 
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+_Podemos animar la rotación de cartas al pasar por encima de una posición del tablero en la que puedan ser colocadas._
