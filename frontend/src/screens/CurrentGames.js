@@ -119,6 +119,7 @@ export default function CurrentGames(){
                     gameCode={gameCode}
                     setGameCode={setGameCode}
                     closeModal={closeJoinModal}
+                    jwt={jwt}
                 />
             )}
         </>

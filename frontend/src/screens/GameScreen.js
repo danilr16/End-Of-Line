@@ -142,10 +142,12 @@ export default function GameScreen() {
     useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])
     useEffect(() => {
         if (!game) return;
-        
         if (game.players) {
             setPlayers(game.players);
         }
+
+
+
         const gameMode = game.gameMode;
 
         switch (gameMode) {
@@ -182,6 +184,16 @@ export default function GameScreen() {
     }, [game, updateColors]);
 
     useEffect(() => {
+        if (game && players && game.numPlayers && user && user.username) {
+            const isPlayerInGame = players.some(player => player.username === user.username);
+            
+            if (!isPlayerInGame && players.length < game.numPlayers) {
+                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
+            }
+        }
+    }, [players]);
+
+    useEffect(() => {
         const updateGridItemSize = () => {
             if (gridRef.current) {
                 const itemSize = gridRef.current.clientWidth / gridSize;
@@ -200,6 +212,8 @@ export default function GameScreen() {
         };
     }, [gridSize, game]);
 
+
+
     if (!game) {
         return (
             <div className="half-screen">
@@ -207,9 +221,6 @@ export default function GameScreen() {
             </div>
         );
     }
-
-
-    
 
     return (
         <div className="full-screen">
