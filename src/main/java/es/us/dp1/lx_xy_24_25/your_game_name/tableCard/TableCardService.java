@@ -133,8 +133,8 @@ public class TableCardService {
                 Cell cell = cells.get(col);
                 if (cell.getCard() != null && cell.getCard().getId().equals(card.getId())) {
                     Map<String, Integer> position = new HashMap<>();
-                    position.put("x", row + 1); 
-                    position.put("y", col + 1); 
+                    position.put("x", col + 1); 
+                    position.put("y", row + 1); 
                     return position;
                 }
             }
@@ -147,25 +147,23 @@ public class TableCardService {
     }
 
     @Transactional
-    public List<Map<String, Integer>> getPossiblePositionsForPlayer(TableCard tableCard, Player player) {
-        Card lastPlacedCard = cardService.getLastPlaced(player); 
-        
-        Map<String, Integer> lastPlacedPos = getPositionOfCard(tableCard, lastPlacedCard);
+    public List<Map<String, Integer>> getPossiblePositionsForPlayer(TableCard tableCard, Player player, Card placedCard) {
+        Map<String, Integer> lastPlacedPos = getPositionOfCard(tableCard, placedCard);
 
         List<Map<String, Integer>> rotationToVector = RotationVectors.createRotationToVector();
 
         List<Map<String,Integer>> possiblePositions = new ArrayList<>();
 
-        for (Integer outputIndex : lastPlacedCard.getOutputs()) {
-            Map<String, Integer> vector = rotationToVector.get((outputIndex+lastPlacedCard.getRotation())%4);
+        for (Integer outputIndex : placedCard.getOutputs()) {
+            Map<String, Integer> vector = rotationToVector.get(outputIndex);
     
             int newX = Math.floorMod(lastPlacedPos.get("x") + vector.get("x")-1,tableCard.getNumRow())+1;
             int newY = Math.floorMod(lastPlacedPos.get("y") + vector.get("y")-1,tableCard.getNumColum())+1;
     
-            if (getCellAt(tableCard, newX, newY).getIsFull() == false) {
+            if (getCellAt(tableCard, newY, newX).getIsFull() == false) {
                 Map<String, Integer> newPosition = new HashMap<>();
                 newPosition.put("position", getCellIndexFromPosition(tableCard, newX, newY));
-                newPosition.put("rotation",(outputIndex+lastPlacedCard.getRotation()+2)%4);
+                newPosition.put("rotation",(outputIndex+2)%4);
                 possiblePositions.add(newPosition);
             }
         }
