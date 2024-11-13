@@ -3,7 +3,6 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -31,20 +30,19 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Row;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.RowService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
-import io.micrometer.core.ipc.http.HttpSender.Response;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -64,12 +62,13 @@ class GameRestController {
     private final PackCardService packCardService;
     private final CardService cardService;
     private final CellService cellService;
+    private final RowService rowService;
 
     @Autowired
     public GameRestController(GameService gameService, UserService userService, 
         PlayerService playerService, HandService handService, 
         TableCardService tableService, PackCardService packCardService, CardService cardService,
-        CellService cellService){
+        CellService cellService, RowService rowService){
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
@@ -78,6 +77,7 @@ class GameRestController {
         this.packCardService = packCardService;
         this.cardService = cardService;
         this.cellService = cellService;
+        this.rowService = rowService;
     }
 
     @InitBinder("game")
@@ -295,7 +295,10 @@ class GameRestController {
         // A continuación comprobamos que la posición de la carta está entre las posibles
         Boolean cardCanBePlaced = false; 
         for(Map<String, Integer> position: possiblePositions){
-            if(position.get("position").equals(index)) cardCanBePlaced = true; 
+            if(position.get("position").equals(index)) {
+                cardCanBePlaced = true; 
+                break;
+            }
         }
 
         if(!cardCanBePlaced) throw new UnfeasibleToPlaceCard();
@@ -309,12 +312,23 @@ class GameRestController {
         currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
         playerService.updatePlayer(currentPlayer, currentPlayer.getId());
         Integer c = Math.floorMod(index, currentTable.getNumColum());
-        Integer f = null; //calcular fila a partir del index.
+        Integer f = (index - 1) / currentTable.getNumColum() + 1; //calcular fila a partir del index.
         Cell cell = currentTable.getRows().get(f-1).getCells().get(c-1);
         cell.setCard(cardToPlace);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
         //ACTUALIZAR LA TABLA 
+        //Primero actualizamos la fila: 
+        Row currentRow = currentTable.getRows().get(f-1); //COMPROBAR SI EL INDICE EMPIEZA EN CERO O EN 1
+        List<Cell> celdsInRow = currentRow.getCells();
+        celdsInRow.set(c-1, cell);
+        currentRow.setCells(celdsInRow);
+        rowService.saveRow(currentRow);
+        //Actualizamos la tabla
+        List<Row> rowsInTable = currentTable.getRows();
+        rowsInTable.set(f-1, currentRow); 
+        currentTable.setRows(rowsInTable);
+        tableService.saveTableCard(currentTable);
 
         return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
