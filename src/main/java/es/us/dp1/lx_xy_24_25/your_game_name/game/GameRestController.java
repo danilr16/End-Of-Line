@@ -16,6 +16,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageRespons
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidRotation;
@@ -122,8 +123,9 @@ class GameRestController {
 
 
     @GetMapping(value = "{gameCode}")
-    public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
+    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
+        GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
             switch (game.getGameMode()) {
                 case PUZZLE_SINGLE:
@@ -138,7 +140,7 @@ class GameRestController {
                     break;
             }
         }
-        return new ResponseEntity<>(game,HttpStatus.OK);
+        return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
 
     @PatchMapping("/{gameCode}/joinAsPlayer")
@@ -268,7 +270,7 @@ class GameRestController {
         return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
 
-    @PatchMapping("/{gameCode}/placeCard")
+    @PatchMapping("/{gameCode}/placeCard2")
     public ResponseEntity<MessageResponse> placeCardRefactorized(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard{
         Card cardToPlace = cardService.findCard(cardId);
         Game currentGame = gameService.findGameByGameCode(gameCode);
@@ -292,7 +294,7 @@ class GameRestController {
             throw new InvalidIndexOfTableCard("The number of the index cant be superior to:" + currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow());
         }
 
-        List<Map<String, Integer>> possiblePositions = tableService.getPossiblePositionsForPlayer(currentTable, currentPlayer);
+        List<Map<String, Integer>> possiblePositions = tableService.getPossiblePositionsForPlayer(currentTable, currentPlayer, cardToPlace);
         // A continuación comprobamos que la posición de la carta está entre las posibles
         Boolean cardCanBePlaced = false; 
         for(Map<String, Integer> position: possiblePositions){
