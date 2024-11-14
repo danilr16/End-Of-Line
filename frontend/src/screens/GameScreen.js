@@ -9,6 +9,7 @@ import { GameCardIcon } from '../components/GameCardIcon';
 import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
 import ChatBox from "../components/ChatBox";
+import InGamePlayerList from "../components/InGamePlayerList";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -68,9 +69,6 @@ export default function GameScreen() {
 
     const onDrop = (index) => {
         if (beingDraggedCardRef.current !== null) {
-            
-            
-    
             const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
             const iconName = handCards[droppedCardIndex].props.iconName;
             const rowIndex = Math.floor(index / gridSize);
@@ -185,22 +183,7 @@ export default function GameScreen() {
     return (
         <div className="full-screen">
             <div className="half-screen">
-                <div className="player-list-container">
-                    <ul className="player-list">
-                        <h5 style={{ color: "white" }}>
-                            Players:
-                        </h5>
-
-                        {players.map((player, index) => (
-                            <div className="player-container" key={index}>
-                                <div>
-                                    <p className="player-container-text">{player.user.username}</p>
-                                </div>
-                            </div>
-                        ))}
-
-                    </ul>
-                </div>
+                <InGamePlayerList players = {players}/>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
                 <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
             </div>

@@ -1,6 +1,7 @@
 import useFetchState from "../util/useFetchState";
 import {  useEffect, useState, useRef } from "react";
 import request from "../util/request";
+import "../static/css/components/chatBox.css"
 
 
 
