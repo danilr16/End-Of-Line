@@ -29,11 +29,13 @@ export const ColorProvider = ({ children }) => {
         if (!matchGamePath) {
             setColors(defaultColors);
         }
+    },[location.pathname])
 
+    useEffect(() => {
         document.documentElement.style.setProperty('--br-c-light', colors.light);
         document.documentElement.style.setProperty('--br-c-normal', colors.normal);
         document.documentElement.style.setProperty('--br-c-dark', colors.dark);
-    }, [colors, location.pathname]); 
+    }, [colors]); 
 
     return (
         <ColorContext.Provider value={{ colors, updateColors }}>

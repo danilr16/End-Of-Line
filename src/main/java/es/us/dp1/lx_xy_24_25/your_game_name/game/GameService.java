@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.Comparator;
@@ -22,8 +23,11 @@ import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import java.time.Duration;
+import java.util.Collections;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,15 +38,17 @@ public class GameService {
     private HandService handService;
     private PlayerService playerService;
     private CardService cardService;
+    private TableCardService tableCardService;
 
     @Autowired
     public GameService(GameRepository gameRepository, PackCardService packCardService, HandService handService
-        ,PlayerService playerService, CardService cardService){
+        ,PlayerService playerService, CardService cardService, TableCardService tableCardService){
         this.gameRepository = gameRepository;
         this.packCardService = packCardService;
         this.handService = handService;
         this.playerService = playerService;
         this.cardService = cardService;
+        this.tableCardService = tableCardService;
     }
 
     @Transactional(readOnly = true)
@@ -109,32 +115,13 @@ public class GameService {
 
     @Transactional
     public void initialTurn(Game game) {//Decide el turno inicial de partida
-        List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
-            .filter(p -> !game.getOrderTurn().contains(p.getId()))
-            .collect(Collectors.toList());
-        List<Card> cards = new ArrayList<>();
-        for (Player player: players) {
-            Card card = this.takeACard(player);
-            cards.add(card);
-        }
-        cards.sort(Comparator.comparing(Card::getIniciative));
-        Integer minIniciative = cards.stream().findFirst().get().getIniciative();
-        Integer aux = cards.size();
-        for (int i = cards.size()-1;i >= 0; i--) {
-            Card card = cards.get(i);
-            if (card.getIniciative() != minIniciative) {
-                game.getOrderTurn().add(0, card.getPlayer().getId());
-                aux--;
-            }
-        }
-        if (aux == 1) {
-            Card card = cards.stream().findFirst().get();
-            game.setTurn(card.getPlayer().getId());
-            game.getOrderTurn().add(0, card.getPlayer().getId());
-            List<Integer> initialTurn = new ArrayList<>(game.getOrderTurn());
-            game.setInitialTurn(initialTurn);
-            this.updateGame(game, game.getId());
-        }
+        List<Integer> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
+            .map(p -> p.getId()).collect(Collectors.toList());
+        Collections.shuffle(players);
+        game.setTurn(players.stream().findFirst().get());
+        game.setOrderTurn(players);
+        game.setInitialTurn(players);
+        this.updateGame(game, game.getId());
     }
 
     @Transactional
@@ -218,8 +205,22 @@ public class GameService {
         }
     }
 
-    public Boolean cantContinuePlaying(Game game, Player playing) {
-        return false;//si el jugador no tiene acciones posibles actuales y no puede usar poder
+    public Boolean cantContinuePlaying(Game game, Player playing) {//si el jugador no tiene acciones posibles actuales y no puede usar poder
+        TableCard tableCard = game.getTable();
+        Card lastPlaced = cardService.getLastPlaced(playing);
+        List<Map<String,Integer>> possiblePositions = tableCardService.getPossiblePositionsForPlayer(tableCard, playing, lastPlaced);
+        if (possiblePositions.isEmpty() && playing.getEnergy() == 0) {
+            return true;
+        } else if (possiblePositions.isEmpty()) {
+            Card possibleGoBack = cardService.findCard(playing.getPlayedCards().get(playing.getPlayedCards().size()-2));
+            if (tableCardService.getPossiblePositionsForPlayer(tableCard, playing, possibleGoBack).isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Transactional
@@ -256,21 +257,17 @@ public class GameService {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            if (game.getTurn() == null) {
-                initialTurn(game);
-            } else {
-                for (Player player : players) {
-                    this.returnCards(player);
-                    for (int i = 1; i <= 5; i++) {
-                        this.takeACard(player);
-                    }
+            initialTurn(game);
+            for (Player player : players) {
+                for (int i = 1; i <= 5; i++) {
+                    this.takeACard(player);
                 }
-                Player start = playerService.findPlayer(game.getTurn());
-                start.setTurnStarted(LocalDateTime.now());
-                playerService.updatePlayer(start, start.getId());
-                game.setNTurn(1);
-                this.updateGame(game, game.getId());
             }
+            Player start = playerService.findPlayer(game.getTurn());
+            start.setTurnStarted(LocalDateTime.now());
+            playerService.updatePlayer(start, start.getId());
+            game.setNTurn(1);
+            this.updateGame(game, game.getId());
         } else {
             if (players.size() == 1) {
                 Player winner = players.stream().findFirst().get();

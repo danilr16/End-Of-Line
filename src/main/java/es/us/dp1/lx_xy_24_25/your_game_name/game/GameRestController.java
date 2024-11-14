@@ -27,6 +27,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
@@ -334,7 +335,7 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/useEnergy")
-    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode) {
+    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid PowerType powerType) {
         return null; //Aquí se añade el uso de poderes
     }
 

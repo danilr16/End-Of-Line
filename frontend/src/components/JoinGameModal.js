@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import "../static/css/components/modal.css";
+import { useNavigate } from 'react-router-dom';
+import request from '../util/request';
 
-export default function JoinGameModal({gameCode, setGameCode,closeModal}){
+export default function JoinGameModal({gameCode, setGameCode,closeModal,jwt}){
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
 
     const handleChange = (e) => {
@@ -13,8 +16,9 @@ export default function JoinGameModal({gameCode, setGameCode,closeModal}){
     const handleSubmit = (e) => {
         e.preventDefault();
         if (/^[A-Za-z]{5}$/.test(gameCode)) {
-            console.log('Game Code submitted:', gameCode);
-            setError('To be implemented.');
+            const game =request(`/api/v1/games/${gameCode.toUpperCase()}`,"GET",null,jwt)
+            if(game) navigate(`/game/${gameCode.toUpperCase()}`)
+            else setError('That room does not exist');
 
         } else {
             setError('Please enter exactly 5 letters.');

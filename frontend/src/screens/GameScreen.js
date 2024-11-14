@@ -8,6 +8,8 @@ import GameCard from "../components/GameCard";
 import { GameCardIcon } from '../components/GameCardIcon';
 import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
+import ChatBox from "../components/ChatBox";
+import InGamePlayerList from "../components/InGamePlayerList";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -71,21 +73,21 @@ export default function GameScreen() {
             const iconName = handCards[droppedCardIndex].props.iconName;
             const rowIndex = Math.floor(index / gridSize);
             const colIndex = index % gridSize;
-
+    
             setBoardItems(prevBoardItems => {
                 const newBoardItems = [...prevBoardItems];
                 newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />;
                 return newBoardItems;
             });
-
+    
             // Add the card to usedCards set
             setUsedCards(prev => new Set(prev).add(droppedCardIndex));
-
+    
             setBeingDraggedCard(null); // Reset the dragged card
         }
     };
 
-    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])
+    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])//Borrar
     useEffect(() => {
         
         if (!game) return;
@@ -93,59 +95,19 @@ export default function GameScreen() {
         document.body.style.overflow = "hidden";
     });
 
-    const [input, setInput] = useState('');
-    const [chat, setChat] = useFetchState(
-        [],
-        `/api/v1/games/${gameCode}/chat`,
-        jwt
-    );
-    const chatEndRef = useRef(null);
-    const MAX_MESSAGES = 75; //Numero maximo de mensajes que se mostrarán en el chat
-
     useEffect(() => {
         if (user) {
             setUser(user)
         }
     }, [user])
 
-    useEffect(() => {
-        if(chatEndRef.current) {
-            chatEndRef.current.scrollTop = chatEndRef.current.scrollHeight;
-        }
-    }, [chat]) //Esto es para que cuando se envíe un mensaje es scroll se vaya para abajo automáticamente
-
-
-    const handleSendMessage = async () => {
-        if (input.trim() === '') {
-            return; //Para que no se envíen mensajes vacíos
-        }
-        console.log(JSON.stringify({userName: user.username, messageString:input}))
-
-        const newChat = (await request(`/api/v1/games/${gameCode}/chat`,'PATCH',{userName:user.username, messageString:input},jwt)).resContent;
-
-        try{
-            setChat(newChat.slice(-MAX_MESSAGES))
-        }
-        catch(e){
-            return;
-        } 
-        
-        setInput('');
-    }
-
-    const handlePressKey = (e) => {
-        if (e.key === 'Enter') {
-            handleSendMessage();
-        }
-    }
-
-    useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])
+    useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])//Borrar
     useEffect(() => {
         if (!game) return;
-        
         if (game.players) {
             setPlayers(game.players);
         }
+
         const gameMode = game.gameMode;
 
         switch (gameMode) {
@@ -188,7 +150,7 @@ export default function GameScreen() {
                 setGridItemSize(itemSize * 0.9);
             }
         };
-      
+
         updateGridItemSize();
         const handleResize = () => {
             updateGridItemSize();
@@ -200,6 +162,16 @@ export default function GameScreen() {
         };
     }, [gridSize, game]);
 
+    useEffect(() => { //Join on entering screen
+        if (game && players && game.numPlayers && user && user.username) {
+            const isPlayerInGame = players.some(player => player.username === user.username);
+            
+            if (!isPlayerInGame && players.length < game.numPlayers) {
+                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
+            }
+        }
+    }, [players]);
+
     if (!game) {
         return (
             <div className="half-screen">
@@ -208,51 +180,12 @@ export default function GameScreen() {
         );
     }
 
-
-    
-
     return (
         <div className="full-screen">
             <div className="half-screen">
-                <div className="player-list-container">
-                    <ul className="player-list">
-                        <h5 style={{ color: "white" }}>
-                            Players:
-                        </h5>
-
-                        {players.map((player, index) => (
-                            <div className="player-container" key={index}>
-                                <div>
-                                    <p className="player-container-text">{player.user.username}</p>
-                                </div>
-                            </div>
-                        ))}
-
-                    </ul>
-                </div>
+                <InGamePlayerList players = {players}/>
                 <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
-                <div className="chat-container">
-                    <div className="chat">
-                        
-
-                        <div className="message-container" ref={chatEndRef}>
-                            <span style={{ color: "grey"}}>Welcome to the chat! </span>
-                            {chat.map((chatMessage, index) => (
-                                <div key={index} className="chat-message">
-                                    [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>
-                                </div>
-                            ))}
-                        </div>
-                        <input className="message-input"
-                            type="text"
-                            placeholder="Send your message..."
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handlePressKey}
-                            maxLength={500}
-                        />
-                    </div>
-                </div>
+                <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
             </div>
             <div className="bottom-container">
                 <div className="card-container">
