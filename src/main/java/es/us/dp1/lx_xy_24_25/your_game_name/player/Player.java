@@ -58,6 +58,8 @@ public class Player extends BaseEntity{
 
     Integer cardsPlayedThisTurn; //Numero de cartas jugadas esta ronda
 
+    Boolean energyUsedThisRound;
+
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
     Hand hand;
@@ -90,6 +92,9 @@ public class Player extends BaseEntity{
         }
         if (cardsPlayedThisTurn == null) {
             cardsPlayedThisTurn = 0;
+        }
+        if (energyUsedThisRound == null) {
+            energyUsedThisRound = false;
         }
     }
 

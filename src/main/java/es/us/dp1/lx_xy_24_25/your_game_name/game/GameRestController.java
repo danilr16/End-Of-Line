@@ -263,7 +263,32 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/useEnergy")
     public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid PowerType powerType) {
-        return null; //Aquí se añade el uso de poderes
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't use energy, because you aren't in this game");
+        }
+        if (!game.getGameState().equals(GameState.IN_PROCESS) || game.getNTurn() < 3 
+            || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
+            throw new AccessDeniedException("You can't use energy right now");
+        }
+        switch (powerType) {
+            case ACCELERATE:
+                gameService.useAccelerate(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BRAKE:
+                gameService.useBrake(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BACK_AWAY:
+                gameService.useBackAway(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case EXTRA_GAS:
+                gameService.useExtraGas(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            default:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PatchMapping("/{gameCode}/rotateCard")//Si se va a rotar la carta automaticamente esto hay que borrarlo
