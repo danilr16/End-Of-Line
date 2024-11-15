@@ -70,6 +70,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/rules" element={<Rules />} />
         <Route path="/test" element={<MyGames />} />
+        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  
         
       </>
     )
@@ -82,10 +83,8 @@ function App() {
         <Route path="/rules" element={<Rules />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/games/current" element={<CurrentGames />} />
-        <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} /> 
-        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} /> 
-
-
+        <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} />
+        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  
       </>
   )
   }

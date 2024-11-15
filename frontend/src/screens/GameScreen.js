@@ -1,7 +1,7 @@
 import {  useEffect, useState, useRef } from "react";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import { useColors } from "../ColorContext";
 import Board from "../components/Board";
 import GameCard from "../components/GameCard";
@@ -13,6 +13,7 @@ import InGamePlayerList from "../components/InGamePlayerList";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
+    const navigate = useNavigate();
     const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
@@ -96,6 +97,9 @@ export default function GameScreen() {
     });
 
     useEffect(() => {
+        if(!jwt){
+            navigate("/login")
+        }
         if (user) {
             setUser(user)
         }
@@ -164,21 +168,27 @@ export default function GameScreen() {
 
     useEffect(() => { //Join on entering screen
         if (game && players && game.numPlayers && user && user.username) {
-            const isPlayerInGame = players.some(player => player.username === user.username);
-            
-            if (!isPlayerInGame && players.length < game.numPlayers) {
+            const isPlayerInGame = players.some(player => player.user.username === user.username);
+            const isSpectatorInGame = game.spectators.some(sp => sp.user.username === user.username);
+
+            if (!isPlayerInGame && players.length < game.numPlayers) { //join as player if possible
                 request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
+            }
+            else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
+                request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);
             }
         }
     }, [players]);
 
-    if (!game) {
+    if (!game && jwt) {
         return (
             <div className="half-screen">
                 <p className="myGames-title">Cargando partida...</p>
             </div>
         );
     }
+
+
 
     return (
         <div className="full-screen">

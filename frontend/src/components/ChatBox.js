@@ -1,29 +1,32 @@
-import useFetchState from "../util/useFetchState";
 import {  useEffect, useState, useRef } from "react";
 import request from "../util/request";
 import "../static/css/components/chatBox.css"
 
 
-
-
 export default function ChatBox({gameCode,user,jwt}){
     const [input, setInput] = useState('');
 
-    const [chat, setChat] = useFetchState(
-        [],
-        `/api/v1/games/${gameCode}/chat`,
-        jwt
-    );
+    const [chat, setChat] = useState([]);
+
+    useEffect(() => {
+        async function fetchChat() {
+            if (!jwt) return; 
+            const response = await request(`/api/v1/games/${gameCode}/chat`, 'GET', null, jwt);
+            setChat(response.resContent);
+        }
+        fetchChat();
+    }, [jwt]); 
+    
 
     const chatEndRef = useRef(null);
 
-    const MAX_MESSAGES = 75; //Numero maximo de mensajes que se mostrarán en el chat
+    const MAX_MESSAGES = 75; 
 
     useEffect(() => {
         if(chatEndRef.current) {
             chatEndRef.current.scrollTop = chatEndRef.current.scrollHeight;
         }
-    }, [chat]) //Esto es para que cuando se envíe un mensaje es scroll se vaya para abajo automáticamente
+    }, [chat]) 
     
 
 
@@ -58,7 +61,7 @@ export default function ChatBox({gameCode,user,jwt}){
 
                         <div className="message-container" ref={chatEndRef}>
                             <span style={{ color: "grey"}}>Welcome to the chat! </span>
-                            {chat.map((chatMessage, index) => (
+                            {chat && chat.map((chatMessage, index) => (
                                 <div key={index} className="chat-message">
                                     [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>
                                 </div>
