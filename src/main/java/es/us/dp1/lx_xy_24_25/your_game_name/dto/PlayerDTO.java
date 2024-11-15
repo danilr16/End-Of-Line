@@ -20,6 +20,10 @@ public class PlayerDTO {
     private  Hand hand;
     private List<PackCard> packCards;
 
+    public PlayerDTO(){
+        
+    }
+
     public PlayerDTO(Integer score,Integer energy,PlayerState playerState,UserDTO user,
     List<Integer> playedCards,LocalDateTime turnStarted,Boolean handChanged,
     Integer cardsPlayedThisTurn,Hand hand,List<PackCard> packCards){

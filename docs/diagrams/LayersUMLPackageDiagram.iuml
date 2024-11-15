@@ -97,6 +97,9 @@ RowService -down-> RowRepository
 ' Internal Business Logic Layer connections
 GameService -down-> PackCardService
 GameService -down-> HandService
+GameService -down-> PlayerService
+GameService -down-> CardService
+GameService -down-> TableCardService
 PackCardService -down-> CardService
 PackCardService -down-> PlayerService
 TableCardService -down-> CellService
@@ -105,7 +108,4 @@ TableCardService -down-> PlayerService
 TableCardService -down-> RowService
 
 ' Styles
-
-
-
 @enduml

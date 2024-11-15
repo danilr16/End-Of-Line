@@ -30,6 +30,10 @@ public class GameDTO {
     private GameMode gameMode;
     private GameState gameState;
 
+    public GameDTO(){
+        
+    }
+
     public GameDTO( String gameCode, Boolean isPublic, Integer numPlayers,Integer turn,
         Integer duration, List<Integer> orderTurn, List<Integer> initialTurn,List<UserDTO> spectators,
         List<PlayerDTO> players, TableCard tableCard, UserDTO host, GameMode gameMode, GameState gameState ){

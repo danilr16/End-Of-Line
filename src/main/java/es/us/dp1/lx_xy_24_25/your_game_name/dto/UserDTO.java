@@ -12,6 +12,7 @@ public class UserDTO {
     private Authorities authorities;
     private List<String> friendsName;
 
+    public UserDTO(){}
 
     public UserDTO(String username,Authorities authorities, List<String> friendsName){
         this.username = username;
