@@ -300,6 +300,10 @@ public class GameService {
 
     @Transactional
     public void useAccelerate(Player player) {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() - 1);
+        playerService.updatePlayer(player, player.getId());
 
     }
 
@@ -318,6 +322,10 @@ public class GameService {
 
     @Transactional
     public void useExtraGas(Player player) {
-        
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        this.takeACard(player);
+        playerService.updatePlayer(player, player.getId());
+
     }
 }
