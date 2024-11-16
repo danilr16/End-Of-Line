@@ -31,8 +31,13 @@ public class SpringSecurityWebAuxTestConfiguration {
                         new SimpleGrantedAuthority("VET"))
         );
 
+        UserDetailsImpl playerActiveUser = new UserDetailsImpl(1, "player", "password",
+        		Arrays.asList(
+                        new SimpleGrantedAuthority("PLAYER"))
+        );
+
         return new InMemoryUserDetailsManager(Arrays.asList(
-        		ownerActiveUser, adminActiveUser, vetActiveUser
+        		ownerActiveUser, adminActiveUser, vetActiveUser, playerActiveUser
         ));
     }
 }

@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
-import es.us.dp1.lx_xy_24_25.your_game_name.configuration.jwt.JwtUtils;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,7 +60,7 @@ class UserRestController {
 
 	@Autowired
 	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService,
-			PasswordEncoder encoder, JwtUtils jwtUtils) {
+			PasswordEncoder encoder) {
 		this.userService = userService;
 		this.authService = authService;
 		this.playerService = playerService;
@@ -110,7 +109,7 @@ class UserRestController {
 	public ResponseEntity<User> update(@PathVariable("userId") Integer id, @RequestBody @Valid User user) {
 		RestPreconditions.checkNotNull(userService.findUser(id), "User", "ID", id);
 		return new ResponseEntity<>(this.userService.updateUser(user, id), HttpStatus.OK);
-	}// Cambiar para que usuario pueda editar solo su propio nombre y contraseña
+	}
 
 	@DeleteMapping(value = "{userId}")
 	@ResponseStatus(HttpStatus.OK)
@@ -141,7 +140,6 @@ class UserRestController {
 			toUpdate.setImage(newImage);
 		}
 		userService.updateUser(toUpdate, id);
-		userService.saveUser(toUpdate);
 		return new ResponseEntity<>(toUpdate, HttpStatus.OK);
 
 	}
@@ -181,7 +179,6 @@ class UserRestController {
              throw new AccessDeniedException("The new password can't be the same as the old password!");
          }
          userService.updateUser(toUpdate, id);
-         userService.saveUser(toUpdate);
          return new ResponseEntity<>(toUpdate, HttpStatus.OK);
 
      }
