@@ -87,6 +87,12 @@ public class GameService {
 		return toUpdate;
     }
 
+    @Transactional
+    public void deleteGame(Integer id) {
+        Game toDelete = this.findGame(id);
+        this.gameRepository.delete(toDelete);
+    }
+
 
     @Transactional(readOnly = true)
     public List<ChatMessage> getGameChat(String gameCode){

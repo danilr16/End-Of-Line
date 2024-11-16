@@ -1,6 +1,6 @@
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
 INSERT INTO authorities(id,authority) VALUES (1,'ADMIN');
-INSERT INTO appusers(id,username,password,authority) VALUES (1,'admin1','$2a$10$nMmTWAhPTqXqLDJTag3prumFrAJpsYtroxf0ojesFYq0k4PmcbWUS',1);
+INSERT INTO appusers(id,username,image,password,authority) VALUES (1,'admin1','https://cdn-icons-png.flaticon.com/512/3135/3135768.png','$2a$10$nMmTWAhPTqXqLDJTag3prumFrAJpsYtroxf0ojesFYq0k4PmcbWUS',1);
 
 -- Ten player users, named player1 with passwor 0wn3r
 INSERT INTO authorities(id,authority) VALUES (2,'PLAYER');

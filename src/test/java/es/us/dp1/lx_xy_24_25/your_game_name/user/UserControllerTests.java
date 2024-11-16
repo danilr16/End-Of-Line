@@ -273,11 +273,9 @@ class UserControllerTests {
 	@Test
 	@WithMockUser("player")
 	void shouldReturnAllGames() throws Exception {
-		Player player = createValidPlayer();
-		Game game = createValidGame(player);
+		List<Game> games = createValidGames();
 		when(userService.findCurrentUser()).thenReturn(user);
-		when(userService.findAllPlayerByUser(user)).thenReturn(List.of(player));
-		when(playerService.findAllGameByPlayer(player)).thenReturn(List.of(game));
+		when(userService.findAllGamesByUserHost(any(User.class))).thenReturn(games);
 
 		mockMvc.perform(get(BASE_URL + "/games"))
 				.andExpect(status().isOk())
@@ -287,8 +285,7 @@ class UserControllerTests {
 				.andExpect(jsonPath("$[?(@.id == 1)].host.username").value(user.getUsername()));
 
 		verify(userService, times(1)).findCurrentUser();
-		verify(userService, times(1)).findAllPlayerByUser(user);
-    	verify(playerService, times(1)).findAllGameByPlayer(player);
+		verify(userService, times(1)).findAllGamesByUserHost(any(User.class));
 	}
 
 	@Test
@@ -390,7 +387,9 @@ class UserControllerTests {
 		return player;
 	}
 
-	public Game createValidGame(Player player) {
+	public List<Game> createValidGames() {
+		List<Game> games = new ArrayList<>();
+		Player player = createValidPlayer();
 		Game game = new Game();
 		game.setId(1);
 		game.setGameCode("ZYXWV");
@@ -399,6 +398,7 @@ class UserControllerTests {
 		game.setNumPlayers(1);
 		game.setIsPublic(false);
 		game.setPlayers(List.of(player));
-		return game;
+		games.add(game);
+		return games;
 	}
 }
