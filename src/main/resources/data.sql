@@ -30,3 +30,6 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
 
+INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',0,0,'ABCDE','WAITING');
+INSERT INTO app_hands(id,num_cards) VALUES (1,0);
+INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn,energy_used_this_round,hand_changed,score,state) VALUES (1,1,1,4,3,0,false,false,0,'PLAYING');
