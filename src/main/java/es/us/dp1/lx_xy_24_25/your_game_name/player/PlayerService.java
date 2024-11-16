@@ -40,6 +40,11 @@ public class PlayerService {
 	}
 
 	@Transactional
+	public Iterable<Player> findAll() {
+		return this.playerRepository.findAll();
+	}
+
+	@Transactional
 	public Player saveUserPlayerbyUser(User u,Hand h) {
 		Player p = new Player();
 		p.setUser(u);

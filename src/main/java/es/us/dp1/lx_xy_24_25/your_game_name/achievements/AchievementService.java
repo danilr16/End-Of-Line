@@ -1,28 +1,29 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Optional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.UserRepository;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import jakarta.validation.Valid;
 
 @Service
 public class AchievementService {
 
     private AchievementRepository repository;
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
-    public AchievementService(AchievementRepository repository, UserRepository userRepository){
+    public AchievementService(AchievementRepository repository, UserService userService){
         this.repository = repository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -51,14 +52,20 @@ public class AchievementService {
 
     @Transactional
 	public void deleteAchievement(Integer id) {
-		Achievement toDelete = findAchievement(id);
+		Achievement toDelete = this.findAchievement(id);
+        List<User> users = ((List<User>)this.userService.findAll()).stream().filter(u -> u.getAchievements().contains(toDelete))
+            .collect(Collectors.toList());
+        for (User user:users) {
+            user.getAchievements().remove(toDelete);
+            this.userService.updateUser(user, user.getId());
+        }
 		this.repository.delete(toDelete);
 	}
 
     @Transactional(readOnly = true)
     public List<Achievement> findAchievementByUserId(Integer userId) {
-    Optional<User> o = this.userRepository.findById(userId);
-    return o.get().getAchievements();
+    User user = this.userService.findUser(userId);
+    return user.getAchievements();
 }
 
 
