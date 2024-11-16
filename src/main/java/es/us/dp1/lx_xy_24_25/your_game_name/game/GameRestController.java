@@ -1,5 +1,10 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,15 +12,17 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
-import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidRotation;
@@ -24,25 +31,18 @@ import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.util.List;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RequestBody;
-import jakarta.validation.Valid;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
-import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/v1/games")
@@ -161,6 +161,7 @@ class GameRestController {
             && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
                 Hand initialUserHand = handService.saveVoidHand();
                 Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
+                userPlayer.setState(PlayerState.SPECTATING);
                 game.getSpectators().add(userPlayer);
                 gameService.updateGame(game, game.getId());
                 return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
@@ -192,12 +193,17 @@ class GameRestController {
     public ResponseEntity<MessageResponse> leaveAsPlayer(@PathVariable("gameCode") @Valid String gameCode) {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
-        if (game.getGameState().equals(GameState.IN_PROCESS) &&
-            game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST)).anyMatch(p -> p.getUser().equals(user))) {
-                Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+        if (game.getPlayers().stream().anyMatch(p -> p.getUser().equals(user))){
+            Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get(); 
+            if(game.getGameState().equals(GameState.WAITING)){
+                game.players.remove(player);
+                playerService.deletePlayer(player);
+                }
+            else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
                 player.setState(PlayerState.LOST);
                 playerService.updatePlayer(player, player.getId());
-                return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
+            }
+            return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't leave this game");
         }
@@ -207,12 +213,11 @@ class GameRestController {
     public ResponseEntity<MessageResponse> leaveAsSpectator(@PathVariable("gameCode") @Valid String gameCode) {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
-        if (game.getGameState().equals(GameState.IN_PROCESS) &&
-            game.getSpectators().stream().filter(p -> !p.getState().equals(PlayerState.LOST)).anyMatch(p -> p.getUser().equals(user))) {
-                Player player = game.getSpectators().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
-                player.setState(PlayerState.LOST);
-                playerService.updatePlayer(player, player.getId());
-                return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
+        if (game.getSpectators().stream().anyMatch(p -> p.getUser().equals(user))) {
+            Player player = game.getSpectators().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+            game.spectators.remove(player);
+            playerService.deletePlayer(player);
+            return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't leave this game");
         }
