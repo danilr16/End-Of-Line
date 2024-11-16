@@ -5,11 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
-import jakarta.validation.Valid;
+
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import jakarta.validation.Valid;
 
 @Service
 public class PlayerService {
@@ -53,5 +54,9 @@ public class PlayerService {
 		BeanUtils.copyProperties(player, toUpdate, "id");
 		playerRepository.save(toUpdate);
 		return toUpdate;
+	}
+	@Transactional
+	public void deletePlayer(@Valid Player player){
+		playerRepository.delete(player);
 	}
 }

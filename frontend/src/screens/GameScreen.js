@@ -171,7 +171,7 @@ export default function GameScreen() {
             const isPlayerInGame = players.some(player => player.user.username === user.username);
             const isSpectatorInGame = game.spectators.some(sp => sp.user.username === user.username);
 
-            if (!isPlayerInGame && players.length < game.numPlayers) { //join as player if possible
+            if (!isPlayerInGame && !isSpectatorInGame && players.length < game.numPlayers) { //join as player if possible
                 request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
             }
             else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
@@ -180,7 +180,7 @@ export default function GameScreen() {
         }
     }, [players]);
 
-    if (!game && jwt) {
+    if ((!game || !user) && jwt) {
         return (
             <div className="half-screen">
                 <p className="myGames-title">Cargando partida...</p>
@@ -193,8 +193,10 @@ export default function GameScreen() {
     return (
         <div className="full-screen">
             <div className="half-screen">
-                <InGamePlayerList players = {players}/>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
+                <InGamePlayerList players = {players} spectators = {game.spectators}
+                    gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers}/>
+                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
+                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
                 <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
             </div>
             <div className="bottom-container">
