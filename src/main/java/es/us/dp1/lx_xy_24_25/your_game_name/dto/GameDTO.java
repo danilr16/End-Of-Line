@@ -1,5 +1,6 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.dto;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +26,11 @@ public class GameDTO {
     private List<Integer> initialTurn;
     private List<UserDTO> spectators;
     private List<PlayerDTO> players;
-    private TableCard tableCard;
+    private TableCardDTO tableCard;
     private UserDTO host;
     private GameMode gameMode;
     private GameState gameState;
+    private LocalDateTime started;
 
     public GameDTO(){
         
@@ -36,7 +38,7 @@ public class GameDTO {
 
     public GameDTO( String gameCode, Boolean isPublic, Integer numPlayers,Integer turn,
         Integer duration, List<Integer> orderTurn, List<Integer> initialTurn,List<UserDTO> spectators,
-        List<PlayerDTO> players, TableCard tableCard, UserDTO host, GameMode gameMode, GameState gameState ){
+        List<PlayerDTO> players, TableCardDTO tableCard, UserDTO host, GameMode gameMode, GameState gameState,LocalDateTime started ){
         this.gameCode = gameCode;
         this.isPublic = isPublic;
         this.numPlayers = numPlayers;
@@ -50,6 +52,7 @@ public class GameDTO {
         this.host = host;
         this.gameMode = gameMode;
         this.gameState = gameState;
+        this.started = started;
     }
 
 
@@ -68,17 +71,19 @@ public class GameDTO {
         //Convertir jugadores
         if(!g.getPlayers().isEmpty()){
             for(Player p:g.getPlayers()){
-                User playerUser = p.getUser();
-                UserDTO userDTO = UserDTO.convertUserToDTO(playerUser);
-                PlayerDTO playerDTO = new PlayerDTO(p.getScore(), p.getEnergy(), p.getState(), userDTO, p.getPlayedCards(), p.getTurnStarted(), p.getHandChanged(), p.getCardsPlayedThisTurn(),p.getHand(), p.getPackCards());
+                PlayerDTO playerDTO = PlayerDTO.PlayertoDTO(p);
                 playersConverted.add(playerDTO);
             }
         }
         //Convertir usuario
         UserDTO hostConverted = UserDTO.convertUserToDTO(g.getHost());
 
+        //Convertir tabla 
+        TableCardDTO tableDTO = TableCardDTO.tableCardToDTO(g.getTable());
+
+
         GameDTO res = new GameDTO(g.getGameCode(),g.getIsPublic(),g.getNumPlayers(),g.getTurn(),g.getDuration(),g.getOrderTurn(),
-        g.getInitialTurn(),spectatorsConverted,playersConverted,g.getTable(),hostConverted,g.getGameMode(),g.getGameState());
+        g.getInitialTurn(),spectatorsConverted,playersConverted,tableDTO,hostConverted,g.getGameMode(),g.getGameState(),g.getStarted());
         return res;
 
         }
