@@ -41,6 +41,7 @@ public class HandService {
         Hand h = new Hand();
         List<Card> cards = new ArrayList<>();
         h.setCards(cards);
+        h.setNumCards(0);
         saveHand(h);
         return h;
     }
