@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
@@ -25,6 +26,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import java.time.Duration;
 import java.util.Collections;
@@ -70,7 +72,8 @@ public class GameService {
 
     @Transactional
     public Game findGameByGameCode(String gameCode){
-       return gameRepository.findGameByGameCode(gameCode).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",gameCode));
+        Game rawGame = gameRepository.findGameByGameCode(gameCode).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",gameCode));
+       return rawGame;
     }
 
     @Transactional(readOnly = true)

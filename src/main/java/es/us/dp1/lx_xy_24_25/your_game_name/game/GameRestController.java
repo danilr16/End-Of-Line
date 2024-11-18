@@ -23,6 +23,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageRespons
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidRotation;
@@ -36,10 +37,21 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Row;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.RowService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -58,12 +70,13 @@ class GameRestController {
     private final PackCardService packCardService;
     private final CardService cardService;
     private final CellService cellService;
+    private final RowService rowService;
 
     @Autowired
     public GameRestController(GameService gameService, UserService userService, 
         PlayerService playerService, HandService handService, 
         TableCardService tableService, PackCardService packCardService, CardService cardService,
-        CellService cellService){
+        CellService cellService, RowService rowService){
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
@@ -72,6 +85,7 @@ class GameRestController {
         this.packCardService = packCardService;
         this.cardService = cardService;
         this.cellService = cellService;
+        this.rowService = rowService;
     }
 
     @InitBinder("game")
@@ -115,8 +129,9 @@ class GameRestController {
 
 
     @GetMapping(value = "{gameCode}")
-    public ResponseEntity<Game> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
+    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
+        GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
             switch (game.getGameMode()) {
                 case PUZZLE_SINGLE:
@@ -131,7 +146,7 @@ class GameRestController {
                     break;
             }
         }
-        return new ResponseEntity<>(game,HttpStatus.OK);
+        return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
 
     @PatchMapping("/{gameCode}/joinAsPlayer")
@@ -263,6 +278,72 @@ class GameRestController {
         cell.setCard(savedCard);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
+        return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
+    }
+
+    @PatchMapping("/{gameCode}/placeCard2")
+    public ResponseEntity<MessageResponse> placeCardRefactorized(@PathVariable("gameCode") @Valid String gameCode, Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard{
+        Card cardToPlace = cardService.findCard(cardId);
+        Game currentGame = gameService.findGameByGameCode(gameCode);
+        TableCard currentTable = currentGame.getTable();
+        //Buscamos el jugador asociado al usuario actual
+        User currenUser = userService.findCurrentUser();
+        Player currentPlayer = currentGame.getPlayers().stream().filter(p -> p.getUser().equals(currenUser)).findFirst().orElse(null);
+        //Excepciones relacionadas con permisos y roles
+
+        if (currentPlayer == null) {
+            throw new AccessDeniedException("You can't place this card, because you aren't in this game");
+        }
+
+        if (!cardToPlace.getPlayer().equals(currentPlayer) || !currentPlayer.getHand().getCards().contains(cardToPlace) 
+            || !currentGame.getGameState().equals(GameState.IN_PROCESS) || !currentPlayer.getState().equals(PlayerState.PLAYING)) {
+            throw new AccessDeniedException("You can't place this card");
+        }
+
+        //Excepcion del index del tablero
+        if(index > currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow()){
+            throw new InvalidIndexOfTableCard("The number of the index cant be superior to:" + currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow());
+        }
+
+        List<Map<String, Integer>> possiblePositions = tableService.getPossiblePositionsForPlayer(currentTable, currentPlayer, cardToPlace);
+        // A continuación comprobamos que la posición de la carta está entre las posibles
+        Boolean cardCanBePlaced = false; 
+        for(Map<String, Integer> position: possiblePositions){
+            if(position.get("position").equals(index)) {
+                cardCanBePlaced = true; 
+                break;
+            }
+        }
+
+        if(!cardCanBePlaced) throw new UnfeasibleToPlaceCard();
+        
+        //Una vez que hemos comprobado que se puede colocar la carta actualizamos los datos correspondientes en la base de datos
+        Hand playerHand = currentPlayer.getHand();
+        playerHand.getCards().remove(cardToPlace);
+        playerHand.setNumCards(playerHand.getNumCards() - 1);
+        handService.updateHand(playerHand, playerHand.getId());
+        currentPlayer.getPlayedCards().add(cardToPlace.getId());
+        currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
+        playerService.updatePlayer(currentPlayer, currentPlayer.getId());
+        Integer c = Math.floorMod(index, currentTable.getNumColum());
+        Integer f = (index - 1) / currentTable.getNumColum() + 1; //calcular fila a partir del index.
+        Cell cell = currentTable.getRows().get(f-1).getCells().get(c-1);
+        cell.setCard(cardToPlace);
+        cell.setIsFull(true);
+        cellService.updateCell(cell, cell.getId());
+        //ACTUALIZAR LA TABLA 
+        //Primero actualizamos la fila: 
+        Row currentRow = currentTable.getRows().get(f-1); //COMPROBAR SI EL INDICE EMPIEZA EN CERO O EN 1
+        List<Cell> celdsInRow = currentRow.getCells();
+        celdsInRow.set(c-1, cell);
+        currentRow.setCells(celdsInRow);
+        rowService.saveRow(currentRow);
+        //Actualizamos la tabla
+        List<Row> rowsInTable = currentTable.getRows();
+        rowsInTable.set(f-1, currentRow); 
+        currentTable.setRows(rowsInTable);
+        tableService.saveTableCard(currentTable);
+
         return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
 
