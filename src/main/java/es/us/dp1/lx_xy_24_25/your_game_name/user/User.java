@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -38,7 +37,7 @@ public class User extends BaseEntity {
 	@JoinColumn(name = "authority")
 	Authorities authority;
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany
 	List<Achievement> achievements;
 
 	@ManyToMany
