@@ -17,6 +17,9 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -26,17 +29,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 
 @Service
 public class UserService {
 
 	private UserRepository userRepository;	
+	private PlayerService playerService;
+	private GameService gameService;
 
 	@Autowired
-	public UserService(UserRepository userRepository) {
+	public UserService(UserRepository userRepository, PlayerService playerService, GameService gameService) {
 		this.userRepository = userRepository;
-		
+		this.playerService = playerService;
+		this.gameService = gameService;
 	}
 
 	@Transactional
@@ -94,10 +103,25 @@ public class UserService {
 	}
 
 	@Transactional
+	public List<Game> findAllGamesByUserHost(User user) {
+		List<Player> players = (List<Player>) this.findAllPlayerByUser(user);
+		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p))
+				.flatMap(List::stream).collect(Collectors.toList());
+		return games;
+	}
+
+	@Transactional
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
-//		deleteRelations(id, toDelete.getAuthority().getAuthority());
-//		this.userRepository.deletePlayerRelation(id);
+		List<Game> games = this.findAllGamesByUserHost(toDelete);
+		for (Game game: games) {
+			this.gameService.deleteGame(game.getId());
+		}
+		List<Player> players = ((List<Player>)this.playerService.findAll()).stream().filter(p -> p.getUser().equals(toDelete))
+			.collect(Collectors.toList());
+		for (Player player: players) {
+			this.playerService.deletePlayer(player);
+		}
 		this.userRepository.delete(toDelete);
 	}
 	

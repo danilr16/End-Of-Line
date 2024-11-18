@@ -1,5 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.player;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
@@ -22,8 +24,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import java.util.ArrayList;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 public class Player extends BaseEntity{
 
     public enum PlayerState {
-        PLAYING, WON, LOST
+        PLAYING, WON, LOST , SPECTATING
     }
 
     @Min(0)
@@ -57,6 +57,8 @@ public class Player extends BaseEntity{
     Boolean handChanged; //Cambio inicial de la mano
 
     Integer cardsPlayedThisTurn; //Numero de cartas jugadas esta ronda
+
+    Boolean energyUsedThisRound;
 
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
@@ -90,6 +92,9 @@ public class Player extends BaseEntity{
         }
         if (cardsPlayedThisTurn == null) {
             cardsPlayedThisTurn = 0;
+        }
+        if (energyUsedThisRound == null) {
+            energyUsedThisRound = false;
         }
     }
 

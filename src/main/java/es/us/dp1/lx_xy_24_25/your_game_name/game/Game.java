@@ -65,7 +65,7 @@ public class Game extends BaseEntity {
     @Enumerated(EnumType.STRING)
     GameState gameState;
 
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn
     List<Player> spectators;
 

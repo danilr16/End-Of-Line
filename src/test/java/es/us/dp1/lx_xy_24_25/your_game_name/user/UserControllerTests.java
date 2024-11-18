@@ -3,15 +3,19 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -25,15 +29,30 @@ import org.springframework.http.MediaType;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.request.LoginRequest;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.SecurityConfiguration;
+import es.us.dp1.lx_xy_24_25.your_game_name.configuration.jwt.JwtUtils;
+import es.us.dp1.lx_xy_24_25.your_game_name.configuration.services.UserDetailsImpl;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameState;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.AuthoritiesService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserRestController;
@@ -58,6 +77,12 @@ class UserControllerTests {
 
 	@MockBean
 	private AuthoritiesService authService;
+
+	@MockBean
+	private PlayerService playerService;
+
+	@MockBean
+    private PasswordEncoder encoder;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -233,4 +258,147 @@ class UserControllerTests {
 				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
 	}
 
+	@Test
+	@WithMockUser("player")
+	void shouldReturnCurrentUser() throws Exception {
+		when(userService.findCurrentUser()).thenReturn(user);
+
+		mockMvc.perform(get(BASE_URL + "/currentUser")).andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(TEST_USER_ID))
+				.andExpect(jsonPath("$.username").value(user.getUsername()));
+
+		verify(userService, times(1)).findCurrentUser();
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shouldReturnAllGames() throws Exception {
+		List<Game> games = createValidGames();
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(userService.findAllGamesByUserHost(any(User.class))).thenReturn(games);
+
+		mockMvc.perform(get(BASE_URL + "/games"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(1))
+				.andExpect(jsonPath("$[?(@.id == 1)].gameCode").value("ZYXWV"))
+				.andExpect(jsonPath("$[?(@.id == 1)].gameMode").value("PUZZLE_SINGLE"))
+				.andExpect(jsonPath("$[?(@.id == 1)].host.username").value(user.getUsername()));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService, times(1)).findAllGamesByUserHost(any(User.class));
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shoulUpdateProfile() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setNewUsername("UPDATED");
+		dto.setNewImage("IMG_UPDATED");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(this.userService.updateUser(any(User.class), any(Integer.class))).thenReturn(user);
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.username").value("UPDATED"))
+				.andExpect(jsonPath("$.image").value("IMG_UPDATED"));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService, times(1)).updateUser(any(User.class), any(Integer.class));
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shoulNotUpdateProfile() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setNewUsername("UPDATED");
+		dto.setNewImage("IMG_UPDATED");
+		when(userService.findCurrentUser()).thenThrow(AccessDeniedException.class);
+		when(this.userService.updateUser(any(User.class), any(Integer.class))).thenReturn(user);
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
+
+		verify(userService, times(1)).findCurrentUser();
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shouldUpdatePassword() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setOldPasswordDTO("password");
+		dto.setNewPasswordDTO("newPassword");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(this.userService.updateUser(any(User.class), any(Integer.class))).thenReturn(user);
+		when(this.encoder.matches(any(String.class), any(String.class))).thenReturn(user.getPassword().equals(dto.getOldPasswordDTO()));
+		when(this.encoder.encode(any(String.class))).thenReturn(dto.getNewPasswordDTO());
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile/update-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.password").value("newPassword"));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService, times(1)).updateUser(any(User.class), any(Integer.class));
+		verify(encoder, times(1)).matches(any(String.class), any(String.class));
+		verify(encoder, times(1)).encode(any(String.class));
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shouldNotUpdateSamePassword() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setOldPasswordDTO("password");
+		dto.setNewPasswordDTO("password");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(this.encoder.matches(any(String.class), any(String.class))).thenReturn(user.getPassword().equals(dto.getOldPasswordDTO()));
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile/update-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(encoder, times(1)).matches(any(String.class), any(String.class));
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shouldUpdateIncorrectPassword() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setOldPasswordDTO("BAD_PASSWORD");
+		dto.setNewPasswordDTO("newPassword");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(this.encoder.matches(any(String.class), any(String.class))).thenReturn(user.getPassword().equals(dto.getOldPasswordDTO()));
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile/update-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(encoder, times(1)).matches(any(String.class), any(String.class));
+	}
+
+	public Player createValidPlayer() {
+		Hand hand = new Hand();
+		hand.setId(1);
+		Player player = new Player();
+		player.setHand(hand);
+		player.setUser(user);
+		player.setPackCards(new ArrayList<>());
+		return player;
+	}
+
+	public List<Game> createValidGames() {
+		List<Game> games = new ArrayList<>();
+		Player player = createValidPlayer();
+		Game game = new Game();
+		game.setId(1);
+		game.setGameCode("ZYXWV");
+		game.setGameMode(GameMode.PUZZLE_SINGLE);
+		game.setHost(user);
+		game.setNumPlayers(1);
+		game.setIsPublic(false);
+		game.setPlayers(List.of(player));
+		games.add(game);
+		return games;
+	}
 }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Alert } from "reactstrap";
+import { useLocation, useNavigate } from "react-router-dom";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import tokenService from "../../services/token.service";
 import "../../static/css/auth/authButton.css";
@@ -8,7 +9,11 @@ import { loginFormInputs } from "./form/loginFormInputs";
 export default function Login() {
   const [message, setMessage] = useState(null)
   const loginFormRef = React.createRef();      
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const gameCode = location.pathname.startsWith("/game/") ? location.pathname.split("/")[2] : null;
+
 
   async function handleSubmit({ values }) {
 
@@ -26,8 +31,13 @@ export default function Login() {
       .then(function (data) {
         tokenService.setUser(data);
         tokenService.updateLocalAccessToken(data.token);
-        window.location.href = "/";
+        if (gameCode) {
+          window.location.assign(`/game/${gameCode}`);
+        } else {
+          navigate("/");
+        }
       })
+
       .catch((error) => {         
         setMessage(error);
       });            

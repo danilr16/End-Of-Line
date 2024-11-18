@@ -2,8 +2,8 @@ import React from 'react';
 import "../static/css/screens/CurrentGames.css"
 import GameContainer from '../components/GameContainer';
 import tokenService from "../services/token.service";
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useFetchState from "../util/useFetchState";
 import CreateModal from '../components/CreateModal';
 import JoinGameModal from '../components/JoinGameModal';
@@ -12,6 +12,7 @@ import { ColorProvider,useColors } from "../ColorContext";
 
 export default function CurrentGames(){
     const jwt = tokenService.getLocalAccessToken();
+    const navigate = useNavigate();
 
     const [isCreationModalOpen,setIsCreationModalOpen] = useState(false);
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
@@ -85,6 +86,17 @@ export default function CurrentGames(){
     
     const gamesToShow = games.map((game)=>parseGame(game))
 
+    const randomJoin = () =>{
+        const availableGames = games.filter( (g) => g.numPlayers > g.players.length);
+        if(!availableGames || availableGames.length === 0) {
+            alert("There is no available games to join");
+            return;
+        }
+        const randomGc = availableGames[Math.floor(Math.random() * (availableGames.length-1))].gameCode;
+        navigate(`/game/${randomGc}`)
+        
+    }
+
     return (
         <>
             <div className={`curgames-options-div ${isCreationModalOpen || isJoinModalOpen ? "blurred" : ""}`}>
@@ -95,7 +107,7 @@ export default function CurrentGames(){
                     <button className="curgames-button" onClick={openJoinModal}>Join with Code</button>
                 </div>
                 <div className="curgames-button-container">
-                    <button className="curgames-button">Quick Join</button>
+                    <button className="curgames-button" onClick={randomJoin}>Quick Join</button>
                 </div>
             </div>
             <ul className={`current-games-container ${isCreationModalOpen || isJoinModalOpen ? "blurred" : ""}`}>

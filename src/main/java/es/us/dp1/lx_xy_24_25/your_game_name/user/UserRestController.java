@@ -25,8 +25,6 @@ import org.springframework.http.ResponseEntity;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,11 +37,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
-import es.us.dp1.lx_xy_24_25.your_game_name.configuration.jwt.JwtUtils;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,15 +52,13 @@ class UserRestController {
 
 	private final UserService userService;
 	private final AuthoritiesService authService;
-	private final PlayerService playerService;
 	private final PasswordEncoder encoder;
 
 	@Autowired
-	public UserRestController(UserService userService, AuthoritiesService authService, PlayerService playerService,
-			PasswordEncoder encoder, JwtUtils jwtUtils) {
+	public UserRestController(UserService userService, AuthoritiesService authService,
+			PasswordEncoder encoder) {
 		this.userService = userService;
 		this.authService = authService;
-		this.playerService = playerService;
 		this.encoder = encoder;
 	}
 
@@ -92,9 +86,7 @@ class UserRestController {
 	@GetMapping("/games")
 	public ResponseEntity<List<Game>> findAllGames() {
 		User user = userService.findCurrentUser();
-		List<Player> players = (List<Player>) userService.findAllPlayerByUser(user);
-		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p))
-				.flatMap(List::stream).collect(Collectors.toList());
+		List<Game> games = userService.findAllGamesByUserHost(user);
 		return new ResponseEntity<>(games, HttpStatus.OK);
 	}
 
@@ -110,7 +102,7 @@ class UserRestController {
 	public ResponseEntity<User> update(@PathVariable("userId") Integer id, @RequestBody @Valid User user) {
 		RestPreconditions.checkNotNull(userService.findUser(id), "User", "ID", id);
 		return new ResponseEntity<>(this.userService.updateUser(user, id), HttpStatus.OK);
-	}// Cambiar para que usuario pueda editar solo su propio nombre y contraseña
+	}
 
 	@DeleteMapping(value = "{userId}")
 	@ResponseStatus(HttpStatus.OK)
@@ -141,7 +133,6 @@ class UserRestController {
 			toUpdate.setImage(newImage);
 		}
 		userService.updateUser(toUpdate, id);
-		userService.saveUser(toUpdate);
 		return new ResponseEntity<>(toUpdate, HttpStatus.OK);
 
 	}
@@ -181,7 +172,6 @@ class UserRestController {
              throw new AccessDeniedException("The new password can't be the same as the old password!");
          }
          userService.updateUser(toUpdate, id);
-         userService.saveUser(toUpdate);
          return new ResponseEntity<>(toUpdate, HttpStatus.OK);
 
      }

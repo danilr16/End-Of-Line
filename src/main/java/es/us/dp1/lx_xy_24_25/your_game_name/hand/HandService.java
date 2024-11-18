@@ -29,6 +29,9 @@ public class HandService {
 
     @Transactional
     public Hand saveHand(Hand hand) throws DataAccessException {
+        if (hand.getNumCards() < 0) {
+            throw new IllegalArgumentException("The number of cards cannot be negative");
+        }
         repository.save(hand);
         return hand;
     }
@@ -38,6 +41,7 @@ public class HandService {
         Hand h = new Hand();
         List<Card> cards = new ArrayList<>();
         h.setCards(cards);
+        h.setNumCards(0);
         saveHand(h);
         return h;
     }

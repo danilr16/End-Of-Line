@@ -90,6 +90,12 @@ public class GameService {
 		return toUpdate;
     }
 
+    @Transactional
+    public void deleteGame(Integer id) {
+        Game toDelete = this.findGame(id);
+        this.gameRepository.delete(toDelete);
+    }
+
 
     @Transactional(readOnly = true)
     public List<ChatMessage> getGameChat(String gameCode){
@@ -231,6 +237,7 @@ public class GameService {
         Integer i = game.getOrderTurn().indexOf(game.getTurn());
         playing.setCardsPlayedThisTurn(0);
         playing.setTurnStarted(null);
+        playing.setEnergyUsedThisRound(false);
         playerService.updatePlayer(playing, playing.getId());
         if (i == game.getOrderTurn().size()-1) {
             game.setNTurn(game.getNTurn() + 1);
@@ -298,5 +305,36 @@ public class GameService {
     @Transactional
     public void gameInProcessTeam(Game game) {
         
+    }
+
+    @Transactional
+    public void useAccelerate(Player player) {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() - 1);
+        playerService.updatePlayer(player, player.getId());
+
+    }
+
+    @Transactional
+    public void useBrake(Player player) {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() + 1);
+        playerService.updatePlayer(player, player.getId());
+    }
+
+    @Transactional
+    public void useBackAway(Player player) {
+        
+    }
+
+    @Transactional
+    public void useExtraGas(Player player) {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        this.takeACard(player);
+        playerService.updatePlayer(player, player.getId());
+
     }
 }
