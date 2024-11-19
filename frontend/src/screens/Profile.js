@@ -113,12 +113,12 @@ export default function Profile() {
                     }, 5000); // Se cierra sesión en 5 segundos
 
                 }
-            
             }
              else {
                 const errorData = await response.json();
-                setMessage(`Error al actualizar el perfil: ${errorData.message || 'Desconocido'}`);
-                console.error("Error Response:", errorData);
+                setVisible(true); // Mostrar modal de error
+                setMessage(errorData.message || 'Error desconocido al actualizar el perfil.');
+                console.error("Error Response Data:", errorData);
             }
         } catch (error) {
             setMessage('Error al conectar con el servidor');
@@ -130,9 +130,8 @@ export default function Profile() {
         console.log("Old Password:", oldPassword);
         console.log("New Password:", newPassword);
         console.log("Confirm Password:", confirmPassword);
-        
         if (newPassword !== confirmPassword) {
-            setMessage("Las contraseñas no coinciden");
+            setMessage("Passwords do not match");
             setVisible(true);
             return;
         }
@@ -165,7 +164,8 @@ export default function Profile() {
                 }, 5000);
             } else {
                 const errorData = await response.json();
-                setMessage(`Error al cambiar la contraseña: ${errorData.message || 'Desconocido'}`);
+                setVisible(true); // Mostrar modal de error
+                setMessage(errorData.message || 'Error desconocido al actualizar el perfil.');
                 console.error("Error Response Data:", errorData);
             }
         } catch (error) {
@@ -230,16 +230,25 @@ export default function Profile() {
                     </div>,
                     document.body
                 )}
+
                 {showConfirmationModal && ReactDOM.createPortal(
                     <div className="modal-profile-overlay">
                         <div className="modal-confirmation-container">
-                            <p>Name changed successfully. The session will be closed in 5 seconds.</p>
+                            <p>Name/Password changed successfully. The session will be closed in 5 seconds.</p>
                         </div>
                     </div>,
                     document.body
                 )}
-
-
+                {visible && ReactDOM.createPortal(
+                    <div className="modal-profile-overlay">
+                        <div className="message-box">
+                        <p className="message-text">{message}</p>
+                        <button className="button-edit" onClick={() => setVisible(false)}>X</button>
+                        </div>
+                    </div>,
+                    document.body
+                    
+                )}
                     <div className="profile-details">
                         {isEditing ? (
                             <>
