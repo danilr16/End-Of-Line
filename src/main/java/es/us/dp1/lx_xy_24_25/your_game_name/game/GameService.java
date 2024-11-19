@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import jakarta.validation.Valid;
@@ -108,6 +109,15 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<ChatMessage> getGameChat(String gameCode){
         return gameRepository.findGameChat(gameCode).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",gameCode));
+    }
+    @Transactional
+    public List<ChatMessage> sendChatMessage(ChatMessage cm){
+        Game game = gameRepository.findGameByGameCode(cm.getGameCode()).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",cm.getGameCode()));
+        game.getChat().add(cm);
+        List<ChatMessage> newChat = game.getChat();
+        this.updateGame(game, game.getId());
+        return newChat;
+
     }
 
     @Transactional
