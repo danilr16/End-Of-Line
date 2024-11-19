@@ -224,7 +224,8 @@ class GameRestController {
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, 
         Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard{
         Card cardToPlace = cardService.findCard(cardId);
-        gameService.placeCard(gameCode, index, cardToPlace, false);
+        User currentUser = userService.findCurrentUser();
+        gameService.placeCard(currentUser, gameCode, index, cardToPlace, false);
         return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
 
@@ -254,7 +255,7 @@ class GameRestController {
                         HttpStatus.BAD_REQUEST);
                 } else {
                     Card cardToPlace = cardService.findCard(cardId);
-                    gameService.useBackAway(player, gameCode, index, cardToPlace);
+                    gameService.useBackAway(user, player, gameCode, index, cardToPlace);
                     return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
                 }
             case EXTRA_GAS:

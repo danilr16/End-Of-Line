@@ -32,7 +32,6 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
-import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import java.time.Duration;
 import java.util.Collections;
@@ -47,12 +46,11 @@ public class GameService {
     private PlayerService playerService;
     private CardService cardService;
     private TableCardService tableCardService;
-    private UserService userService;
     private CellService cellService;
 
     @Autowired
     public GameService(GameRepository gameRepository, PackCardService packCardService, HandService handService
-        , PlayerService playerService, CardService cardService, TableCardService tableCardService, UserService userService,
+        , PlayerService playerService, CardService cardService, TableCardService tableCardService,
         CellService cellService){
         this.gameRepository = gameRepository;
         this.packCardService = packCardService;
@@ -60,7 +58,6 @@ public class GameService {
         this.playerService = playerService;
         this.cardService = cardService;
         this.tableCardService = tableCardService;
-        this.userService = userService;
         this.cellService = cellService;
     }
 
@@ -336,11 +333,11 @@ public class GameService {
     }
 
     @Transactional
-    public void useBackAway(Player player, String gameCode, Integer index, Card cardToPlace) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public void useBackAway(User currentUser, Player player, String gameCode, Integer index, Card cardToPlace) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         playerService.updatePlayer(player, player.getId());
-        this.placeCard(gameCode, index, cardToPlace, true);
+        this.placeCard(currentUser, gameCode, index, cardToPlace, true);
     }
 
     @Transactional
@@ -353,12 +350,11 @@ public class GameService {
     }
 
     @Transactional
-    public void placeCard(String gameCode, Integer index, Card cardToPlace, Boolean backAway) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public void placeCard(User currentUser, String gameCode, Integer index, Card cardToPlace, Boolean backAway) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         Game currentGame = this.findGameByGameCode(gameCode);
         TableCard currentTable = currentGame.getTable();
         //Buscamos el jugador asociado al usuario actual
-        User currenUser = userService.findCurrentUser();
-        Player currentPlayer = currentGame.getPlayers().stream().filter(p -> p.getUser().equals(currenUser)).findFirst().orElse(null);
+        Player currentPlayer = currentGame.getPlayers().stream().filter(p -> p.getUser().equals(currentUser)).findFirst().orElse(null);
         //Excepciones relacionadas con permisos y roles
 
         if (currentPlayer == null) {
