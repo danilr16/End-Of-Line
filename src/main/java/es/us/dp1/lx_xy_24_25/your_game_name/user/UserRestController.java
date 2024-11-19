@@ -152,6 +152,10 @@ class UserRestController {
          int id = toUpdate.getId();
 		 String oldPassword = userUpdateDTO.getOldPasswordDTO();
 		 String newPassword = userUpdateDTO.getNewPasswordDTO();
+		 //Comprobamos que todos los campos sean válidos
+		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {
+             throw new AccessDeniedException("All fields are required!");
+         }
 		 //Comprobamos que la antigua contraseña sea correcta
          if (oldPassword != null && !oldPassword.strip().isEmpty()) {
 			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {
@@ -161,7 +165,7 @@ class UserRestController {
 		 //Comprobamos que la nueva contraseña sea diferente a la antigua
 		 if (!newPassword.equals(oldPassword)) {
 			//Comprobamos que la nueva contraseña sea válida
-			if(newPassword!= null &&!newPassword.strip().isEmpty()){
+			if(newPassword!= null && !newPassword.strip().isEmpty()){
 				String encodePassword = encoder.encode(newPassword);
 				toUpdate.setPassword(encodePassword);
 			}else{
