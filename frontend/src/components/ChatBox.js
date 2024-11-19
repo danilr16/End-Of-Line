@@ -1,21 +1,50 @@
 import {  useEffect, useState, useRef } from "react";
 import request from "../util/request";
 import "../static/css/components/chatBox.css"
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 
 export default function ChatBox({gameCode,user,jwt}){
     const [input, setInput] = useState('');
-
     const [chat, setChat] = useState([]);
+    const [client, setClient] = useState(null);
 
     useEffect(() => {
         async function fetchChat() {
             if (!jwt) return; 
             const response = await request(`/api/v1/games/${gameCode}/chat`, 'GET', null, jwt);
-            setChat(response.resContent);
+            console.log("Fetched messages:", response.resContent);
+            setChat(response.resContent);  // Actualizar el chat con los mensajes previos
         }
         fetchChat();
-    }, [jwt]); 
+    }, [jwt]);
+
+    useEffect(() => {
+        const sock = new SockJS("http://localhost:8080/ws");
+        const stompClient = new Client({
+            webSocketFactory: () => sock,
+            connectHeaders: {
+                Authorization: `Bearer ${jwt}`, // Agrega el token JWT aquí
+            },
+            onConnect: () => {
+                console.log("Connected to WebSocket");
+                stompClient.subscribe("/topic/chat", (msg) => {
+                    const receivedMessage = JSON.parse(msg.body);
+                    setChat((prevChat) => [...prevChat, receivedMessage].slice(-MAX_MESSAGES));
+                });
+            },
+            onStompError: (frame) => {
+                console.error("STOMP error:", frame.headers["message"]);
+                console.error("Details:", frame.body);
+            },
+        });
+    
+        stompClient.activate();
+        setClient(stompClient);
+    
+        return () => stompClient.deactivate();
+    }, [jwt]);
     
 
     const chatEndRef = useRef(null);
@@ -34,16 +63,22 @@ export default function ChatBox({gameCode,user,jwt}){
         if (input.trim() === '') {
             return; //Para que no se envíen mensajes vacíos
         }
-        console.log(JSON.stringify({userName: user.username, messageString:input}))//Borrar
 
-        const newChat = (await request(`/api/v1/games/${gameCode}/chat`,'PATCH',{userName:user.username, messageString:input},jwt)).resContent;
-
-        try{
-            setChat(newChat.slice(-MAX_MESSAGES))
+        if (client && input.trim()) {
+            client.publish({
+            destination: "/app/chat",
+            body: JSON.stringify({userName:user.username, messageString:input,gameCode:gameCode}),
+            });
         }
-        catch(e){
-            return;
-        } 
+
+        // const newChat = (await request(`/api/v1/games/${gameCode}/chat`,'PATCH',{userName:user.username, messageString:input},jwt)).resContent;
+
+        // try{
+        //     setChat(newChat.slice(-MAX_MESSAGES))
+        // }
+        // catch(e){
+        //     return;
+        // } 
         
         setInput('');
     }
