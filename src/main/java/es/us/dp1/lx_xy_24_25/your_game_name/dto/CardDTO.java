@@ -20,18 +20,16 @@ public class CardDTO {
     private TypeCard type;
     private Integer iniciative;
     private Integer rotation;
-    private PlayerDTO player;
     private Output output;
     private List<Integer> outputs;
     private Integer input;
 
     public CardDTO(){}
 
-    public CardDTO(TypeCard type,Integer inciative,Integer rotation,PlayerDTO player,Output output,List<Integer> outputs,Integer input){
+    public CardDTO(TypeCard type,Integer inciative,Integer rotation,Output output,List<Integer> outputs,Integer input){
         this.type = type;
         this.iniciative = inciative;
         this.rotation = rotation;
-        this.player = player;
         this.output = output;
         this.outputs = outputs;
         this.input = input;
@@ -40,8 +38,7 @@ public class CardDTO {
 
     public static CardDTO cardToDTO(Card c){
         if(c==null)return null;
-        PlayerDTO pDTO = playertoDTO2(c.getPlayer());
-        CardDTO  res = new CardDTO(c.getType(), c.getIniciative(), c.getRotation(), pDTO, c.getOutput(), c.getOutputs(),c.getInput());
+        CardDTO  res = new CardDTO(c.getType(), c.getIniciative(), c.getRotation(), c.getOutput(), c.getOutputs(),c.getInput());
         return res;
     }
 
