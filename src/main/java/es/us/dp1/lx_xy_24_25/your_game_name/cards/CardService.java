@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.ArrayList;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
-import es.us.dp1.lx_xy_24_25.your_game_name.dto.PlayerDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
