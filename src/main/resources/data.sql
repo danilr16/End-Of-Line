@@ -37,7 +37,7 @@ INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn
 
 INSERT INTO app_hands(id,num_cards) VALUES (2,5);
 INSERT INTO app_pack_cards(id,num_cards,player_id) VALUES (1,15,1);
-INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,type) VALUES (2,1,1,1,1,0,'TYPE_1');
+INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,outputs,input,type) VALUES (2,1,1,1,1,0,ARRAY[2,3],0,'TYPE_1');
 INSERT INTO app_table_cards(id, num_colum,num_row,type) VALUES (1,6,6,'JUGADORES_2');
 INSERT INTO app_rows(id,table_id) VALUES (1,1);
 INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (1,1,false,1);
