@@ -17,6 +17,7 @@ export default function GameScreen() {
     const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
     const [isDragging, setDragging] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(-1);
     const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
@@ -188,6 +189,26 @@ export default function GameScreen() {
         );
     }
 
+    const modalVisibility = () => {
+        
+        if(game.gameState !== 'END') { //Si la partida ha finalizado, no pide confirmación para salir
+            setShowConfirmationModal(true);
+        }
+    }
+    
+
+    const handleLeave = () => {
+        if (game && players && game.numPlayers && user && user.username) {
+            const isPlayerInGame = players.some(player => player.user.username === user.username)
+            const isSpectatorInGame = game.spectators.some(spectator => spectator.user.username === user.username)
+            if(isPlayerInGame) {
+                request(`/api/v1/games/${gameCode}/leaveAsPlayer`, "PATCH", {}, jwt)
+            } else if (isSpectatorInGame) {
+                request(`/api/v1/games/${gameCode}/leaveAsSpectator`, "PATCH", {}, jwt)
+            }
+            navigate('/games/current')
+        }
+    };
 
 
     return (
@@ -205,6 +226,24 @@ export default function GameScreen() {
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
+                <button className="leave-button" onClick={modalVisibility}>
+                    Leave game
+                </button>
+                {showConfirmationModal && (
+                    <div className="confirmation-modal">
+                        <h2 className="modal-title">Leave game</h2>
+                        <p className="modal-text">
+                            {game.gameState === 'WAITING' || game.spectators.some(spectator => spectator.user.username === user.username)
+                            ? "Are you sure you want to leave?"
+                            : "Leaving now will count as a lose, proceed?"
+                            }
+                        </p>
+                        <div className="modal-buttons">
+                            <button className="confirm-button" onClick={handleLeave}>Leave</button>
+                            <button className="cancel-button" onClick={() => setShowConfirmationModal(false)}>Stay</button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
