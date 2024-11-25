@@ -8,11 +8,12 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import lombok.Getter;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-@JsonIdentityInfo(
+/*@JsonIdentityInfo(
     generator = ObjectIdGenerators.PropertyGenerator.class,
     property = "player"
-)
+)*/
 @Getter
 @Setter
 public class CardDTO {
@@ -20,6 +21,7 @@ public class CardDTO {
     private TypeCard type;
     private Integer iniciative;
     private Integer rotation;
+    @JsonIgnore
     private PlayerDTO player;
     private Output output;
     private List<Integer> outputs;
@@ -37,7 +39,7 @@ public class CardDTO {
         this.input = input;
     }
 
-
+//funcion para hacer playerDTO específica en esta 
     public static CardDTO cardToDTO(Card c){
         if(c==null)return null;
         PlayerDTO pDTO = PlayerDTO.PlayertoDTO(c.getPlayer());
