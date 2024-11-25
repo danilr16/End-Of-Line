@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import jakarta.validation.Valid;
@@ -312,12 +311,79 @@ public class GameService {
 
     @Transactional
     public void gameInProcessSingle(Game game) {
-
+        List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
+            .collect(Collectors.toList());
+        if (game.getNTurn() == 0) {
+            initialTurn(game);
+            for (Player player : players) {
+                for (int i = 1; i <= 5; i++) {
+                    this.takeACard(player);
+                }
+            }
+            Player start = playerService.findPlayer(game.getTurn());
+            start.setTurnStarted(LocalDateTime.now());
+            playerService.updatePlayer(start, start.getId());
+            game.setNTurn(1);
+            this.updateGame(game, game.getId());
+        } else {
+            if (players.isEmpty()) {
+                game.setGameState(GameState.END);
+                game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
+                this.updateGame(game, game.getId());
+            } else if (tableCardService.tableCardFull(game.getTable())) {
+                Player winner = players.stream().findFirst().get();
+                winner.setState(PlayerState.WON);
+                Integer sumInicHand = winner.getHand().getCards().stream().mapToInt(c -> c.getIniciative()).sum();
+                winner.setScore(sumInicHand + winner.getEnergy());
+                playerService.updatePlayer(winner, winner.getId());
+                game.setGameState(GameState.END);
+                game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
+                this.updateGame(game, game.getId());
+            } else {
+                manageTurnOfPlayer(game);
+            }
+        }
     }
 
     @Transactional
     public void gameInProcessCoop(Game game) {
-        
+        List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
+            .collect(Collectors.toList());
+        if (game.getNTurn() == 0) {
+            initialTurn(game);
+            for (Player player : players) {
+                for (int i = 1; i <= 5; i++) {
+                    this.takeACard(player);
+                }
+            }
+            Player start = playerService.findPlayer(game.getTurn());
+            start.setTurnStarted(LocalDateTime.now());
+            playerService.updatePlayer(start, start.getId());
+            game.setNTurn(1);
+            this.updateGame(game, game.getId());
+        } else {
+            if (players.size() < 2) {
+                for (Player loser:players) {
+                    loser.setState(PlayerState.LOST);
+                    playerService.updatePlayer(loser, loser.getId());
+                }
+                game.setGameState(GameState.END);
+                game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
+                this.updateGame(game, game.getId());
+            } else if (tableCardService.tableCardFull(game.getTable())) {
+                for (Player winner:players) {
+                    winner.setState(PlayerState.WON);
+                    Integer sumInicHand = winner.getHand().getCards().stream().mapToInt(c -> c.getIniciative()).sum();
+                    winner.setScore(sumInicHand + winner.getEnergy());
+                    playerService.updatePlayer(winner, winner.getId());
+                }
+                game.setGameState(GameState.END);
+                game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
+                this.updateGame(game, game.getId());
+            } else {
+                manageTurnOfPlayer(game);
+            }
+        }
     }
 
     @Transactional
