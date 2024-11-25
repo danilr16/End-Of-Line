@@ -170,4 +170,17 @@ public class TableCardService {
     
         return possiblePositions;
     }
+
+    public Boolean tableCardFull(TableCard tableCard) {
+        Boolean res = true;
+        for(Row row:tableCard.getRows()) {
+            for(Cell cell:row.getCells()) {
+                if(!cell.getIsFull()) {
+                    res = false;
+                    break;
+                }
+            }
+        }
+        return res;
+    }
 }
