@@ -10,11 +10,13 @@ import lombok.Setter;
 public class ChatMessage {
     private String userName;
     private String messageString;
+    private String gameCode;
 
     ChatMessage(){}
 
-    ChatMessage(String userName, String messageString){
+    ChatMessage(String userName, String messageString, String gameCode){
         this.userName = userName;
         this.messageString = messageString;
+        this.gameCode = gameCode;
     }
 }

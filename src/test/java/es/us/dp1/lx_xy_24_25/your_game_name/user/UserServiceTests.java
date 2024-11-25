@@ -1,9 +1,11 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +19,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.AuthoritiesService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
@@ -54,7 +58,7 @@ class UserServiceTests {
 	@Test
 	void shouldFindAllUsers() {
 		List<User> users = (List<User>) this.userService.findAll();
-		assertEquals(11, users.size());
+		assertEquals(17, users.size());
 	}
 
 	@Test
@@ -66,7 +70,7 @@ class UserServiceTests {
 	@Test
 	void shouldFindUsersByAuthority() {
 		List<User> owners = (List<User>) this.userService.findAllByAuthority("PLAYER");
-		assertEquals(10, owners.size());
+		assertEquals(16, owners.size());
 
 		List<User> admins = (List<User>) this.userService.findAllByAuthority("ADMIN");
 		assertEquals(1, admins.size());
@@ -131,57 +135,33 @@ class UserServiceTests {
 		assertEquals(count + 1, finalCount);
 	}
 		
+	@Test
+	@Transactional
+	void shouldDeleteUser() {
+		int count = ((Collection<User>) this.userService.findAll()).size();
+		int idToDelete = 1;
+		this.userService.deleteUser(idToDelete);
+		int finalCount = ((Collection<User>) this.userService.findAll()).size();
+		assertEquals(count - 1, finalCount);
+		assertThrows(ResourceNotFoundException.class, () -> this.userService.findUser(idToDelete));
+	}
 
-//	@Test
-//	@Transactional
-//	void shouldDeleteUserWithOwner() {
-//		Integer firstCount = ((Collection<User>) userService.findAll()).size();
-//		User user = new User();
-//		user.setUsername("Sam");
-//		user.setPassword("password");
-//		Authorities auth = authService.findByAuthority("OWNER");
-//		user.setAuthority(auth);
-//		Owner owner = new Owner();
-//		owner.setAddress("Test");
-//		owner.setFirstName("Test");
-//		owner.setLastName("Test");
-//		owner.setPlan(PricingPlan.BASIC);
-//		owner.setTelephone("999999999");
-//		owner.setUser(user);
-//		owner.setCity("Test");
-//		this.ownerService.saveOwner(owner);
-//
-//		Integer secondCount = ((Collection<User>) userService.findAll()).size();
-//		assertEquals(firstCount + 1, secondCount);
-//		userService.deleteUser(user.getId());
-//		Integer lastCount = ((Collection<User>) userService.findAll()).size();
-//		assertEquals(firstCount, lastCount);
-//	}
+	@Test
+	@Transactional
+	void shoulFindAllPlayersFromUser() {
+		User user = this.userService.findUser(4);
+		int idPlayer = 1;
+		List<Player> players = (List<Player>) this.userService.findAllPlayerByUser(user);
+		assertFalse(players.isEmpty());
+		assertTrue(players.stream().anyMatch(p -> p.getId() == idPlayer));
+	}
 
-	
-
-//	@Test
-//	@Transactional
-//	void shouldDeleteUserWithVet() {
-//		Integer firstCount = ((Collection<User>) userService.findAll()).size();
-//		User user = new User();
-//		user.setUsername("Sam");
-//		user.setPassword("password");
-//		Authorities auth = authService.findByAuthority("VET");
-//		user.setAuthority(auth);
-//		userService.saveUser(user);
-//		Vet vet = new Vet();
-//		vet.setFirstName("Test");
-//		vet.setLastName("Test");
-//		vet.setUser(user);
-//		vet.setCity("Test");
-//		this.vetService.saveVet(vet);
-//
-//		Integer secondCount = ((Collection<User>) userService.findAll()).size();
-//		assertEquals(firstCount + 1, secondCount);
-//		userService.deleteUser(user.getId());
-//		Integer lastCount = ((Collection<User>) userService.findAll()).size();
-//		assertEquals(firstCount, lastCount);
-//	}
-
+	@Test
+	@Transactional
+	void shouldFindAllGamesByUserHost() {
+		User user = this.userService.findUser(4);
+		List<Game> games = (List<Game>) this.userService.findAllGamesByUserHost(user);
+		assertFalse(games.isEmpty());
+		assertTrue(games.size() >= 1);
+	}
 }

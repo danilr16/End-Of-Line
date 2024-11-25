@@ -240,4 +240,25 @@
     cursor: pointer;  
 }
 
+.message-box {
+    text-align: center;
+    position: relative; 
+    align-items: center;
+    top: 200px;          
+    display: flex;
+    justify-content: center;
+    flex-direction:row;
+    padding: 20px;
+    background-color: #f4f4f4;
+    width: 500px;
+    height: 100px;
+    border-radius: 25px;
+    animation: slideFadeIn 2s ease forwards;
+    margin: auto;
+}
+.message-text{
+    width: 100%;
+}
+
+
 

@@ -9,6 +9,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
@@ -36,11 +38,9 @@ public class User extends BaseEntity {
 	Authorities authority;
 
 	@ManyToMany
-	@NotNull
 	List<Achievement> achievements;
 
 	@ManyToMany
-	@NotNull
 	List<User> friends;
 
 	@PrePersist
@@ -49,6 +49,12 @@ public class User extends BaseEntity {
         if (image == null ) {
             this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
         }
+		if (achievements == null) {
+			this.achievements = new ArrayList<>();
+		}
+		if (friends == null) {
+			this.friends = new ArrayList<>();
+		}
     }
 
 	public void setImage(String image) {

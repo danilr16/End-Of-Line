@@ -1,6 +1,6 @@
 -- One admin user, named admin1 with passwor 4dm1n and authority admin
 INSERT INTO authorities(id,authority) VALUES (1,'ADMIN');
-INSERT INTO appusers(id,username,password,authority) VALUES (1,'admin1','$2a$10$nMmTWAhPTqXqLDJTag3prumFrAJpsYtroxf0ojesFYq0k4PmcbWUS',1);
+INSERT INTO appusers(id,username,image,password,authority) VALUES (1,'admin1','https://cdn-icons-png.flaticon.com/512/3135/3135768.png','$2a$10$nMmTWAhPTqXqLDJTag3prumFrAJpsYtroxf0ojesFYq0k4PmcbWUS',1);
 
 -- Ten player users, named player1 with passwor 0wn3r
 INSERT INTO authorities(id,authority) VALUES (2,'PLAYER');
@@ -29,4 +29,16 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
+
+INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',0,0,'ABCDE','WAITING');
+INSERT INTO app_hands(id,num_cards) VALUES (1,0);
+INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn,energy_used_this_round,hand_changed,score,state) VALUES (1,1,1,4,3,0,false,false,0,'PLAYING');
+
+
+INSERT INTO app_hands(id,num_cards) VALUES (2,5);
+INSERT INTO app_pack_cards(id,num_cards,player_id) VALUES (1,15,1);
+INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,outputs,input,type) VALUES (2,1,1,1,1,0,ARRAY[2,3],0,'TYPE_1');
+INSERT INTO app_table_cards(id, num_colum,num_row,type) VALUES (1,6,6,'JUGADORES_2');
+INSERT INTO app_rows(id,table_id) VALUES (1,1);
+INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (1,1,false,1);
 

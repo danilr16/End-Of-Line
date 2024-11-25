@@ -143,7 +143,7 @@ public class TableCardService {
     }
 
     public Integer getCellIndexFromPosition(TableCard tableCard, Integer x, Integer y) {
-        return ((y-1)*tableCard.getNumColum())+(x-1);
+        return ((y-1)*tableCard.getNumColum())+x;
     }
 
     @Transactional

@@ -152,6 +152,7 @@ classDiagram
         +turnStarted LocalDateTime
         +handChanged Boolean
         +cardsPlayedThisTurn Integer
+        +energyUsedThisRound Boolean
         +hand Hand (NotNull)
         +packCards List~PackCard~ (NotNull)
         +getScore() Integer
@@ -162,6 +163,7 @@ classDiagram
         +getTurnStarted() LocalDateTime
         +getHandChanged() Boolean
         +getCardsPlayedThisTurn() Integer
+        +getEnergyUsedThisRound() Boolean
         +gettHand() Hand
         +getPackCards() List~PackCard~
         +setScore(Integer score)
@@ -172,6 +174,7 @@ classDiagram
         +setTurnStarted(LocalDateTime turnStarted)
         +setHandChanged(Boolean handChanged)
         +setCardsPlayedThisTurn(Integer playedThisTurn)
+        +setEnergyUsedThisRound(Boolean energyUsedThisRound)
         +settHand(Hand hand)
         +setPackCards(List~PackCard~ packCards)
         +canUseEnergy() Boolean
