@@ -35,7 +35,7 @@ public class CardDTO {
         this.input = input;
     }
 
-
+//funcion para hacer playerDTO específica en esta 
     public static CardDTO cardToDTO(Card c){
         if(c==null)return null;
         CardDTO  res = new CardDTO(c.getType(), c.getIniciative(), c.getRotation(), c.getOutput(), c.getOutputs(),c.getInput());
