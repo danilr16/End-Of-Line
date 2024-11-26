@@ -5,7 +5,6 @@ import java.util.List;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,13 +38,6 @@ public class CardDTO {
     public static CardDTO cardToDTO(Card c){
         if(c==null)return null;
         CardDTO  res = new CardDTO(c.getType(), c.getIniciative(), c.getRotation(), c.getOutput(), c.getOutputs(),c.getInput());
-        return res;
-    }
-
-    public static PlayerDTO playertoDTO2(Player p){
-        UserDTO uDTO = UserDTO.convertUserToDTO(p.getUser());
-        HandDTO hDTO = HandDTO.handToDTO(p.getHand());
-        PlayerDTO res = new PlayerDTO(p.getScore(), p.getEnergy(), p.getState(), uDTO, p.getPlayedCards(), p.getTurnStarted(), p.getHandChanged(),p.getCardsPlayedThisTurn(), hDTO, null);
         return res;
     }
 

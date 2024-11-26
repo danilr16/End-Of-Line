@@ -3,7 +3,6 @@ package es.us.dp1.lx_xy_24_25.your_game_name.player;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
@@ -60,6 +59,11 @@ public class Player extends BaseEntity{
 
     Boolean energyUsedThisRound;
 
+    List<Integer> possiblePositions;
+    //Listas cuyos valores van a pares: valor índice 0 de possiblePositions va relacionado con valor índice 0 de possibleRotations
+    //Indican las posiciones posibles y rotaciones necesarias donde el jugador puede colocar una carta
+    List<Integer> possibleRotations;
+
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
     Hand hand;
@@ -95,6 +99,12 @@ public class Player extends BaseEntity{
         }
         if (energyUsedThisRound == null) {
             energyUsedThisRound = false;
+        }
+        if (possiblePositions == null) {
+            possiblePositions = new ArrayList<>();
+        }
+        if (possibleRotations == null) {
+            possibleRotations = new ArrayList<>();
         }
     }
 
