@@ -200,7 +200,7 @@ export default function GameScreen() {
     const handleLeave = () => {
         if (game && players && game.numPlayers && user && user.username) {
             const isPlayerInGame = players.some(player => player.user.username === user.username)
-            const isSpectatorInGame = game.spectators.some(spectator => spectator.user.username === user.username)
+            const isSpectatorInGame = game.spectators.some(spectator => spectator.username === user.username)
             if(isPlayerInGame) {
                 request(`/api/v1/games/${gameCode}/leaveAsPlayer`, "PATCH", {}, jwt)
             } else if (isSpectatorInGame) {
@@ -233,7 +233,7 @@ export default function GameScreen() {
                     <div className="confirmation-modal">
                         <h2 className="modal-title">Leave game</h2>
                         <p className="modal-text">
-                            {game.gameState === 'WAITING' || game.spectators.some(spectator => spectator.user.username === user.username)
+                            {game.gameState === 'WAITING' || game.spectators.some(spectator => spectator.username === user.username)
                             ? "Are you sure you want to leave?"
                             : "Leaving now will count as a lose, proceed?"
                             }
