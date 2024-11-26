@@ -10,6 +10,7 @@ import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
 import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
+import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -226,25 +227,11 @@ export default function GameScreen() {
                 </div>
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
-                <button className="leave-button" onClick={modalVisibility}>
-                    Leave game
-                </button>
-                {showConfirmationModal && (
-                    <div className="confirmation-modal">
-                        <h2 className="modal-title">Leave game</h2>
-                        <p className="modal-text">
-                            {game.gameState === 'WAITING' || game.spectators.some(spectator => spectator.username === user.username)
-                            ? "Are you sure you want to leave?"
-                            : "Leaving now will count as a lose, proceed?"
-                            }
-                        </p>
-                        <div className="modal-buttons">
-                            <button className="confirm-button" onClick={handleLeave}>Leave</button>
-                            <button className="cancel-button" onClick={() => setShowConfirmationModal(false)}>Stay</button>
-                        </div>
-                    </div>
-                )}
             </div>
+            <button className="leave-button" onClick={modalVisibility}>
+                    Leave game
+            </button>
+            <LeaveConfirmationModal showConfirmationModal={showConfirmationModal} setShowConfirmationModal = {setShowConfirmationModal} handleLeave={handleLeave} game={game} user={user} />
         </div>
     );
 }
