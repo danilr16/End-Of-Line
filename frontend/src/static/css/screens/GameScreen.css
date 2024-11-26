@@ -49,3 +49,78 @@
         0px -11px 0px var(--br-c-normal),  
         0px -12px 0px var(--br-c-dark);
 }
+
+.leave-button {
+    margin-bottom: 30px;
+    align-self: flex-start;
+    margin-left: 30px;
+    background-color: var(--br-c-normal);
+    border-radius: 10px;
+    border: none;
+    padding: 10px 30px;
+}
+
+.confirmation-modal {
+    position: fixed;
+    background-color: var(--br-c-normal);
+    margin-bottom: 300px;
+    padding: 25px 100px;
+    border-radius: 10px;
+    animation: popUp 2s ease forwards;
+    text-align: center;
+}
+
+@keyframes popUp {
+    0% {
+        opacity: 0;
+        transform: translateY(-1000px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+    
+}
+
+.modal-title {
+    color: black;
+}
+
+.modal-text {
+    margin-top: 10px;
+    color: black;
+    margin-bottom: 5px;
+}
+
+.modal-buttons {
+    display: flex;
+}
+
+.confirm-button {
+    background-color: red; 
+    border-radius: 10px;
+    border: none;
+    padding: 5px 50px;
+    
+}
+
+.confirm-button:hover {
+    animation: moveUp 0.3s ease forwards;
+}
+
+.cancel-button {
+    background-color: green;
+    border-radius: 10px;
+    border: none;
+    padding: 5px 50px;
+}
+
+.cancel-button:hover {
+    animation: moveUp 0.3s ease forwards;
+}
+
+@keyframes moveUp {
+    100%{
+        transform: translateY(-5px);
+    }
+}

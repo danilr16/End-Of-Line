@@ -3,6 +3,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -76,8 +77,9 @@ class GameRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Game>> findAll(){
-        List<Game> res = (List<Game>) gameService.findAll();
+    public ResponseEntity<List<GameDTO>> findAll(){
+        List<Game> games = (List<Game>) gameService.findAll();
+        List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
@@ -98,8 +100,9 @@ class GameRestController {
     }
     
     @GetMapping("/current")
-    public ResponseEntity<List<Game>> findJoinableGames(){
-        List<Game> res = gameService.findJoinableGames();
+    public ResponseEntity<List<GameDTO>> findJoinableGames(){
+        List<Game> games = gameService.findJoinableGames();
+        List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
