@@ -237,7 +237,7 @@ public class GameService {
         List<Map<String,Integer>> possiblePositions = tableCardService.getPossiblePositionsForPlayer(tableCard, playing, lastPlaced);
         if (possiblePositions.isEmpty() && playing.getEnergy() == 0) {
             return true;
-        } else if (possiblePositions.isEmpty()) {
+        } else if (possiblePositions.isEmpty() && playing.getPlayedCards().size() >= 2) {
             Card possibleGoBack = cardService.findCard(playing.getPlayedCards().get(playing.getPlayedCards().size()-2));
             if (tableCardService.getPossiblePositionsForPlayer(tableCard, playing, possibleGoBack).isEmpty()) {
                 return true;
@@ -310,7 +310,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessSingle(Game game) {
+    public void gameInProcessSingle(Game game) {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -346,7 +346,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessCoop(Game game) {
+    public void gameInProcessCoop(Game game) {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -426,36 +426,19 @@ public class GameService {
     }
 
     @Transactional
-    public void placeCard(User currentUser, String gameCode, Integer index, Card cardToPlace, Boolean backAway) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public void placeCard(User currentUser, String gameCode, Integer index, Card cardToPlace, Boolean backAway) 
+        throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         Game currentGame = this.findGameByGameCode(gameCode);
         TableCard currentTable = currentGame.getTable();
         //Buscamos el jugador asociado al usuario actual
         Player currentPlayer = currentGame.getPlayers().stream().filter(p -> p.getUser().equals(currentUser)).findFirst().orElse(null);
         //Excepciones relacionadas con permisos y roles
+        checkConditionsPlaceCard(currentPlayer, cardToPlace, currentGame, currentTable, index);
 
-        if (currentPlayer == null) {
-            throw new AccessDeniedException("You can't place this card, because you aren't in this game");
-        }
-
-        if (!cardToPlace.getPlayer().equals(currentPlayer) || !currentPlayer.getHand().getCards().contains(cardToPlace) 
-            || !currentGame.getGameState().equals(GameState.IN_PROCESS) || !currentPlayer.getState().equals(PlayerState.PLAYING)) {
-            throw new AccessDeniedException("You can't place this card");
-        }
-
-        //Excepcion del index del tablero
-        if(index > currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow() || index <= 0){
-            throw new InvalidIndexOfTableCard("The number of the index cant be superior to:" + currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow() + "or lower equals to 0");
-        }
-        // Comprobamos que es el turno del jugador y puede colocar carta
         Card lastPlacedCard = cardService.getLastPlaced(currentPlayer);
         if (backAway != null && backAway) {//Si vas a usar marcha atras, entonces se coloca en la penultima carta jugada
             lastPlacedCard = cardService.findCard(currentPlayer.getPlayedCards().get(currentPlayer.getPlayedCards().size()-2));
         }
-        Player turnOfPlayer = playerService.findPlayer(currentGame.getTurn());
-        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2)) {
-            throw new AccessDeniedException("You can't place this card, because it's not your turn");
-        }
-
         List<Map<String, Integer>> possiblePositions = tableCardService.getPossiblePositionsForPlayer(currentTable, currentPlayer, 
             lastPlacedCard);
         // A continuación comprobamos que la posición de la carta está entre las posibles
@@ -470,8 +453,33 @@ public class GameService {
         }
 
         if(!cardCanBePlaced) throw new UnfeasibleToPlaceCard();
-        Integer rotationToPlace = possiblePositions.get(i).get("rotation");
         //Una vez que hemos comprobado que se puede colocar la carta actualizamos los datos correspondientes en la base de datos
+        updatePlaceCard(possiblePositions, cardToPlace, currentPlayer, currentTable, index, i);
+    }
+    
+    private void checkConditionsPlaceCard(Player currentPlayer, Card cardToPlace, Game currentGame, 
+        TableCard currentTable, Integer index) throws InvalidIndexOfTableCard {
+        if (currentPlayer == null) {
+            throw new AccessDeniedException("You can't place this card, because you aren't in this game");
+        }
+        if (!cardToPlace.getPlayer().equals(currentPlayer) || !currentPlayer.getHand().getCards().contains(cardToPlace) 
+            || !currentGame.getGameState().equals(GameState.IN_PROCESS) || !currentPlayer.getState().equals(PlayerState.PLAYING)) {
+            throw new AccessDeniedException("You can't place this card");
+        }
+        //Excepcion del index del tablero
+        if(index > currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow() || index <= 0){
+            throw new InvalidIndexOfTableCard("The number of the index cant be superior to:" + currentGame.getTable().getNumColum()*currentGame.getTable().getNumRow() + "or lower equals to 0");
+        }
+        // Comprobamos que es el turno del jugador y puede colocar carta
+        Player turnOfPlayer = playerService.findPlayer(currentGame.getTurn());
+        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2)) {
+            throw new AccessDeniedException("You can't place this card, because it's not your turn");
+        }
+    }
+
+    private void updatePlaceCard(List<Map<String, Integer>> possiblePositions, Card cardToPlace, 
+        Player currentPlayer, TableCard currentTable, Integer index, Integer i) {
+        Integer rotationToPlace = possiblePositions.get(i).get("rotation");
         List<Integer> newOutputs = cardToPlace.getOutputs().stream()
             .map(o -> (o + rotationToPlace) % 4).collect(Collectors.toList());
         Integer newInput = rotationToPlace;
@@ -493,5 +501,17 @@ public class GameService {
         cell.setCard(cardToPlace);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
+        //Calculamos nuevas posiciones posibles del jugador
+        List<Map<String, Integer>> newPossiblePositions = tableCardService.getPossiblePositionsForPlayer(currentTable, currentPlayer, 
+            cardToPlace);
+        List<Integer> positions = new ArrayList<>();
+        List<Integer> rotations = new ArrayList<>();
+        for (Map<String,Integer> mp:newPossiblePositions) {
+            positions.add(mp.get("position"));
+            rotations.add(mp.get("rotation"));
+        }
+        currentPlayer.setPossiblePositions(positions);
+        currentPlayer.setPossibleRotations(rotations);
+        playerService.updatePlayer(currentPlayer, currentPlayer.getId());
     }
 }
