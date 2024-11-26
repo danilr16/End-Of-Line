@@ -104,12 +104,13 @@ export default function Stats() {
                     </h3>
                     <div className="win-lose-ratio">
                         <canvas ref={canvasRef} width={250} height={250}/>
+                        <div className="user-games">
+                            <h3 className="won-games">Won: 80</h3>
+                            <h3 className="lost-games">Lost: 35</h3>
+                            <h3 className="total-games">Total: 115</h3>
+                        </div>
                     </div>
-                    <div className="user-games">
-                        <h3 className="won-games">Won: 80</h3>
-                        <h3 className="lost-games">Lost: 35</h3>
-                        <h3 className="total-games">Total: 115</h3>
-                    </div>
+                    
                 </div>
                 <div className="buttons-container">
                     <button className="sub-screen-button">Individual stats</button>
