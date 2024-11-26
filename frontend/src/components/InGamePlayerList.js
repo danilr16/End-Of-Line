@@ -4,10 +4,6 @@ import request from "../util/request";
 export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers}){
 
     const userIsPlayer = players.some((p)=>p.user.username === username);
-    console.log("Spectators:", spectators);
-    spectators?.forEach((p, i) => console.log(`Spectator ${i}:`, p));
-    console.log("Spectators:", players);
-    players?.forEach((p, i) => console.log(`Player ${i}:`, p));
     const userIsSpectator = spectators.some((p)=>p.username === username);
     const userSwitchRole = userIsPlayer ? "spectator" : "player"
 

@@ -67,8 +67,9 @@ export default function ChatBox({gameCode,user,jwt}){
         if (client && input.trim()) {
             client.publish({
             destination: "/app/chat",
-            body: JSON.stringify({jwt:jwt, messageString:input,gameCode:gameCode}),
+            body: JSON.stringify({username:user.userName,jwt:jwt, messageString:input,gameCode:gameCode}),
             });
+            console.log({username:user.userName,jwt:jwt, messageString:input,gameCode:gameCode});
         }
         
         setInput('');

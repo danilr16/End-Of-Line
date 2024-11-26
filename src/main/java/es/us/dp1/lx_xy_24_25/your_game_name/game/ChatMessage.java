@@ -12,18 +12,16 @@ import lombok.Setter;
 @Setter
 public class ChatMessage {
     private String jwt;
-    private String userName;
     private String messageString;
     private String gameCode;
+    private String userName;
 
-    @Autowired
-    JwtUtils jwtu;
 
     ChatMessage(){}
 
-    ChatMessage(String jwt, String messageString, String gameCode){
+    ChatMessage(String userName,String jwt, String messageString, String gameCode){
+        this.userName = userName;
         this.jwt = jwt;
-        this.userName = jwtu.getUserNameFromJwtToken(jwt);
         this.messageString = messageString;
         this.gameCode = gameCode;
     }
