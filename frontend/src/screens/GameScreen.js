@@ -163,10 +163,17 @@ export default function GameScreen() {
         };
 
         window.addEventListener('resize', handleResize);
+
+        const intervalId = setInterval(updateGridItemSize, 1000);
         return () => {
             window.removeEventListener('resize', handleResize);
+            clearInterval(intervalId);
         };
-    }, [gridSize, game]);
+    }, [gridSize, game, gridRef.current]);
+
+    useEffect(() => {
+        console.log("SIZE "+gridItemSize);
+    }, [gridItemSize])
 
     useEffect(() => { //Join on entering screen
         if (game && players && game.numPlayers && user && user.username) {

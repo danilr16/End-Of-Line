@@ -42,16 +42,20 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
         // Set timeout to update position on initial load
         const timeoutId = setTimeout(updatePosition, 30);
 
+        const intervalId = setInterval(updatePosition, 1000);
+
         // Add event listeners for mouse events
         document.addEventListener('mouseup', handleDragEnd);
         document.addEventListener('mousemove', handleMouseMove);
 
         // Add resize event listener
+        updatePosition()
         window.addEventListener('resize', updatePosition);
 
         return () => {
             // Cleanup listeners
             clearTimeout(timeoutId);
+            clearInterval(intervalId);
             document.removeEventListener('mouseup', handleDragEnd);
             document.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', updatePosition);
