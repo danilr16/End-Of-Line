@@ -7,14 +7,14 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
@@ -184,7 +184,10 @@ public class GameServicetests {
     @Test
     public void shouldSaveGame(){
         Game newGame = new Game();
+        newGame.setId(1);
         newGame.setDuration(20);;
+        when(gameRepository.save(newGame)).thenReturn(newGame);
+
         Game savedGame = gameService.saveGame(newGame);
         assertNotNull(newGame.getId());
         assertEquals(20, savedGame.getDuration());
@@ -193,20 +196,30 @@ public class GameServicetests {
     @Test 
     public void shouldUpdateGame(){
         Game g = new Game();
+        g.setId(1);
         g.setDuration(10);
+
+        when(gameRepository.save(g)).thenReturn(g);
         Game gameToUpdated = gameService.saveGame(g);
 
         gameToUpdated.setDuration(20);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(g));
+        when(gameRepository.save(g)).thenReturn(gameToUpdated);
+
         Game gameUpdated = gameService.updateGame(gameToUpdated, gameToUpdated.getId());
         assertNotNull(gameUpdated);
         assertEquals(20,gameToUpdated.getDuration());      
     }
 
     @Test 
+    @Transactional
     public void shouldDeleteGame(){
-        Game g = new Game();
-        gameService.deleteGame(g.getId());
-        assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(g.getId()));
+        int count = ((List<Game>) gameService.findAll()).size();
+        int idToDelete = 1;
+        gameService.deleteGame(idToDelete);
+        int finalCount = ((List<Game>) gameService.findAll()).size();
+        assertEquals(count-1, finalCount);
+        assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(simGame.getId()));
     }
 
 
