@@ -170,7 +170,7 @@ export default function GameScreen() {
     useEffect(() => { //Join on entering screen
         if (game && players && game.numPlayers && user && user.username) {
             const isPlayerInGame = players.some(player => player.user.username === user.username);
-            const isSpectatorInGame = game.spectators.some(sp => sp.user.username === user.username);
+            const isSpectatorInGame = game.spectators.some(sp => sp.user &&  sp.user.username === user.username);
 
             if (!isPlayerInGame && !isSpectatorInGame && players.length < game.numPlayers) { //join as player if possible
                 request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);

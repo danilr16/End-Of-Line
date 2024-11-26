@@ -4,7 +4,7 @@ import request from "../util/request";
 export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers}){
 
     const userIsPlayer = players.some((p)=>p.user.username === username);
-    const userIsSpectator = spectators.some((p)=>p.user.username === username);
+    const userIsSpectator = spectators.some((p) => p.user && p.user.username === username);
     const userSwitchRole = userIsPlayer ? "spectator" : "player"
 
     const handleSwitch = () =>{
