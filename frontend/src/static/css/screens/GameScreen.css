@@ -7,6 +7,8 @@
     justify-content: flex-end; 
     align-items: center; 
     flex-direction: column; 
+    margin-top: 3%;
+    margin-bottom: -1%;
 }
 
 .card-container {
@@ -54,32 +56,82 @@
     margin-bottom: 30px;
     align-self: flex-start;
     margin-left: 30px;
-    background-color: var(--br-c-normal);
+    background-color: var(--br-trans-grey);
+    color: var(--br-trans-grey-very-light);
     border-radius: 10px;
     border: none;
     padding: 10px 30px;
+    transition: background-color 0.2s
 }
 
+.leave-button:hover {
+    background-color: var(--br-trans-grey-light);
+}
+
+/* Overlay with transition for blur effect and opacity */
+.confirmation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0); /* Start with fully transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 400; /* Ensure it covers everything */
+    pointer-events: none; /* Ensure it doesn't capture clicks when hidden */
+    transition: background 0.3s ease, backdrop-filter 0.3s ease; /* Smooth transition for background & blur */
+    backdrop-filter: blur(0px); /* Start with no blur */
+}
+
+/* Apply blur effect and opacity change when modal is active */
+.confirmation-modal-overlay.blurredOverlay {
+    background: rgba(0, 0, 0, 0.2); /* Make background semi-transparent when active */
+    backdrop-filter: blur(7px); /* Apply blur only to the background */
+    pointer-events: auto; /* Enable pointer events when visible */
+}
+
+/* Modal content */
 .confirmation-modal {
     position: fixed;
-    background-color: var(--br-c-normal);
-    margin-bottom: 300px;
+    background-color: white;
     padding: 25px 100px;
     border-radius: 10px;
-    animation: popUp 2s ease forwards;
+    animation: popUp 0.5s ease forwards;
     text-align: center;
+    top: 50%;
+    left: 50%;
+    z-index: 500; /* Ensure modal is above the overlay */
+    transform: translate(-50%, -50%);
 }
 
+/* Pop-up animation */
 @keyframes popUp {
     0% {
         opacity: 0;
-        transform: translateY(-1000px);
+        transform: translate(-50%, -250%);
     }
     100% {
         opacity: 1;
-        transform: translateY(0px);
+        transform: translate(-50%, -50%);
     }
-    
+}
+
+/* Exit animation */
+.popUp-exit {
+    animation: slideUpExit 0.5s ease forwards;
+}
+
+@keyframes slideUpExit {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -250%);
+    }
 }
 
 .modal-title {
@@ -97,26 +149,31 @@
 }
 
 .confirm-button {
-    background-color: red; 
+    background-color: var(--br-c-normal); 
     border-radius: 10px;
     border: none;
     padding: 5px 50px;
-    
+    color:black;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .confirm-button:hover {
-    animation: moveUp 0.3s ease forwards;
+    background-color: var(--br-c-dark);
+    color: white; 
 }
 
 .cancel-button {
-    background-color: green;
+    background-color: var(--br-black-transparency-light);
     border-radius: 10px;
     border: none;
     padding: 5px 50px;
+    color:black;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .cancel-button:hover {
-    animation: moveUp 0.3s ease forwards;
+    background-color: var(--black-transparency);
+    color: white; 
 }
 
 @keyframes moveUp {

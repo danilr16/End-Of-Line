@@ -15,10 +15,12 @@
     --br-blue-dark:#216778;
     --pure-white:#fff;
     --black-transparency:rgba(0,0,0,0.7);
+    --br-black-transparency-light:rgba(0, 0, 0, 0.344);
     --br-selected-over-bg:#818a91;
     --br-hovered-over-bg:#96a1aa;
     --br-trans-grey: #ffffff0a;
     --br-trans-grey-light: #ffffff27;
+    --br-trans-grey-very-light: #ffffff9b;
 }
 
 html body {
