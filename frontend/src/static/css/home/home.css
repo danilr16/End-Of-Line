@@ -39,9 +39,9 @@
     transition: background-color 0.3s; 
 }
 
+
 .big-button:hover {
     background-color: var(--br-c-dark);
     color: white; 
 }
-
 
