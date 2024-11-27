@@ -2,8 +2,12 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.geo.GeoModule;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
@@ -98,35 +103,23 @@ public class GameServicetests {
 
     @Test
     public void shouldFindAll(){
-        System.out.println("GameRepository: " + gameRepository);
-        System.out.println("GameService: " + gameService);
         //Simulo comportamiento de findAll
-        Game g = new Game();
-        g.setId(1);
-        g.setDuration(20);
-        g.setGameCode("ABCDE");
-        List<Game> mockGames = List.of(g);
+        List<Game> mockGames = List.of(simGame);
         when(gameRepository.findAll()).thenReturn(mockGames);
         //Llamo al repositorio
         List<Game> games = (List<Game>) gameService.findAll();
-
         //Compruebo el resultado
         assertEquals(1, games.size());
-        assertEquals("ABCDE",games.get(0).getGameCode());
+        assertEquals(1,games.get(0).getId());
     }
 
 
     @Test
     public void shouldFindGame(){
-        Game mockGame = new Game();
-        mockGame.setId(1);
-        mockGame.setDuration(20);
-        mockGame.setGameCode("ABCDE");
-        Mockito.when(gameRepository.findById(1)).thenReturn(Optional.of(mockGame));
-
+        //Simulo el comportamiento de findById
+        Mockito.when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
         // Llama al método del servicio
         Game game = gameService.findGame(1);
-
         // Verifica el resultado
         assertNotNull(game);
         assertEquals(1, game.getId());
@@ -135,20 +128,17 @@ public class GameServicetests {
     @Test
     public void shouldNotFindGame(){
         Mockito.when(gameRepository.findById(3423234)).thenReturn(Optional.empty());
-
         // Verifica que lanza la excepción
         assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(3423234));
     }
 
     @Test 
     public void shouldFindGameByGameCode(){
-        Game mockGame = new Game();
-        mockGame.setId(1);
-        mockGame.setDuration(20);
-        mockGame.setGameCode("ABCDE");
-        when(gameRepository.findGameByGameCode("ABCDE")).thenReturn(Optional.of(mockGame));
-        
+        //Simula el comportamiento del repositorio
+        when(gameRepository.findGameByGameCode("ABCDE")).thenReturn(Optional.of(simGame));
+        //Llama al servicio
         Game gamebyGameCode = gameService.findGameByGameCode("ABCDE");
+        //Comprueba el resultado
         assertNotNull(gamebyGameCode);
         assertEquals("ABCDE", gamebyGameCode.getGameCode());
     }
@@ -161,18 +151,26 @@ public class GameServicetests {
 
     @Test
     public void shouldFindJoinableGames(){
-        Game mockGame = new Game();
-        mockGame.setId(1);
-        mockGame.setDuration(20);
-        mockGame.setGameCode("ABCDE");
-        mockGame.setGameState(GameState.WAITING);
-        List<Game> joinableGames = List.of(mockGame);
+        //Simula el comportamiento del repositorio
+        List<Game> joinableGames = List.of(simGame);
         List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
         when(gameRepository.findByGameStateIn(validStates)).thenReturn(joinableGames);
-
+        //Llama al servicio
         List<Game> games = gameService.findJoinableGames();
+        //Comprueba el resultado
         assertFalse(games.isEmpty());
-        assertEquals(20, games.get(0).getDuration()); 
+        assertEquals(1, games.get(0).getId()); 
+    }
+
+    @Test
+    void shouldNotFindJoinableGames(){
+        //Simula el comportamiento del repositorio
+        List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
+        when(gameRepository.findByGameStateIn(validStates)).thenReturn(new ArrayList<>());
+        //Llamo al servicio
+        List<Game> joinableGames = gameService.findJoinableGames();
+        //Compruebo el resultado
+        assertEquals(0, joinableGames.size());
     }
 
 
@@ -183,44 +181,76 @@ public class GameServicetests {
 
     @Test
     public void shouldSaveGame(){
-        Game newGame = new Game();
-        newGame.setId(1);
-        newGame.setDuration(20);;
-        when(gameRepository.save(newGame)).thenReturn(newGame);
-
-        Game savedGame = gameService.saveGame(newGame);
-        assertNotNull(newGame.getId());
-        assertEquals(20, savedGame.getDuration());
+        //Simulación del repositorio en el juego
+        when(gameRepository.save(simGame)).thenReturn(simGame);
+        //Llamada al servicio
+        Game savedGame = gameService.saveGame(simGame);
+        //Simulación del repositorio para obtener el juegoGuardado
+        when(gameRepository.findAll()).thenReturn(List.of(savedGame));
+        //Llamada al servicio
+        List<Game> games = (List<Game>) gameService.findAll();
+        assertNotNull(savedGame);
+        assertEquals(1, games.size());
+        assertEquals(1, savedGame.getId());
     }
 
     @Test 
     public void shouldUpdateGame(){
-        Game g = new Game();
-        g.setId(1);
-        g.setDuration(10);
 
-        when(gameRepository.save(g)).thenReturn(g);
-        Game gameToUpdated = gameService.saveGame(g);
+        when(gameRepository.save(simGame)).thenReturn(simGame);
+        Game gameToUpdated = gameService.saveGame(simGame);
 
-        gameToUpdated.setDuration(20);
-        when(gameRepository.findById(1)).thenReturn(Optional.of(g));
-        when(gameRepository.save(g)).thenReturn(gameToUpdated);
+        gameToUpdated.setDuration(30);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
+        when(gameRepository.save(simGame)).thenReturn(gameToUpdated);
 
         Game gameUpdated = gameService.updateGame(gameToUpdated, gameToUpdated.getId());
         assertNotNull(gameUpdated);
-        assertEquals(20,gameToUpdated.getDuration());      
+        assertEquals(30,gameToUpdated.getDuration());      
     }
 
-    @Test 
+    @Test
     @Transactional
-    public void shouldDeleteGame(){
-        int count = ((List<Game>) gameService.findAll()).size();
-        int idToDelete = 1;
-        gameService.deleteGame(idToDelete);
+    public void shouldDeleteGame() {
+        // Lista simulada para representar los datos "persistidos"
+        List<Game> mockDatabase = new ArrayList<>();
+        mockDatabase.add(simGame);
+
+        // Simular comportamiento de findAll()
+        when(gameRepository.findAll()).thenAnswer(invocation -> new ArrayList<>(mockDatabase));
+
+        // Simular comportamiento de findById()
+        when(gameRepository.findById(anyInt())).thenAnswer(invocation -> {
+            int id = invocation.getArgument(0);
+            return mockDatabase.stream()
+                    .filter(game -> game.getId() == id)
+                    .findFirst();
+        });
+
+        // Simular comportamiento de delete()
+        doAnswer(invocation -> {
+            Game game = invocation.getArgument(0);
+            mockDatabase.remove(game);
+            return null;
+        }).when(gameRepository).delete(any(Game.class));
+
+        // Número de partidas inicial
+        int count =((List<Game>) gameService.findAll()).size();
+        System.out.println(count);
+
+        // Borrar la partida
+        gameService.deleteGame(simGame.getId());
+
+        // Número de partidas final
         int finalCount = ((List<Game>) gameService.findAll()).size();
-        assertEquals(count-1, finalCount);
+        System.out.println(finalCount);
+        assertEquals(count - 1, finalCount);
+
+        // Verificar que ya no se encuentra en el repositorio
         assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(simGame.getId()));
     }
+
+   
 
 
 
