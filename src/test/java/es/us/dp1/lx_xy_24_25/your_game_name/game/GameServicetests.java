@@ -64,7 +64,7 @@ public class GameServicetests {
 
     //Game simulado para comprobar el funcionamiento
     @BeforeEach
-    public void setUp(){
+    void setUp(){
         simGame = new Game();
         simGame.setDuration(20);
         simGame.setGameCode("ABCDE");
@@ -76,7 +76,8 @@ public class GameServicetests {
         List<Player> players = List.of(p);
         ChatMessage c = new ChatMessage();
         c.setMessageString("hello");;
-        List<ChatMessage> chat = List.of(c);
+        List<ChatMessage> chat = new ArrayList<>();
+        chat.add(c);
         GameState state = GameState.WAITING;
         GameMode mode = GameMode.VERSUS;
         Player p2 = new Player();
@@ -94,7 +95,7 @@ public class GameServicetests {
     }
 
     @Test
-    public void verifyDefaultGameInitialization() {
+    void verifyDefaultGameInitialization() {
         assertNotNull(simGame, "defaultGame debería estar inicializado en @BeforeEach");
         assertEquals(1, simGame.getId());
     }
@@ -102,7 +103,7 @@ public class GameServicetests {
     //Test de consulta de Game
 
     @Test
-    public void shouldFindAll(){
+    void shouldFindAll(){
         //Simulo comportamiento de findAll
         List<Game> mockGames = List.of(simGame);
         when(gameRepository.findAll()).thenReturn(mockGames);
@@ -115,7 +116,7 @@ public class GameServicetests {
 
 
     @Test
-    public void shouldFindGame(){
+    void shouldFindGame(){
         //Simulo el comportamiento de findById
         Mockito.when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
         // Llama al método del servicio
@@ -126,14 +127,14 @@ public class GameServicetests {
     }
 
     @Test
-    public void shouldNotFindGame(){
+    void shouldNotFindGame(){
         Mockito.when(gameRepository.findById(3423234)).thenReturn(Optional.empty());
         // Verifica que lanza la excepción
         assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(3423234));
     }
 
     @Test 
-    public void shouldFindGameByGameCode(){
+    void shouldFindGameByGameCode(){
         //Simula el comportamiento del repositorio
         when(gameRepository.findGameByGameCode("ABCDE")).thenReturn(Optional.of(simGame));
         //Llama al servicio
@@ -144,13 +145,13 @@ public class GameServicetests {
     }
 
     @Test 
-    public void shouldNotFindGameByGameCode(){
+    void shouldNotFindGameByGameCode(){
         when(gameRepository.findGameByGameCode("AAAAA")).thenReturn(Optional.empty());
         assertThrows(ResourceNotFoundException.class, () -> gameService.findGameByGameCode("AAAAA"));
     }
 
     @Test
-    public void shouldFindJoinableGames(){
+    void shouldFindJoinableGames(){
         //Simula el comportamiento del repositorio
         List<Game> joinableGames = List.of(simGame);
         List<GameState> validStates = List.of(GameState.IN_PROCESS,GameState.WAITING);
@@ -173,14 +174,8 @@ public class GameServicetests {
         assertEquals(0, joinableGames.size());
     }
 
-
-
-
-
-
-
     @Test
-    public void shouldSaveGame(){
+    void shouldSaveGame(){
         //Simulación del repositorio en el juego
         when(gameRepository.save(simGame)).thenReturn(simGame);
         //Llamada al servicio
@@ -195,7 +190,7 @@ public class GameServicetests {
     }
 
     @Test 
-    public void shouldUpdateGame(){
+    void shouldUpdateGame(){
 
         when(gameRepository.save(simGame)).thenReturn(simGame);
         Game gameToUpdated = gameService.saveGame(simGame);
@@ -211,7 +206,7 @@ public class GameServicetests {
 
     @Test
     @Transactional
-    public void shouldDeleteGame() {
+    void shouldDeleteGame() {
         // Lista simulada para representar los datos "persistidos"
         List<Game> mockDatabase = new ArrayList<>();
         mockDatabase.add(simGame);
@@ -248,6 +243,39 @@ public class GameServicetests {
 
         // Verificar que ya no se encuentra en el repositorio
         assertThrows(ResourceNotFoundException.class, () -> gameService.findGame(simGame.getId()));
+    }
+
+    @Test
+    void shouldGetGameChat(){
+        //Simulo el comportamiento del repositorio
+        when(gameRepository.findGameChat("ABCDE")).thenReturn(Optional.of(simGame.getChat()));
+        //Llamo al servicio
+        List<ChatMessage> chat = gameService.getGameChat("ABCDE");
+        //Compruebo el resultado
+        assertNotNull(chat);
+        assertEquals(1, chat.size());
+    }
+
+    @Test
+    void shouldNotGetGameChat(){
+        when(gameRepository.findGameChat("AAAAA")).thenReturn(Optional.empty());//Para que salte la excepción orElseThrow debe devolver un Optional vacio
+        assertThrows(ResourceNotFoundException.class, () -> gameService.getGameChat("AAAAA"));
+    }
+
+    @Test
+    @Transactional
+    void shouldSendMessage(){
+        when(gameRepository.findGameChat("ABCDE")).thenReturn(Optional.of(simGame.getChat()));
+        int iniChatSize = gameService.getGameChat("ABCDE").size();
+        when(gameRepository.findGameByGameCode("ABCDE")).thenReturn(Optional.of(simGame));
+        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
+        when(gameRepository.save(simGame)).thenReturn(simGame);
+        ChatMessage cm = new ChatMessage();
+        cm.setGameCode("ABCDE");
+        cm.setMessageString("BYE");
+        int finalChatSize = gameService.sendChatMessage(cm).size();
+        assertNotEquals(iniChatSize, finalChatSize);
+        assertEquals(2, finalChatSize);
     }
 
    
