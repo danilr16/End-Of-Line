@@ -15,21 +15,10 @@ import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
     const navigate = useNavigate();
-    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
-    const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
-    const [isDragging, setDragging] = useState(false);
-    const [hoveredIndex, setHoveredIndex] = useState(-1);
-    const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
-    const gridRef = useRef(null);
-    const beingDraggedCardRef = useRef(beingDraggedCard);
-    const setBeingDraggedCard = (card) => {
-        _setBeingDraggedCard(card);
-        beingDraggedCardRef.current = card; 
-    };
-    const { colors, updateColors } = useColors();
     const { gameCode } = useParams();
+
     const [game, setGame] = useFetchState(
         null,
         `/api/v1/games/${gameCode}`,
@@ -69,6 +58,52 @@ export default function GameScreen() {
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
+
+
+
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
+    const [isDragging, setDragging] = useState(false);
+    const [hoveredIndex, setHoveredIndex] = useState(-1);
+    const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
+    const gridRef = useRef(null);
+    const beingDraggedCardRef = useRef(beingDraggedCard);
+    const setBeingDraggedCard = (card) => {
+        _setBeingDraggedCard(card);
+        beingDraggedCardRef.current = card; 
+    };
+    const { colors, updateColors } = useColors();
+
+
+    const [player, setPlayer] = useState(null);
+
+    useEffect(() => {
+        if (game && game.players && game.players.length > 0) {
+        // Find the player that matches the username from game data
+        const currentPlayer = game.players.find(p => p.user.username === 'admin1');
+
+        if (currentPlayer) {
+            // Set the player state if found
+            console.log(currentPlayer)
+            setPlayer(currentPlayer);
+        } else {
+            // Optionally, handle the case when the player is not found
+            setPlayer(null);
+        }
+        } else {
+        // If the game or players are null or empty, reset player state
+        setPlayer(null);
+        }
+    }, [game]); // Run this effect whenever the 'game' state changes
+    
+
+    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
+    useEffect(() => {
+        if (game && game.tableCard) {
+            setGridSize(game.tableCard.numRow);
+        }
+    }, [game]); // Dependency on 'game' to watch for updates
+
+    
 
     const [user, setUser] = useFetchState(
         null,
@@ -251,14 +286,28 @@ export default function GameScreen() {
         }
     };
 
+    const handleStart = () => {
+        if (game && players && game.numPlayers && user && user.username && game.host.username == user.username) {
+            request(`/api/v1/games/${gameCode}/startGame`, "PATCH", {}, jwt)
+        }
+    };
+
 
     return (
         <div className="full-screen">
             <div className="half-screen">
                 <InGamePlayerList players = {players} spectators = {game.spectators}
                     gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers}/>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
-                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
+
+                {game.tableCard !== null && (<Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
+                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />)}
+
+                {(game.tableCard == null && game.host.username == user.username) && (<button className="start-game-button" onClick={handleStart}>START GAME</button>)}
+
+                {(game.tableCard == null && game.host.username !== user.username) && (<div className="waiting-sign"> 
+                    Waiting for host...
+                </div>)}
+
                 <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
             </div>
             <div className="bottom-container">
@@ -268,9 +317,9 @@ export default function GameScreen() {
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
             </div>
-            <button className="leave-button" onClick={modalVisibility}>
+            {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game
-            </button>
+            </button>}
             <LeaveConfirmationModal showConfirmationModal={showConfirmationModal} setShowConfirmationModal = {setShowConfirmationModal} handleLeave={handleLeave} game={game} user={user} />
         </div>
     );
