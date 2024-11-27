@@ -7,17 +7,17 @@ import "../static/css/components/gameCard.css"
 const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex }) => {
     const cardRef = useRef(null);
     const [position, setPosition] = useState({ top: window.innerHeight* 0.9691, left: window.innerWidth* 0.25083});
-    const [isHovered, setIsHovered] = useState(false); // State to track hover status
-    const isDragging = useRef(false); // Ref to track dragging status
+    const [isHovered, setIsHovered] = useState(false); 
+    const isDragging = useRef(false); 
     const handleDragStart = () => {
-        isDragging.current = true; // Set dragging ref to true
+        isDragging.current = true; 
         setBeingDraggedCard(index);
         document.body.classList.add('no-select');
         setDragging(true);
     };
 
     const handleDragEnd = () => {
-        isDragging.current = false; // Set dragging ref to false
+        isDragging.current = false; 
         setTimeout(() => {
             setBeingDraggedCard(null);
             document.body.classList.remove('no-select');
@@ -35,34 +35,29 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
         const updatePosition = () => {
             if (cardRef.current && !isDragging.current) {
                 const rect = cardRef.current.getBoundingClientRect();
-                setPosition({ top: rect.top + ((isHovered && !isDragging.current) ? 0 : 10), left: rect.left });
+                setPosition({
+                    top: rect.top + ((isHovered && !isDragging.current) ? 0 : 10),
+                    left: rect.left
+                });
             }
         };
-
-        // Set timeout to update position on initial load
-        const timeoutId = setTimeout(updatePosition, 30);
-
-        const intervalId = setInterval(updatePosition, 30);
-
-        // Add event listeners for mouse events
+    
+        const animationFrameId = requestAnimationFrame(function update() {
+            updatePosition();
+            requestAnimationFrame(update);
+        });
+    
         document.addEventListener('mouseup', handleDragEnd);
         document.addEventListener('mousemove', handleMouseMove);
-
-        // Add resize event listener
-        updatePosition()
-        window.addEventListener('resize', updatePosition);
-
+    
+    
         return () => {
-            // Cleanup listeners
-            clearTimeout(timeoutId);
-            clearInterval(intervalId);
+            cancelAnimationFrame(animationFrameId);
             document.removeEventListener('mouseup', handleDragEnd);
             document.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('resize', updatePosition);
         };
     }, [beingDraggedCard, index, isHovered]);
 
-    // Hover event handlers
     const handleMouseEnter = () => {
         if (hoverable) {
             setIsHovered(true);
