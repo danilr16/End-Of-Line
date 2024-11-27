@@ -196,17 +196,14 @@ public class GameService {
     @Transactional
     public void returnCards(Player player) {//Devuelve todas las cartas de la mano de un jugador al mazo
         Hand hand = player.getHand();
-        Card card = hand.getCards().stream().findFirst().get();
+        List<Card> cards = hand.getCards();
         PackCard packCard = player.getPackCards().stream().findFirst().get();
-        packCard.getCards().add(card);
-        packCard.setNumCards(packCard.getNumCards() + 1);
-        hand.getCards().remove(card);
-        hand.setNumCards(hand.getNumCards() - 1);
+        packCard.getCards().addAll(cards);
+        packCard.setNumCards(packCard.getNumCards() + cards.size());
+        hand.getCards().removeAll(cards);
+        hand.setNumCards(hand.getNumCards() - cards.size());
         packCardService.updatePackCard(packCard, packCard.getId());
         handService.updateHand(hand, hand.getId());
-        if (!hand.getCards().isEmpty()) {
-            returnCards(player);
-        }
     }
 
     @Transactional
