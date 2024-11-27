@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandRepository;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardRepository;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
@@ -37,6 +39,7 @@ public class GameServicetests {
     
     @Mock
     private GameRepository gameRepository;
+
 
     @InjectMocks //Clase que queremos probar inyectando las dependencias correspondientes
     private GameService gameService;
@@ -277,6 +280,40 @@ public class GameServicetests {
         assertNotEquals(iniChatSize, finalChatSize);
         assertEquals(2, finalChatSize);
     }
+
+    @Test 
+    @Transactional 
+    void shouldTakeCard(){
+        //Simular player
+
+        //Simular repositorio
+        //when(handService.updateHand(null, null)).thenReturn()
+    }
+
+    @Test 
+    @Transactional
+    void shouldInitialTurn(){
+        //Comprobar que se ha creado un orden(la propiedad initialTurn no es null ni vacía)
+    }
+
+    @Test
+    @Transactional
+    void shouldDecideTurns(){
+
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnCards(){ //Actualizar repo antes 
+
+    }
+
+    @Test 
+    @Transactional
+    void shouldChangeInitialHand(){
+
+    }
+
 
    
 
