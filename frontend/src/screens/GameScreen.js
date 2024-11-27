@@ -37,6 +37,39 @@ export default function GameScreen() {
         setMessage,
         setVisible
     );
+
+    useEffect(() => {
+        const fetchGameUpdates = () => {
+            fetch(`/api/v1/games/${gameCode}`, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.message) {
+                        setGame(data); // Keep the previous state while updating
+                    } else {
+                        if (setMessage !== null) {
+                            setMessage(data.message);
+                            setVisible(true);
+                        } else {
+                            window.alert(data.message);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching game updates:", error);
+                    setMessage("Failed to fetch data");
+                    setVisible(true);
+                });
+        };
+
+        const interval = setInterval(fetchGameUpdates, 1000);
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [gameCode, jwt, setMessage, setVisible, setGame]);
+
     const [user, setUser] = useFetchState(
         null,
         '/api/v1/users/currentUser',
