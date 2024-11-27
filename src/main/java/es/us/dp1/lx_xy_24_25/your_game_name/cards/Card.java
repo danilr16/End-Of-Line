@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.cards;
 
-import es.us.dp1.lx_xy_24_25.your_game_name.dto.PlayerDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import jakarta.persistence.Entity;

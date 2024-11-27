@@ -78,7 +78,19 @@ public class TableCardService {
         List<nodeCoordinates> ls = mp.get(numJugadores);
         tableCard = createGenericTable(aux.get(numJugadores), numJugadores);
         for (int i = 0; i < numJugadores; i++) {
-            createHomeNode(tableCard, players.get(i), ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
+            Player player = players.get(i);
+            createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
+            Card nodePlayer = cardService.findCard(player.getPlayedCards().stream().findFirst().get());
+            List<Map<String, Integer>> possiblePositions = getPossiblePositionsForPlayer(tableCard, player, nodePlayer);
+            List<Integer> positions = new ArrayList<>();
+            List<Integer> rotations = new ArrayList<>();
+            for (Map<String, Integer> position: possiblePositions) {
+                positions.add(position.get("position"));
+                rotations.add(position.get("rotation"));
+            }
+            player.setPossiblePositions(positions);
+            player.setPossibleRotations(rotations);
+            playerService.updatePlayer(player, player.getId());
         }
         updateTableCard(tableCard, tableCard.getId());
         return tableCard;
@@ -169,5 +181,18 @@ public class TableCardService {
         }
     
         return possiblePositions;
+    }
+
+    public Boolean tableCardFull(TableCard tableCard) {
+        Boolean res = true;
+        for(Row row:tableCard.getRows()) {
+            for(Cell cell:row.getCells()) {
+                if(!cell.getIsFull()) {
+                    res = false;
+                    break;
+                }
+            }
+        }
+        return res;
     }
 }

@@ -49,20 +49,13 @@ export default function CreateModal({
         setLoading(true);
         setError(null);
 
-        const payload = {
-            numPlayers: maxPlayers,
-            gameMode: selectedGamemode.toUpperCase(),
-            isPublic: !isPrivateRoom
-        };
-
         try {
-            const response = await fetch('/api/v1/games', {
+            const response = await fetch(`/api/v1/games?isPublic=${!isPrivateRoom}&numPlayers=${maxPlayers}&gameMode=${selectedGamemode.toUpperCase()}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(payload)
             });
 
             if (!response.ok) {

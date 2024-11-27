@@ -26,6 +26,7 @@ public class CellService {
 
     @Transactional
     public Cell saveCell(Cell cell) throws DataAccessException {
+        cell.setIsFull(cell.getCard() != null);
         repository.save(cell);
         return cell;
     }
@@ -36,17 +37,25 @@ public class CellService {
 	}	
 
     @Transactional
-	public Cell updateCell(@Valid Cell cell, Integer idToUpdate) {
-		Cell toUpdate = findCell(idToUpdate);
-		BeanUtils.copyProperties(cell, toUpdate, "id");
-		repository.save(toUpdate);
-		return toUpdate;
-	}
-
+    public Cell updateCell(@Valid Cell cell, Integer idToUpdate) {
+        Cell toUpdate = findCell(idToUpdate);
+        if (toUpdate.getCard() != null && cell.getCard() != null && 
+            !toUpdate.getCard().getId().equals(cell.getCard().getId())) {
+            throw new IllegalArgumentException("Cannot update cell with a different card.");
+        }
+        BeanUtils.copyProperties(cell, toUpdate, "id");
+        toUpdate.setIsFull(toUpdate.getCard() != null);
+    
+        repository.save(toUpdate);
+        return toUpdate;
+    }
+    
+    
     @Transactional
 	public void deleteCell(Integer id) {
 		Cell toDelete = findCell(id);
 		this.repository.delete(toDelete);
+        
 	}
 
 }

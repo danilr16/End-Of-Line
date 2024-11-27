@@ -16,6 +16,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 
@@ -40,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -84,10 +86,11 @@ class UserRestController {
 	}
 
 	@GetMapping("/games")
-	public ResponseEntity<List<Game>> findAllGames() {
+	public ResponseEntity<List<GameDTO>> findAllGames() {
 		User user = userService.findCurrentUser();
 		List<Game> games = userService.findAllGamesByUserHost(user);
-		return new ResponseEntity<>(games, HttpStatus.OK);
+		List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@PostMapping

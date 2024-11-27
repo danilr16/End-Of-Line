@@ -29,6 +29,14 @@ public class GameValidator implements Validator {
             errors.rejectValue("gameMode", "players_gameMode", 
                 "The gameMode can't be " + gameMode + " with one player");
         }
+        if (numPlayer != 2 && gameMode.equals(GameMode.PUZZLE_COOP)) {
+            errors.rejectValue("gameMode", "players_gameMode", 
+                "The gameMode can't be " + gameMode + " with " + numPlayer + " players");
+        }
+        if (numPlayer <= 3 && gameMode.equals(GameMode.TEAM_BATTLE)) {
+            errors.rejectValue("gameMode", "players_gameMode", 
+                "The gameMode can't be " + gameMode + " with " + numPlayer + " players");
+        }
     }
     
     @Override

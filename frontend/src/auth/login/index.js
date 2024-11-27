@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Alert } from "reactstrap";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import tokenService from "../../services/token.service";
 import "../../static/css/auth/authButton.css";
@@ -10,7 +10,6 @@ export default function Login() {
   const [message, setMessage] = useState(null)
   const loginFormRef = React.createRef();      
   const location = useLocation();
-  const navigate = useNavigate();
 
   const gameCode = location.pathname.startsWith("/game/") ? location.pathname.split("/")[2] : null;
 
@@ -34,7 +33,7 @@ export default function Login() {
         if (gameCode) {
           window.location.assign(`/game/${gameCode}`);
         } else {
-          navigate("/");
+          window.location.assign("/");
         }
       })
 

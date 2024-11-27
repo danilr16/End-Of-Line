@@ -3,6 +3,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,11 +38,9 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
-
-
-import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("api/v1/games")
@@ -76,30 +75,33 @@ class GameRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Game>> findAll(){
-        List<Game> res = (List<Game>) gameService.findAll();
+    public ResponseEntity<List<GameDTO>> findAll(){
+        List<Game> games = (List<Game>) gameService.findAll();
+        List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Game> create(@RequestBody @Valid Game game) {
+    public ResponseEntity<Game> create(@RequestParam(required = true) Boolean isPublic, 
+        @RequestParam(required = true) Integer numPlayers, @RequestParam(required = true) @Valid GameMode gameMode) {
         Game newGame = new Game();
         User currentUser = userService.findCurrentUser();
         Hand initialUserHand = handService.saveVoidHand();
         Player userPlayer = playerService.saveUserPlayerbyUser(currentUser,initialUserHand);
         newGame.setHost(currentUser);
         newGame.setPlayers(new ArrayList<>(List.of(userPlayer)));
-        newGame.setIsPublic(game.getIsPublic());
-        newGame.setNumPlayers(game.getNumPlayers());
-        newGame.setGameMode(game.getGameMode());
+        newGame.setIsPublic(isPublic);
+        newGame.setNumPlayers(numPlayers);
+        newGame.setGameMode(gameMode);
         Game savedGame = gameService.saveGame(newGame);
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
     
     @GetMapping("/current")
-    public ResponseEntity<List<Game>> findJoinableGames(){
-        List<Game> res = gameService.findJoinableGames();
+    public ResponseEntity<List<GameDTO>> findJoinableGames(){
+        List<Game> games = gameService.findJoinableGames();
+        List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
         return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
@@ -115,17 +117,15 @@ class GameRestController {
         Game game = gameService.findGameByGameCode(gameCode);
         GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
-            switch (game.getGameMode()) {
-                case PUZZLE_SINGLE:
-                    gameService.gameInProcessSingle(game);
-                case PUZZLE_COOP:
-                    gameService.gameInProcessCoop(game);
-                case TEAM_BATTLE:
-                    gameService.gameInProcessTeam(game);
-                case VERSUS:
-                    gameService.gameInProcess(game);
-                default:
-                    break;
+            GameMode gameMode = game.getGameMode();
+            if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
+                gameService.gameInProcessSingle(game);
+            } else if (gameMode.equals(GameMode.PUZZLE_COOP)) {
+                gameService.gameInProcessCoop(game);
+            } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
+                gameService.gameInProcessTeam(game);
+            } else {
+                gameService.gameInProcess(game);
             }
         }
         return new ResponseEntity<>(gameDTO,HttpStatus.OK);
@@ -230,7 +230,7 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/useEnergy")
-    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid PowerType powerType, 
+    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType, 
         @RequestParam(required = false)Integer index, @RequestParam(required = false)Integer cardId) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();

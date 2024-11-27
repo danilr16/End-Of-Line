@@ -67,18 +67,10 @@ export default function ChatBox({gameCode,user,jwt}){
         if (client && input.trim()) {
             client.publish({
             destination: "/app/chat",
-            body: JSON.stringify({userName:user.username, messageString:input,gameCode:gameCode}),
+            body: JSON.stringify({userName:user.username,jwt:jwt, messageString:input,gameCode:gameCode}),
             });
+            console.log({username:user.userName,jwt:jwt, messageString:input,gameCode:gameCode});
         }
-
-        // const newChat = (await request(`/api/v1/games/${gameCode}/chat`,'PATCH',{userName:user.username, messageString:input},jwt)).resContent;
-
-        // try{
-        //     setChat(newChat.slice(-MAX_MESSAGES))
-        // }
-        // catch(e){
-        //     return;
-        // } 
         
         setInput('');
     }

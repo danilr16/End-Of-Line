@@ -10,13 +10,58 @@ import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
 import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
+import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
     const navigate = useNavigate();
-    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
+    const { gameCode } = useParams();
+
+    const [game, setGame] = useFetchState(
+        null,
+        `/api/v1/games/${gameCode}`,
+        jwt,
+        setMessage,
+        setVisible
+    );
+
+    useEffect(() => {
+        const fetchGameUpdates = () => {
+            fetch(`/api/v1/games/${gameCode}`, {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.message) {
+                        setGame(data); // Keep the previous state while updating
+                    } else {
+                        if (setMessage !== null) {
+                            setMessage(data.message);
+                            setVisible(true);
+                        } else {
+                            window.alert(data.message);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching game updates:", error);
+                    setMessage("Failed to fetch data");
+                    setVisible(true);
+                });
+        };
+
+        const interval = setInterval(fetchGameUpdates, 1000);
+
+        return () => clearInterval(interval); // Cleanup on unmount
+    }, [gameCode, jwt, setMessage, setVisible, setGame]);
+
+
+
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
     const [isDragging, setDragging] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(-1);
     const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
@@ -27,14 +72,39 @@ export default function GameScreen() {
         beingDraggedCardRef.current = card; 
     };
     const { colors, updateColors } = useColors();
-    const { gameCode } = useParams();
-    const [game, setGame] = useFetchState(
-        null,
-        `/api/v1/games/${gameCode}`,
-        jwt,
-        setMessage,
-        setVisible
-    );
+
+
+    const [player, setPlayer] = useState(null);
+
+    useEffect(() => {
+        if (game && game.players && game.players.length > 0) {
+        // Find the player that matches the username from game data
+        const currentPlayer = game.players.find(p => p.user.username === 'admin1');
+
+        if (currentPlayer) {
+            // Set the player state if found
+            console.log(currentPlayer)
+            setPlayer(currentPlayer);
+        } else {
+            // Optionally, handle the case when the player is not found
+            setPlayer(null);
+        }
+        } else {
+        // If the game or players are null or empty, reset player state
+        setPlayer(null);
+        }
+    }, [game]); // Run this effect whenever the 'game' state changes
+    
+
+    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
+    useEffect(() => {
+        if (game && game.tableCard) {
+            setGridSize(game.tableCard.numRow);
+        }
+    }, [game]); // Dependency on 'game' to watch for updates
+
+    
+
     const [user, setUser] = useFetchState(
         null,
         '/api/v1/users/currentUser',
@@ -161,15 +231,22 @@ export default function GameScreen() {
         };
 
         window.addEventListener('resize', handleResize);
+
+        const intervalId = setInterval(updateGridItemSize, 1000);
         return () => {
             window.removeEventListener('resize', handleResize);
+            clearInterval(intervalId);
         };
-    }, [gridSize, game]);
+    }, [gridSize, game, gridRef.current]);
+
+    useEffect(() => {
+        console.log("SIZE "+gridItemSize);
+    }, [gridItemSize])
 
     useEffect(() => { //Join on entering screen
         if (game && players && game.numPlayers && user && user.username) {
             const isPlayerInGame = players.some(player => player.user.username === user.username);
-            const isSpectatorInGame = game.spectators.some(sp => sp.user.username === user.username);
+            const isSpectatorInGame = game.spectators.some(sp => sp.username === user.username);
 
             if (!isPlayerInGame && !isSpectatorInGame && players.length < game.numPlayers) { //join as player if possible
                 request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
@@ -188,6 +265,32 @@ export default function GameScreen() {
         );
     }
 
+    const modalVisibility = () => {
+        
+        if(game.gameState !== 'END') { //Si la partida ha finalizado, no pide confirmación para salir
+            setShowConfirmationModal(true);
+        }
+    }
+    
+
+    const handleLeave = () => {
+        if (game && players && game.numPlayers && user && user.username) {
+            const isPlayerInGame = players.some(player => player.user.username === user.username)
+            const isSpectatorInGame = game.spectators.some(spectator => spectator.username === user.username)
+            if(isPlayerInGame) {
+                request(`/api/v1/games/${gameCode}/leaveAsPlayer`, "PATCH", {}, jwt)
+            } else if (isSpectatorInGame) {
+                request(`/api/v1/games/${gameCode}/leaveAsSpectator`, "PATCH", {}, jwt)
+            }
+            navigate('/games/current')
+        }
+    };
+
+    const handleStart = () => {
+        if (game && players && game.numPlayers && user && user.username && game.host.username == user.username) {
+            request(`/api/v1/games/${gameCode}/startGame`, "PATCH", {}, jwt)
+        }
+    };
 
 
     return (
@@ -195,8 +298,16 @@ export default function GameScreen() {
             <div className="half-screen">
                 <InGamePlayerList players = {players} spectators = {game.spectators}
                     gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers}/>
-                <Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
-                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />
+
+                {game.tableCard !== null && (<Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
+                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />)}
+
+                {(game.tableCard == null && game.host.username == user.username) && (<button className="start-game-button" onClick={handleStart}>START GAME</button>)}
+
+                {(game.tableCard == null && game.host.username !== user.username) && (<div className="waiting-sign"> 
+                    Waiting for host...
+                </div>)}
+
                 <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
             </div>
             <div className="bottom-container">
@@ -206,6 +317,10 @@ export default function GameScreen() {
                 <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
                 </div>
             </div>
+            {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
+                    Leave game
+            </button>}
+            <LeaveConfirmationModal showConfirmationModal={showConfirmationModal} setShowConfirmationModal = {setShowConfirmationModal} handleLeave={handleLeave} game={game} user={user} />
         </div>
     );
 }
