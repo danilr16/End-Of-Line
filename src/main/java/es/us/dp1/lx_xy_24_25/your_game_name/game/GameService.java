@@ -173,7 +173,7 @@ public class GameService {
     }
 
     @Transactional
-    public void initialTurn(Game game) {//Decide el turno inicial de partida
+    public Game initialTurn(Game game) {//Decide el turno inicial de partida
         List<Integer> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .map(p -> p.getId()).collect(Collectors.toList());
         Collections.shuffle(players);
@@ -181,6 +181,7 @@ public class GameService {
         game.setOrderTurn(players);
         game.setInitialTurn(players);
         this.updateGame(game, game.getId());
+        return game; //Se ha añadido que devuelva game para la comprobación de los test
     }
 
     @Transactional

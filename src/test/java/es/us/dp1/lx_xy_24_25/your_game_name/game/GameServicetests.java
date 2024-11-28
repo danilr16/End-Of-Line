@@ -31,6 +31,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
@@ -100,9 +101,19 @@ public class GameServicetests {
         simGame.setId(1);
 
         User host = new User();
-        //Datos de usuario
+        //Datos de jugadores
         Player p = new Player();
         p.setId(1);
+        p.setState(PlayerState.PLAYING);
+        Player p2 = new Player();
+        p2.setId(2);
+        p2.setState(PlayerState.PLAYING);
+        Player p3 = new Player();
+        p3.setId(3);
+        p3.setState(PlayerState.PLAYING);
+        Player p4 = new Player();
+        p4.setId(4);
+        p4.setState(PlayerState.PLAYING);
             //Crear packcard
         PackCard pc = new PackCard();
         List<Card> cards = simCreate25Cards(p);
@@ -120,16 +131,16 @@ public class GameServicetests {
         playerHand.setNumCards(handCards.size());
         p.setHand(playerHand);
 
-        List<Player> players = List.of(p);
+        List<Player> players = List.of(p,p2,p3,p4);
         ChatMessage c = new ChatMessage();
         c.setMessageString("hello");;
         List<ChatMessage> chat = new ArrayList<>();
         chat.add(c);
         GameState state = GameState.WAITING;
         GameMode mode = GameMode.VERSUS;
-        Player p2 = new Player();
-        p2.setId(2);
-        List<Player> spectators = List.of(p2);
+        Player spectator = new Player();
+        spectator.setId(2);
+        List<Player> spectators = List.of(spectator);
         TableCard table = new TableCard();
        
 
@@ -351,6 +362,12 @@ public class GameServicetests {
     @Transactional
     void shouldInitialTurn(){
         //Comprobar que se ha creado un orden(la propiedad initialTurn no es null ni vacía)
+        //Simulación de servicios y repos
+        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
+        when(gameRepository.save(simGame)).thenReturn(simGame);
+        Game gameWithInitialTurn = gameService.initialTurn(simGame);
+        assertNotNull(gameWithInitialTurn.getInitialTurn());
+        assertTrue(gameWithInitialTurn.getInitialTurn().size()==4);
     }
 
     @Test
