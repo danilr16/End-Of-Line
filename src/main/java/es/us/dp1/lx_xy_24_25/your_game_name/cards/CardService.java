@@ -59,7 +59,7 @@ public class CardService {
     }
 
     @Transactional
-    public List<Card> create25Cards(Player player) {
+    public  List<Card> create25Cards(Player player) {
         List<Card> cards = new ArrayList<>();
         for(int i=1;i<=3;i++) {
             Card c1 = Card.createByType(TypeCard.TYPE_1, player);

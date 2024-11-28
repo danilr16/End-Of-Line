@@ -18,14 +18,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.geo.GeoModule;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
-import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandRepository;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
-import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardRepository;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
@@ -74,8 +74,24 @@ public class GameServicetests {
         simGame.setId(1);
 
         User host = new User();
+        //Datos de usuario
         Player p = new Player();
         p.setId(1);
+            //Crear packcard
+        PackCard pc = new PackCard();
+        List<Card> cards = cardService.create25Cards(p);
+        System.out.println(cards);
+        pc.setCards(cards);
+        pc.setId(1);
+        List<PackCard> packCards = new ArrayList<>();
+        packCards.add(pc);
+        p.setPackCards(packCards);
+            //Crear hand
+        Hand playerHand = new Hand();
+        List<Card> handCards = cards.subList(0, 5);
+        playerHand.setCards(handCards);
+        p.setHand(playerHand);
+
         List<Player> players = List.of(p);
         ChatMessage c = new ChatMessage();
         c.setMessageString("hello");;
@@ -87,6 +103,7 @@ public class GameServicetests {
         p2.setId(2);
         List<Player> spectators = List.of(p2);
         TableCard table = new TableCard();
+       
 
         simGame.setHost(host);
         simGame.setChat(chat);
@@ -284,10 +301,19 @@ public class GameServicetests {
     @Test 
     @Transactional 
     void shouldTakeCard(){
-        //Simular player
+        //Simular repo
+        when(this.cardService.saveCard(any(Card.class))).thenReturn(null);
+        Player p  = simGame.getPlayers().get(0);
+        PackCard packCard = p.getPackCards().stream().findFirst().get();
+        int initialSizeCards = packCard.getNumCards();
+        Player playerUpdated = gameService.takeACard(p).getPlayer();
+        //Compruebo que el mazo tiene una carta menos
+        int finalSizeCards = playerUpdated.getPackCards().get(0).getNumCards();;
+        assertEquals(initialSizeCards - 1, finalSizeCards );
+        //Compruebo que la carta está en la mano
+        Card cardTaken = gameService.takeACard(p).getCard();
+        assertTrue(playerUpdated.getPackCards().get(0).getCards().contains(cardTaken));
 
-        //Simular repositorio
-        //when(handService.updateHand(null, null)).thenReturn()
     }
 
     @Test 
