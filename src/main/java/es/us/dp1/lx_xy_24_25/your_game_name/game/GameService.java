@@ -27,6 +27,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
@@ -222,7 +223,9 @@ public class GameService {
         if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 5 || cantContinuePlaying(game, playing)) {
             playing.setState(PlayerState.LOST);
             playerService.updatePlayer(playing, playing.getId());
-            nextTurn(game, playing);
+            if (!game.getGameMode().equals(GameMode.PUZZLE_SINGLE)) {
+                nextTurn(game, playing);
+            }
         } else if (playing.getCardsPlayedThisTurn() >= 2) {
             nextTurn(game, playing);
         }
@@ -393,8 +396,8 @@ public class GameService {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() - 1);
+        player.getUsedPowers().add(PowerType.ACCELERATE);
         playerService.updatePlayer(player, player.getId());
-
     }
 
     @Transactional
@@ -402,6 +405,7 @@ public class GameService {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() + 1);
+        player.getUsedPowers().add(PowerType.BRAKE);
         playerService.updatePlayer(player, player.getId());
     }
 
@@ -409,6 +413,7 @@ public class GameService {
     public void useBackAway(User currentUser, Player player, String gameCode, Integer index, Card cardToPlace) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
+        player.getUsedPowers().add(PowerType.BACK_AWAY);
         playerService.updatePlayer(player, player.getId());
         this.placeCard(currentUser, gameCode, index, cardToPlace, true);
     }
@@ -418,6 +423,7 @@ public class GameService {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         this.takeACard(player);
+        player.getUsedPowers().add(PowerType.EXTRA_GAS);
         playerService.updatePlayer(player, player.getId());
 
     }
