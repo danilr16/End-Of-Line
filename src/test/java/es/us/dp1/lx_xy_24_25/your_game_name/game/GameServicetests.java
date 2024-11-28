@@ -18,15 +18,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.geo.GeoModule;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService.Pair;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
@@ -37,6 +42,7 @@ public class GameServicetests {
     
     @Mock
     private GameRepository gameRepository;
+
 
     @InjectMocks //Clase que queremos probar inyectando las dependencias correspondientes
     private GameService gameService;
@@ -62,6 +68,30 @@ public class GameServicetests {
 
     private Game simGame;
 
+    List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
+        List<Card> cards = new ArrayList<>();
+        for(int i=1;i<=3;i++) {
+            Card c1 = Card.createByType(TypeCard.TYPE_1, player);
+            cards.add(c1);
+            Card c2 = Card.createByType(TypeCard.TYPE_2_IZQ, player);
+            cards.add(c2);
+            Card c3 = Card.createByType(TypeCard.TYPE_2_DER, player);
+            cards.add(c3);
+            Card c4 = Card.createByType(TypeCard.TYPE_3_IZQ, player);
+            cards.add(c4);
+            Card c5 = Card.createByType(TypeCard.TYPE_3_DER, player);
+            cards.add(c5);
+            Card c6 = Card.createByType(TypeCard.TYPE_4, player);
+            cards.add(c6);
+            Card c7 = Card.createByType(TypeCard.TYPE_5, player);
+            cards.add(c7);
+            Card c8 = Card.createByType(TypeCard.TYPE_0, player);
+            cards.add(c8);
+        }
+        Card c9 = Card.createByType(TypeCard.TYPE_1, player);
+        cards.add(c9);
+        return cards;
+    }
     //Game simulado para comprobar el funcionamiento
     @BeforeEach
     void setUp(){
@@ -71,19 +101,48 @@ public class GameServicetests {
         simGame.setId(1);
 
         User host = new User();
+        //Datos de jugadores
         Player p = new Player();
         p.setId(1);
-        List<Player> players = List.of(p);
+        p.setState(PlayerState.PLAYING);
+        Player p2 = new Player();
+        p2.setId(2);
+        p2.setState(PlayerState.PLAYING);
+        Player p3 = new Player();
+        p3.setId(3);
+        p3.setState(PlayerState.PLAYING);
+        Player p4 = new Player();
+        p4.setId(4);
+        p4.setState(PlayerState.PLAYING);
+            //Crear packcard
+        PackCard pc = new PackCard();
+        List<Card> cards = simCreate25Cards(p);
+        pc.setCards(cards);
+        pc.setId(1);
+        pc.setNumCards(cards.size());
+        List<PackCard> packCards = new ArrayList<>();
+        packCards.add(pc);
+        p.setPackCards(packCards);
+            //Crear hand
+        Hand playerHand = new Hand();
+        playerHand.setId(1);
+        List<Card> handCards = new ArrayList<>(cards.subList(0, 5));
+        playerHand.setCards(handCards);
+        playerHand.setNumCards(handCards.size());
+        p.setHand(playerHand);
+
+        List<Player> players = List.of(p,p2,p3,p4);
         ChatMessage c = new ChatMessage();
         c.setMessageString("hello");;
         List<ChatMessage> chat = new ArrayList<>();
         chat.add(c);
         GameState state = GameState.WAITING;
         GameMode mode = GameMode.VERSUS;
-        Player p2 = new Player();
-        p2.setId(2);
-        List<Player> spectators = List.of(p2);
+        Player spectator = new Player();
+        spectator.setId(2);
+        List<Player> spectators = List.of(spectator);
         TableCard table = new TableCard();
+       
 
         simGame.setHost(host);
         simGame.setChat(chat);
@@ -93,6 +152,8 @@ public class GameServicetests {
         simGame.setSpectators(spectators);
         simGame.setTable(table);
     }
+
+
 
     @Test
     void verifyDefaultGameInitialization() {
@@ -277,6 +338,56 @@ public class GameServicetests {
         assertNotEquals(iniChatSize, finalChatSize);
         assertEquals(2, finalChatSize);
     }
+
+    @Test 
+    @Transactional 
+    void shouldTakeCard(){
+        //Simulación de servicios llamados en takeCard
+        when(this.handService.updateHand(simGame.getPlayers().get(0).getHand(), 1)).thenReturn(null);
+        when(this.packCardService.updatePackCard(simGame.getPlayers().get(0).getPackCards().get(0), 1)).thenReturn(null);
+        Player p  = simGame.getPlayers().get(0);
+        PackCard packCard = p.getPackCards().stream().findFirst().get();
+        int initialSizeCards = packCard.getNumCards();
+        Pair<Player,Card> playerCard = gameService.takeACard(p);
+        //Compruebo que el mazo tiene una carta menos
+        int finalSizeCards = playerCard.getPlayer().getPackCards().get(0).getNumCards();;
+        assertEquals(initialSizeCards - 1, finalSizeCards );
+        //Compruebo que la carta está en la mano y que no está en el mazo 
+        Card cardTaken = playerCard.getCard();
+        assertFalse(playerCard.getPlayer().getPackCards().get(0).getCards().contains(cardTaken));
+        assertTrue(playerCard.getPlayer().getHand().getCards().contains(cardTaken));
+    }
+
+    @Test 
+    @Transactional
+    void shouldInitialTurn(){
+        //Comprobar que se ha creado un orden(la propiedad initialTurn no es null ni vacía)
+        //Simulación de servicios y repos
+        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
+        when(gameRepository.save(simGame)).thenReturn(simGame);
+        Game gameWithInitialTurn = gameService.initialTurn(simGame);
+        assertNotNull(gameWithInitialTurn.getInitialTurn());
+        assertTrue(gameWithInitialTurn.getInitialTurn().size()==4);
+    }
+
+    @Test
+    @Transactional
+    void shouldDecideTurns(){
+
+    }
+
+    @Test
+    @Transactional
+    void shouldReturnCards(){ //Actualizar repo antes 
+
+    }
+
+    @Test 
+    @Transactional
+    void shouldChangeInitialHand(){
+
+    }
+
 
    
 

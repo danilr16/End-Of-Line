@@ -120,8 +120,35 @@ public class GameService {
 
     }
 
+    //Par para devolver player y card en takeCard para el test
+    public static class Pair<P, C> {
+        private Player player;
+        private Card card;
+
+        public Pair(Player p, Card c) {
+            this.player = p;
+            this.card = c;
+        }
+
+        public Player getPlayer() {
+            return player;
+        }
+
+        public void setPlayer(Player p) {
+            this.player = p;
+        }
+
+        public Card getCard() {
+            return card;
+        }
+
+        public void setSecond(Card c) {
+            this.card = c;
+        }
+    }
+
     @Transactional
-    public Card takeACard(Player player) {
+    public Pair<Player,Card> takeACard(Player player) {
         PackCard packCard = player.getPackCards().stream().findFirst().get();
         if (packCard.getNumCards() != 0) {
             SecureRandom rand = new SecureRandom();
@@ -134,14 +161,20 @@ public class GameService {
             hand.getCards().add(card);
             hand.setNumCards(hand.getNumCards() + 1);
             handService.updateHand(hand, hand.getId());
-            return card;
+            //Actualizo player para devolverlo junto a la carta
+            List<PackCard> pcUpdated = new ArrayList<>();
+            pcUpdated.add(packCard);
+            player.setPackCards(pcUpdated);
+            player.setHand(hand);
+            Pair<Player,Card> res = new Pair<>(player, card);
+            return res;
         } else {
             return null;
         }
     }
 
     @Transactional
-    public void initialTurn(Game game) {//Decide el turno inicial de partida
+    public Game initialTurn(Game game) {//Decide el turno inicial de partida
         List<Integer> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .map(p -> p.getId()).collect(Collectors.toList());
         Collections.shuffle(players);
@@ -149,6 +182,7 @@ public class GameService {
         game.setOrderTurn(players);
         game.setInitialTurn(players);
         this.updateGame(game, game.getId());
+        return game; //Se ha añadido que devuelva game para la comprobación de los test
     }
 
     @Transactional
