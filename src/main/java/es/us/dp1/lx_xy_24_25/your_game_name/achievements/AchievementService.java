@@ -43,6 +43,7 @@ public class AchievementService {
 	}	
 
     @Transactional
+    //Si no hay imagen se queda la anterior, igual con name, description,threshold y metric
 	public Achievement updateAchievement(@Valid Achievement achievement, Integer idToUpdate) {
 		Achievement toUpdate = findAchievement(idToUpdate);
 		BeanUtils.copyProperties(achievement, toUpdate, "id");

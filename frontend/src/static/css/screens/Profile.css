@@ -126,6 +126,7 @@
     align-items: center;
     margin: 8px 0;
     color: darkgray;
+    
 }
 .achievement-image {
     width: 60px;
@@ -151,6 +152,18 @@
 .achievement-details {
     display: flex;
     flex-direction: column;
+}
+
+.achievement-one{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.achievement-buttons{
+    margin-left: auto; 
+    display: flex; 
+    gap: 10px; 
 }
 
 .modal-profile-overlay{
