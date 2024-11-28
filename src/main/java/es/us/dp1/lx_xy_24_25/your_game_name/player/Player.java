@@ -64,6 +64,8 @@ public class Player extends BaseEntity{
     //Indican las posiciones posibles y rotaciones necesarias donde el jugador puede colocar una carta
     List<Integer> possibleRotations;
 
+    List<PowerType> usedPowers;
+
     @NotNull
     @OneToOne(optional = false, cascade = CascadeType.REMOVE)
     Hand hand;
@@ -105,6 +107,9 @@ public class Player extends BaseEntity{
         }
         if (possibleRotations == null) {
             possibleRotations = new ArrayList<>();
+        }
+        if (usedPowers == null) {
+            usedPowers = new ArrayList<>();
         }
     }
 
