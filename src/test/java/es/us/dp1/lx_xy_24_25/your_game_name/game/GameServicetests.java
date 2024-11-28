@@ -21,8 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService.Pair;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
@@ -65,6 +67,30 @@ public class GameServicetests {
 
     private Game simGame;
 
+    List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
+        List<Card> cards = new ArrayList<>();
+        for(int i=1;i<=3;i++) {
+            Card c1 = Card.createByType(TypeCard.TYPE_1, player);
+            cards.add(c1);
+            Card c2 = Card.createByType(TypeCard.TYPE_2_IZQ, player);
+            cards.add(c2);
+            Card c3 = Card.createByType(TypeCard.TYPE_2_DER, player);
+            cards.add(c3);
+            Card c4 = Card.createByType(TypeCard.TYPE_3_IZQ, player);
+            cards.add(c4);
+            Card c5 = Card.createByType(TypeCard.TYPE_3_DER, player);
+            cards.add(c5);
+            Card c6 = Card.createByType(TypeCard.TYPE_4, player);
+            cards.add(c6);
+            Card c7 = Card.createByType(TypeCard.TYPE_5, player);
+            cards.add(c7);
+            Card c8 = Card.createByType(TypeCard.TYPE_0, player);
+            cards.add(c8);
+        }
+        Card c9 = Card.createByType(TypeCard.TYPE_1, player);
+        cards.add(c9);
+        return cards;
+    }
     //Game simulado para comprobar el funcionamiento
     @BeforeEach
     void setUp(){
@@ -79,17 +105,19 @@ public class GameServicetests {
         p.setId(1);
             //Crear packcard
         PackCard pc = new PackCard();
-        List<Card> cards = cardService.create25Cards(p);
-        System.out.println(cards);
+        List<Card> cards = simCreate25Cards(p);
         pc.setCards(cards);
         pc.setId(1);
+        pc.setNumCards(cards.size());
         List<PackCard> packCards = new ArrayList<>();
         packCards.add(pc);
         p.setPackCards(packCards);
             //Crear hand
         Hand playerHand = new Hand();
-        List<Card> handCards = cards.subList(0, 5);
+        playerHand.setId(1);
+        List<Card> handCards = new ArrayList<>(cards.subList(0, 5));
         playerHand.setCards(handCards);
+        playerHand.setNumCards(handCards.size());
         p.setHand(playerHand);
 
         List<Player> players = List.of(p);
@@ -113,6 +141,8 @@ public class GameServicetests {
         simGame.setSpectators(spectators);
         simGame.setTable(table);
     }
+
+
 
     @Test
     void verifyDefaultGameInitialization() {
@@ -301,19 +331,20 @@ public class GameServicetests {
     @Test 
     @Transactional 
     void shouldTakeCard(){
-        //Simular repo
-        when(this.cardService.saveCard(any(Card.class))).thenReturn(null);
+        //Simulación de servicios llamados en takeCard
+        when(this.handService.updateHand(simGame.getPlayers().get(0).getHand(), 1)).thenReturn(null);
+        when(this.packCardService.updatePackCard(simGame.getPlayers().get(0).getPackCards().get(0), 1)).thenReturn(null);
         Player p  = simGame.getPlayers().get(0);
         PackCard packCard = p.getPackCards().stream().findFirst().get();
         int initialSizeCards = packCard.getNumCards();
-        Player playerUpdated = gameService.takeACard(p).getPlayer();
+        Pair<Player,Card> playerCard = gameService.takeACard(p);
         //Compruebo que el mazo tiene una carta menos
-        int finalSizeCards = playerUpdated.getPackCards().get(0).getNumCards();;
+        int finalSizeCards = playerCard.getPlayer().getPackCards().get(0).getNumCards();;
         assertEquals(initialSizeCards - 1, finalSizeCards );
-        //Compruebo que la carta está en la mano
-        Card cardTaken = gameService.takeACard(p).getCard();
-        assertTrue(playerUpdated.getPackCards().get(0).getCards().contains(cardTaken));
-
+        //Compruebo que la carta está en la mano y que no está en el mazo 
+        Card cardTaken = playerCard.getCard();
+        assertFalse(playerCard.getPlayer().getPackCards().get(0).getCards().contains(cardTaken));
+        assertTrue(playerCard.getPlayer().getHand().getCards().contains(cardTaken));
     }
 
     @Test 
