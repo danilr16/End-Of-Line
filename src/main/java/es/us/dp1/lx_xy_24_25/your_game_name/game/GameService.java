@@ -15,7 +15,6 @@ import java.security.SecureRandom;
 import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
-import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.Output;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
@@ -517,21 +516,12 @@ public class GameService {
     private void updatePlaceCard(List<Map<String, Integer>> possiblePositions, Card cardToPlace, 
         Player currentPlayer, TableCard currentTable, Integer index, Integer i) {
         Integer rotationToPlace = possiblePositions.get(i).get("rotation");
-        List<Integer> newOutputs = cardToPlace.getOutputs().stream()
-            .map(o -> (o + rotationToPlace) % 4).collect(Collectors.toList());
-        Integer newInput = rotationToPlace;
         cardToPlace.setRotation(rotationToPlace);
-        cardToPlace.setOutput(Output.of(newOutputs, newInput));
-        cardToPlace.setOutputs(newOutputs);
-        cardToPlace.setInput(newInput);
         cardService.updateCard(cardToPlace, cardToPlace.getId());
         Hand playerHand = currentPlayer.getHand();
         playerHand.getCards().remove(cardToPlace);
         playerHand.setNumCards(playerHand.getNumCards() - 1);
         handService.updateHand(playerHand, playerHand.getId());
-        currentPlayer.getPlayedCards().add(cardToPlace.getId());
-        currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
-        playerService.updatePlayer(currentPlayer, currentPlayer.getId());
         Integer c = Math.floorMod(index-1, currentTable.getNumColum()) + 1;
         Integer f = (index - 1) / currentTable.getNumColum() + 1; //calcular fila a partir del index.
         Cell cell = currentTable.getRows().get(f-1).getCells().get(c-1);
@@ -549,6 +539,8 @@ public class GameService {
         }
         currentPlayer.setPossiblePositions(positions);
         currentPlayer.setPossibleRotations(rotations);
+        currentPlayer.getPlayedCards().add(cardToPlace.getId());
+        currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
         playerService.updatePlayer(currentPlayer, currentPlayer.getId());
     }
 }
