@@ -543,4 +543,20 @@ public class GameService {
         currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
         playerService.updatePlayer(currentPlayer, currentPlayer.getId());
     }
+
+    @Transactional
+    public void manageGame(Game game) {
+        if (game.getGameState().equals(GameState.IN_PROCESS)) {
+            GameMode gameMode = game.getGameMode();
+            if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
+                this.gameInProcessSingle(game);
+            } else if (gameMode.equals(GameMode.PUZZLE_COOP)) {
+                this.gameInProcessCoop(game);
+            } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
+                this.gameInProcessTeam(game);
+            } else {
+                this.gameInProcess(game);
+            }
+        }
+    }
 }
