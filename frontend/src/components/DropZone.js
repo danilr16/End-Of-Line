@@ -93,14 +93,15 @@ const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, set
     return (
         <div 
             key={index} 
-            className={`drop-zone ${hoveredIndex === index && isDraggingRef.current && isHovered ? "drop-zone-show" : "drop-zone-hide"} ${
-                (isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-possible" : ""
-            } ${(!isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-darkened" : ""}`}
+            className={`drop-zone 
+                ${hoveredIndex === index && isDraggingRef.current && isHovered ? "drop-zone-show" : "drop-zone-hide"} 
+                ${(isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-possible" : ""} 
+                ${(!isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-darkened" : ""}
+                ${(!(cardIcon === null)) ? "drop-zone-trans-border" : ""}`}
             style={{
                 minWidth: `${size}px`,
                 minHeight: `${size}px`,
                 position: "relative",
-                //border: !(cardIcon === null) ? "0px solid transparent" : "1px solid var(--br-c-dark)", 
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

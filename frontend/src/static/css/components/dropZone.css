@@ -18,6 +18,10 @@
     background-color: transparent; /* Start with transparent */
 }
 
+.drop-zone-trans-border {
+    border: 0px solid transparent
+}
+
 /* Pulsating Animation */
 @keyframes pulsate {
     0% {
