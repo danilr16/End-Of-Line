@@ -60,7 +60,19 @@ export default function GameScreen() {
         return () => clearInterval(interval); // Cleanup on unmount
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
 
-
+    const cardNameMapping = {
+        "INICIO": "start_card",
+        "BLOCK_CARD": "block_card",
+        "TYPE_0": "cross_0_card",
+        "TYPE_5": "cross_5_card",
+        "ENERGY_CARD": "energy_card",
+        "TYPE_1": "forward_1_card",
+        "TYPE_2_IZQ": "l_l_2_card",
+        "TYPE_2_DER": "l_r_2_card",
+        "TYPE_3_IZQ": "t_fl_3_card",
+        "TYPE_3_DER": "t_fr_3_card",
+        "TYPE_4": "t_rl_4_card",
+    };
 
     const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
     const [isDragging, setDragging] = useState(false);
@@ -77,6 +89,55 @@ export default function GameScreen() {
 
 
     const [player, setPlayer] = useState(null);
+
+    const playerRef = useRef(player);
+    useEffect(() => {
+        playerRef.current = player;
+    }, [player]);
+
+    const [fetchedCards, setFetchedCards] = useState([]);
+    useEffect(() => {
+        if (player && player.hand && player.hand.cards) {
+            const updatedCards = player.hand.cards.map((card) => ({
+                id: card.id,
+                type: cardNameMapping[card.type],
+            }));
+            setFetchedCards(updatedCards);
+        }
+    }, [player]);
+
+    const fetchedCardsRef = useRef(fetchedCards);
+    useEffect(() => {
+        fetchedCardsRef.current = fetchedCards;
+    }, [fetchedCards]);
+
+    const [currentCards, setCurrentCards] = useState([]); 
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentCards((prevCurrentCards) => {
+                const nextCard = fetchedCardsRef.current.find(
+                    (card) => !prevCurrentCards.some((currentCard) => currentCard.id === card.id)
+                );
+
+                if (nextCard) {
+                    return [...prevCurrentCards, nextCard];
+                }
+                return prevCurrentCards;
+            });
+        }, 100); 
+
+        return () => clearInterval(interval);
+    }, []); 
+
+    useEffect(() => {
+        console.log("Updated current cards:", currentCards);
+    }, [currentCards]); 
+
+    const currentCardsRef = useRef(currentCards);
+    useEffect(() => {
+        currentCardsRef.current = currentCards;
+    }, [currentCards]);
 
     useEffect(() => {
         if (user && game && game.players && game.players.length > 0) {
@@ -114,19 +175,23 @@ export default function GameScreen() {
     const [players, setPlayers] = useState([]);
     
     const [playerColors, setPlayerColors] = useState([]);
+
+    const playerColorsRef = useRef(playerColors);
+    useEffect(() => {
+        playerColorsRef.current = playerColors;
+    }, [playerColors]);
     
     function findPlayerIndexById(id) {
         return players.findIndex(player => player.id === id);
     }
 
     function findColorById(id) {
-        return playerColors[findPlayerIndexById(id)];
+        return playerColorsRef.current[findPlayerIndexById(id)];
     }
 
     useEffect(() => {
         setPlayerColors(randomShuffle(gameCode,players.length));
-        console.log(players)
-    }, [player])
+    }, [players])
 
     const [gridItemSize, setGridItemSize] = useState(0);
     const [boardItems, setBoardItems] = useState(
@@ -141,30 +206,12 @@ export default function GameScreen() {
         if (game !== null && game.tableCard !== null) {
             const { rows } = game.tableCard;
 
-            const cardNameMapping = {
-                "INICIO": "start_card",
-                "BLOCK_CARD": "block_card",
-                "CROSS_0_CARD": "cross_0_card",
-                "CROSS_5_CARD": "cross_5_card",
-                "ENERGY_CARD": "energy_card",
-                "FORWARD_1_CARD": "forward_1_card",
-                "L_L_2_CARD": "l_l_2_card",
-                "L_R_2_CARD": "l_r_2_card",
-                "T_FL_3_CARD": "t_fl_3_card",
-                "T_FR_3_CARD": "t_fr_3_card",
-                "T_RL_4_CARD": "t_rl_4_card",
-                "TILE": "tile",
-            };
-
-            
-
             const newBoardItems = rows.map((row, rowIndex) =>
             row.cells.map((cell, colIndex) => {
                 
                 if (cell.isFull && cell.card) {
                     const cardName = cell.card.type;
-                    console.log(playerColors)
-                    return <GameCardIcon key={`${rowIndex}-${colIndex}`} iconName={cardNameMapping[cardName] || cardName.toLowerCase().replace(/_/g, '').toLowerCase()} 
+                    return <GameCardIcon key={`${rowIndex}-${colIndex}`} iconName={cardNameMapping[cardName]} 
                     rotation={cell.card.rotation} color = {findColorById(cell.card.playerId)}/>;
                 }
                 return null;
@@ -199,27 +246,59 @@ export default function GameScreen() {
         />
     ));
 
+    
+
     const onDrop = (index) => {
         if (beingDraggedCardRef.current !== null) {
             const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
-            const iconName = handCards[droppedCardIndex].props.iconName;
+            const card = currentCardsRef.current[droppedCardIndex];
+            const cardId = card.id;
+            const iconName = card.type;
             const rowIndex = Math.floor(index / gridSize);
             const colIndex = index % gridSize;
     
             setBoardItems(prevBoardItems => {
                 const newBoardItems = [...prevBoardItems];
-                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} />;
+                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} color={findColorById(playerRef.current.id)} rotation = {hoveredRotation} />;
                 return newBoardItems;
             });
     
             // Add the card to usedCards set
-            setUsedCards(prev => new Set(prev).add(droppedCardIndex));
+            setUsedCards(prev => new Set(prev).add(cardId));
     
             setBeingDraggedCard(null); // Reset the dragged card
-        }
-    };
 
-    useEffect(() => console.log(beingDraggedCard),[beingDraggedCard])//Borrar
+            console.log(cardId)
+            console.log(index-1)
+
+            const url = new URL(`/api/v1/games/${gameCode}/placeCard`, window.location.origin);
+            url.searchParams.append("cardId", cardId);
+            url.searchParams.append("index", index+1);
+
+            // Use fetch to send the PATCH request with query parameters
+            fetch(url, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${jwt}`, // Pass JWT token as Authorization header
+                },
+            })
+            .then((response) => response.json()) // Parse the response as JSON
+            .then((data) => {
+                // Handle the response if needed
+                console.log("Card placed successfully:", data);
+            })
+            .catch((error) => {
+                // Handle any errors that occur during the request
+                console.error("Error placing card:", error);
+            });
+            }
+    };
+    
+    useEffect(() => {
+        console.log(usedCards)
+    }, [usedCards]);
+
     useEffect(() => {
         
         if (!game) return;
@@ -236,7 +315,6 @@ export default function GameScreen() {
         }
     }, [user])
 
-    useEffect(() => console.log(beingDraggedCard), [beingDraggedCard])//Borrar
     useEffect(() => {
         if (!game) return;
         if (game.players) {
@@ -385,7 +463,22 @@ export default function GameScreen() {
             </div>
             <div className="bottom-container">
                 <div className="card-container">
-                    {handCards.filter((_, index) => !usedCards.has(index))}
+                    {currentCards.map((card, index) => (
+                        <GameCard
+                            key={index}
+                            size={gridItemSize}
+                            iconName={card.type}
+                            setBeingDraggedCard={setBeingDraggedCard}
+                            index={index}
+                            beingDraggedCard={beingDraggedCard}
+                            setDragging={setDragging}
+                            dropIndex={hoveredIndex}
+                            hoveredRotation={hoveredRotation}
+                            isUsed={usedCards.has(card.id)}
+                            color = {player ? findColorById(player.id) : 1}
+                            id = {card.id}
+                        />
+                    )).filter((card, index) => !usedCards.has(card.id))}
                 </div>
                 {player && <div
                     className="card-deck"
