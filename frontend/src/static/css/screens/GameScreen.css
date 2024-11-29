@@ -206,15 +206,14 @@
 }
 
 .waiting-sign {
-    padding: 15px 30px;
     font-size: 25px;
-    margin: 0 10px;
+    margin: 40% 30px;
     color: var(--br-trans-grey-light);
     border: none;
     border-radius: 5px;
-    transition: background-color 0.3s;
     animation: pulse-color 1.5s infinite alternate;
-    margin-top: 15%
+    margin-top: 15%;
+    text-align: center;
 }
 
 @keyframes pulse-color {

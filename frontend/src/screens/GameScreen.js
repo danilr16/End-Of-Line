@@ -11,6 +11,7 @@ import request from "../util/request";
 import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
 import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
+import randomShuffle from "../util/randomShuffle";
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -64,6 +65,7 @@ export default function GameScreen() {
     const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
     const [isDragging, setDragging] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(-1);
+    const [hoveredRotation, setHoveredRotation] = useState(0);
     const [beingDraggedCard, _setBeingDraggedCard] = useState(null);
     const gridRef = useRef(null);
     const beingDraggedCardRef = useRef(beingDraggedCard);
@@ -77,13 +79,12 @@ export default function GameScreen() {
     const [player, setPlayer] = useState(null);
 
     useEffect(() => {
-        if (game && game.players && game.players.length > 0) {
+        if (user && game && game.players && game.players.length > 0) {
         // Find the player that matches the username from game data
-        const currentPlayer = game.players.find(p => p.user.username === 'admin1');
+        const currentPlayer = game.players.find(p => p.user.username === user.username);
 
         if (currentPlayer) {
             // Set the player state if found
-            console.log(currentPlayer)
             setPlayer(currentPlayer);
         } else {
             // Optionally, handle the case when the player is not found
@@ -96,7 +97,7 @@ export default function GameScreen() {
     }, [game]); // Run this effect whenever the 'game' state changes
     
 
-    const [gridSize, setGridSize] = useState(7); // TAMAÑO DEL TABLERO
+    const [gridSize, setGridSize] = useState(1); // TAMAÑO DEL TABLERO
     useEffect(() => {
         if (game && game.tableCard) {
             setGridSize(game.tableCard.numRow);
@@ -111,10 +112,68 @@ export default function GameScreen() {
         jwt
     );
     const [players, setPlayers] = useState([]);
+    
+    const [playerColors, setPlayerColors] = useState([]);
+    
+    function findPlayerIndexById(id) {
+        return players.findIndex(player => player.id === id);
+    }
+
+    function findColorById(id) {
+        return playerColors[findPlayerIndexById(id)];
+    }
+
+    useEffect(() => {
+        setPlayerColors(randomShuffle(gameCode,players.length));
+        console.log(players)
+    }, [player])
 
     const [gridItemSize, setGridItemSize] = useState(0);
-    const [boardItems, setBoardItems] = useState(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
+    const [boardItems, setBoardItems] = useState(
+        Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
+    );
     
+    useEffect(() => {
+        setBoardItems(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
+    }, [gridSize]);
+    
+    useEffect(() => {
+        if (game !== null && game.tableCard !== null) {
+            const { rows } = game.tableCard;
+
+            const cardNameMapping = {
+                "INICIO": "start_card",
+                "BLOCK_CARD": "block_card",
+                "CROSS_0_CARD": "cross_0_card",
+                "CROSS_5_CARD": "cross_5_card",
+                "ENERGY_CARD": "energy_card",
+                "FORWARD_1_CARD": "forward_1_card",
+                "L_L_2_CARD": "l_l_2_card",
+                "L_R_2_CARD": "l_r_2_card",
+                "T_FL_3_CARD": "t_fl_3_card",
+                "T_FR_3_CARD": "t_fr_3_card",
+                "T_RL_4_CARD": "t_rl_4_card",
+                "TILE": "tile",
+            };
+
+            
+
+            const newBoardItems = rows.map((row, rowIndex) =>
+            row.cells.map((cell, colIndex) => {
+                
+                if (cell.isFull && cell.card) {
+                    const cardName = cell.card.type;
+                    console.log(playerColors)
+                    return <GameCardIcon key={`${rowIndex}-${colIndex}`} iconName={cardNameMapping[cardName] || cardName.toLowerCase().replace(/_/g, '').toLowerCase()} 
+                    rotation={cell.card.rotation} color = {findColorById(cell.card.playerId)}/>;
+                }
+                return null;
+            })
+            );
+            setBoardItems(newBoardItems);
+        }
+      }, [game]);
+
     // New state to track used cards
     const [usedCards, setUsedCards] = useState(new Set());
 
@@ -134,7 +193,9 @@ export default function GameScreen() {
             beingDraggedCard={beingDraggedCard}
             setDragging={setDragging}
             dropIndex={hoveredIndex}
+            hoveredRotation={hoveredRotation}
             isUsed={usedCards.has(index)}
+            color = {player ? findColorById(player.id) : 1}
         />
     ));
 
@@ -239,9 +300,7 @@ export default function GameScreen() {
         };
     }, [gridSize, game, gridRef.current]);
 
-    useEffect(() => {
-        console.log("SIZE "+gridItemSize);
-    }, [gridItemSize])
+    
 
     useEffect(() => { //Join on entering screen
         if (game && players && game.numPlayers && user && user.username) {
@@ -259,9 +318,7 @@ export default function GameScreen() {
 
     if ((!game || !user) && jwt) {
         return (
-            <div className="half-screen">
-                <p className="myGames-title">Cargando partida...</p>
-            </div>
+            <p className="waiting-sign">Loading game...</p>
         );
     }
 
@@ -292,15 +349,31 @@ export default function GameScreen() {
         }
     };
 
-
+    
     return (
         <div className="full-screen">
             <div className="half-screen">
-                <InGamePlayerList players = {players} spectators = {game.spectators}
+                <InGamePlayerList players = {players} spectators = {game.spectators} colors = {playerColors}
                     gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers}/>
 
-                {game.tableCard !== null && (<Board gridSize={gridSize} gridItemSize={gridItemSize} gridRef={gridRef} onDrop={onDrop} 
-                    boardItems={boardItems} isDragging={isDragging} hoveredIndex={hoveredIndex} setHoveredIndex={setHoveredIndex} />)}
+                    {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0) && (
+                        <Board 
+                            gridSize={gridSize} 
+                            gridItemSize={gridItemSize} 
+                            gridRef={gridRef} 
+                            onDrop={onDrop} 
+                            boardItems={boardItems} 
+                            isDragging={isDragging} 
+                            hoveredIndex={hoveredIndex} 
+                            hoveredRotation={hoveredRotation}
+                            setHoveredIndex={setHoveredIndex}
+                            setHoveredRotation={setHoveredRotation}
+                            possiblePositions = {player?.possiblePositions?.map((position, index) => ({
+                                position: position,
+                                rotation: player?.possibleRotations?.[index], 
+                            })) || []} 
+                        />
+                    )}
 
                 {(game.tableCard == null && game.host.username == user.username) && (<button className="start-game-button" onClick={handleStart}>START GAME</button>)}
 
@@ -308,14 +381,36 @@ export default function GameScreen() {
                     Waiting for host...
                 </div>)}
 
-                <ChatBox gameCode={gameCode} user={user} jwt={jwt}/>
+                <ChatBox gameCode={gameCode} user={user} jwt={jwt} colors = {playerColors}/>
             </div>
             <div className="bottom-container">
                 <div className="card-container">
                     {handCards.filter((_, index) => !usedCards.has(index))}
                 </div>
-                <div className="card-deck" style={{ minWidth: `${gridItemSize}px`, minHeight: `${gridItemSize}px` }}>
-                </div>
+                {player && <div
+                    className="card-deck"
+                    style={{
+                        minWidth: `${gridItemSize}px`,
+                        minHeight: `${gridItemSize}px`,
+                        backgroundColor: `var(--player${findColorById(player.id)}-normal)`, // Dynamically set normal color
+                        color: `var(--player${findColorById(player.id)}-dark)`, // Dynamically set dark color
+                        boxShadow: `
+                            0px -1px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -2px 0px var(--player${findColorById(player.id)}-dark),
+                            0px -3px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -4px 0px var(--player${findColorById(player.id)}-dark),
+                            0px -5px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -6px 0px var(--player${findColorById(player.id)}-dark),
+                            0px -7px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -8px 0px var(--player${findColorById(player.id)}-dark),
+                            0px -9px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -10px 0px var(--player${findColorById(player.id)}-dark),
+                            0px -11px 0px var(--player${findColorById(player.id)}-normal),
+                            0px -12px 0px var(--player${findColorById(player.id)}-dark)
+                        `,
+                    }}
+                >
+                </div>}
             </div>
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game

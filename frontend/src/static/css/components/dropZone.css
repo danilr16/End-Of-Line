@@ -8,3 +8,22 @@
     border: 1px solid #fff ;   
     border-radius: 15%;            
 }
+
+.drop-zone-darkened {
+    background-color: rgba(0, 0, 0, 0); /* Black with 0.1 opacity */
+}
+
+.drop-zone.drop-zone-possible {
+    animation: pulsate 0.3s infinite alternate; /* Pulsate animation */
+    background-color: transparent; /* Start with transparent */
+}
+
+/* Pulsating Animation */
+@keyframes pulsate {
+    0% {
+        background-color: transparent;
+    }
+    100% {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+}

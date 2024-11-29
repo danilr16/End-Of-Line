@@ -4,7 +4,7 @@ import { CardOverlay } from './CardOverlay';
 import "../static/css/components/gameCard.css"
 
 
-const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex }) => {
+const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex, hoveredRotation, color }) => {
     const cardRef = useRef(null);
     const [position, setPosition] = useState({ top: window.innerHeight* 0.9691, left: window.innerWidth* 0.25083});
     const [isHovered, setIsHovered] = useState(false); 
@@ -15,7 +15,6 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
         document.body.classList.add('no-select');
         setDragging(true);
     };
-
     const handleDragEnd = () => {
         isDragging.current = false; 
         setTimeout(() => {
@@ -85,7 +84,7 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
                 })}
                 style={{ minWidth: `${size}px`, minHeight: `${size+10}px` }}
             />
-            <CardOverlay iconName={iconName} size={size} position={position} isDragging={beingDraggedCard === index} dropIndex = {dropIndex} index={index} />
+            <CardOverlay iconName={iconName} size={size} position={position} isDragging={beingDraggedCard === index} dropIndex = {dropIndex} index={index} hoveredRotation = {hoveredRotation} color = {color}/>
         </React.Fragment>
     );
 };

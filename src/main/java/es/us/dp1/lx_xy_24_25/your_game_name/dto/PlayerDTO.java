@@ -15,6 +15,7 @@ import lombok.Setter;
 @Setter
 public class PlayerDTO {
 
+    private Integer id;
     private Integer score; //solo para los modos solitarios
     private Integer energy;
     private PlayerState playerState;
@@ -34,11 +35,12 @@ public class PlayerDTO {
         
     }
 
-    public PlayerDTO(Integer score,Integer energy,PlayerState playerState,UserDTO user,
+    public PlayerDTO(Integer id, Integer score,Integer energy,PlayerState playerState,UserDTO user,
         List<Integer> playedCards,LocalDateTime turnStarted,Boolean handChanged,
         Integer cardsPlayedThisTurn,HandDTO hand,List<PackCardDTO> packCards, 
         List<Integer> possiblePositions, List<Integer> possibleRotations){
 
+        this.id = id;
         this.score = score;
         this.energy = energy;
         this.playerState = playerState;
@@ -63,7 +65,7 @@ public class PlayerDTO {
                 pcsDTO.add(packCardDTO);
             }
         }
-        PlayerDTO playerDTO = new PlayerDTO(p.getScore(), p.getEnergy(), p.getState(), userDTO, 
+        PlayerDTO playerDTO = new PlayerDTO(p.getId(), p.getScore(), p.getEnergy(), p.getState(), userDTO, 
             p.getPlayedCards(), p.getTurnStarted(), p.getHandChanged(), p.getCardsPlayedThisTurn(),
             handDTO,pcsDTO,p.getPossiblePositions(),p.getPossibleRotations());
         return playerDTO;
