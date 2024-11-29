@@ -10,6 +10,7 @@ export default function Stats() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const canvasRef = useRef(null);
+    const navigate = useNavigate();
 
     const [user, setUser] = useFetchState(
         [],
@@ -113,7 +114,8 @@ export default function Stats() {
                     
                 </div>
                 <div className="buttons-container">
-                    <button className="sub-screen-button">Individual stats</button>
+                    <button className="sub-screen-button" onClick={()=>navigate("/individualStats")}>Individual stats</button>
+                    {/*cuando estén hechas las rutas esa seguramente sea /:currentUser/individualStats*/}
                     <button className="sub-screen-button">Global stats</button>
                     <button className="sub-screen-button">Ranking</button>
                 </div>

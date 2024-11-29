@@ -1,0 +1,145 @@
+@import "../colors.css";
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.screen-title {
+    align-self: center;
+    text-decoration: underline;
+    text-shadow: 0px 0px 10px var(--br-yellow);
+    color: white;
+    font-size: 350%;
+    margin-top: 3%;
+    animation: fallDown 2s ease forwards;
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.games-stats {
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 2%;
+    margin-top: 3%;
+    margin-left: 1%;
+}
+
+.average-points {
+    opacity: 0;
+    color: var(--br-green);
+    font-size: 140%;
+    animation: slideFromLeft 2s ease forwards;
+}
+
+.max-points-obtained {
+    opacity: 0;
+    color: var(--br-red);
+    font-size: 140%;
+    animation: slideFromLeft 2s ease forwards;
+    animation-delay: 1s;
+}
+
+.longest-victory-streak {
+    opacity: 0;
+    color: var(--br-blue);
+    font-size: 140%;
+    animation: slideFromLeft 2s ease forwards;
+    animation-delay: 2s;
+}
+
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+
+.tables {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6%;
+}
+
+.most-played-modes-container{
+    margin-left: 15%;
+    background-color: var(--br-dark);
+    margin-bottom: 2%;
+}
+
+.most-used-powers-container{
+    margin-right: 15%;
+    background-color: var(--br-dark);
+    margin-bottom: 2%;
+}
+
+@keyframes smoothAppear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.most-played-modes table {
+    border-collapse: separate;
+}
+
+.most-played-modes thead th {
+    background-color: var(--br-yellow);
+    color: black;
+    padding: 10px 30px;
+    border-bottom: 5px solid var(--br-dark); /* Línea más gruesa bajo la cabecera */
+    white-space: nowrap;
+    animation: smoothAppear 2s ease forwards;
+}
+
+.most-played-modes tbody td {
+    background-color: var(--br-trans-grey-very-light);
+    color: black;
+    padding: 10px 30px;
+    border-top: 3px solid var(--br-dark); /* Línea separando cada fila de la tabla */
+    animation: smoothAppear 2s ease forwards;
+}
+
+.most-used-powers table {
+    text-align: center;
+}
+
+.most-used-powers thead th {
+    opacity: 0;
+    background-color: var(--br-yellow);
+    color: black;
+    padding: 10px;
+    border-bottom: 5px solid var(--br-dark); /* Línea más gruesa bajo la cabecera */
+    text-align: center;
+    animation: smoothAppear 2s ease forwards;
+    animation-delay: 2s;
+}
+
+.most-used-powers tbody td {
+    opacity: 0;
+    background-color: var(--br-trans-grey-very-light);
+    color: black;
+    padding: 30px 30px;
+    border-left: 3px solid var(--br-dark); 
+    white-space: pre-line;
+    text-align: center;
+    animation: smoothAppear 2s ease forwards;
+    animation-delay: 2s;
+}
