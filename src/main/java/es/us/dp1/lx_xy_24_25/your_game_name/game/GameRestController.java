@@ -115,19 +115,8 @@ class GameRestController {
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
+        gameService.manageGame(game);
         GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
-        if (game.getGameState().equals(GameState.IN_PROCESS)) {
-            GameMode gameMode = game.getGameMode();
-            if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
-                gameService.gameInProcessSingle(game);
-            } else if (gameMode.equals(GameMode.PUZZLE_COOP)) {
-                gameService.gameInProcessCoop(game);
-            } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
-                gameService.gameInProcessTeam(game);
-            } else {
-                gameService.gameInProcess(game);
-            }
-        }
         return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
 
@@ -172,6 +161,9 @@ class GameRestController {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if (game.getGameState().equals(GameState.WAITING) && game.getHost().equals(user)) {
+            if (game.getPlayers().size() == 1) {
+                game.setGameMode(GameMode.PUZZLE_SINGLE);
+            }
             game.setNumPlayers(game.getPlayers().size());
             game.setStarted(LocalDateTime.now());
             game.setGameState(GameState.IN_PROCESS);
@@ -199,6 +191,7 @@ class GameRestController {
             else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
                 player.setState(PlayerState.LOST);
                 playerService.updatePlayer(player, player.getId());
+                gameService.manageGame(game);
             }
             return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
         } else {
