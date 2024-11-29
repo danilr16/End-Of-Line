@@ -251,8 +251,7 @@ public class GameService {
     }
 
     @Transactional
-    public void manageTurnOfPlayer(Game game) { //Gestiona las acciones del jugador al que le toca
-        Player playing = playerService.findPlayer(game.getTurn());
+    public void manageTurnOfPlayer(Game game, Player playing) { //Gestiona las acciones del jugador al que le toca
         if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 5 || cantContinuePlaying(game, playing)) {
             playing.setState(PlayerState.LOST);
             playerService.updatePlayer(playing, playing.getId());
@@ -295,11 +294,9 @@ public class GameService {
                 .collect(Collectors.toList());
             decideTurns(game, players);
             for (Player player : players) {
-                Integer n = player.getHand().getNumCards();
-                if (n < 5) {
-                    for (int j = 1; j <= (5-n); j++) {
-                        this.takeACard(player);
-                    }
+                Hand hand = player.getHand();
+                while (hand.getNumCards() < 5) {
+                    this.takeACard(player);
                 }
             }
         } else {
@@ -313,21 +310,40 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcess(Game game) {//Lógica de gestión de una partida VERSUS en progreso
+    private void turn0(Game game, List<Player> players, User currentUser) {
+        initialTurn(game);
+            for (Player player : players) {
+                User user = player.getUser();
+                if (user.equals(currentUser)) {
+                    Hand hand = player.getHand();
+                    while (hand.getNumCards() < 5) {
+                        this.takeACard(player);
+                    }
+                    break;
+                }
+            }
+            Boolean todosConCartas = true;
+            for (Player player: players) {
+                if (player.getHand().getNumCards() != 5) {
+                    todosConCartas = false;
+                    break;
+                }
+            }
+            if (todosConCartas) {
+                Player start = playerService.findPlayer(game.getTurn());
+                start.setTurnStarted(LocalDateTime.now());
+                playerService.updatePlayer(start, start.getId());
+                game.setNTurn(1);
+            }
+            this.updateGame(game, game.getId());
+    }
+
+    @Transactional
+    public void gameInProcess(Game game, User currentUser) {//Lógica de gestión de una partida VERSUS en progreso
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            initialTurn(game);
-            for (Player player : players) {
-                for (int i = 1; i <= 5; i++) {
-                    this.takeACard(player);
-                }
-            }
-            Player start = playerService.findPlayer(game.getTurn());
-            start.setTurnStarted(LocalDateTime.now());
-            playerService.updatePlayer(start, start.getId());
-            game.setNTurn(1);
-            this.updateGame(game, game.getId());
+            this.turn0(game, players, currentUser);
         } else {
             if (players.size() == 1) {
                 Player winner = players.stream().findFirst().get();
@@ -337,27 +353,20 @@ public class GameService {
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
             } else {
-                manageTurnOfPlayer(game);
+                Player playing = playerService.findPlayer(game.getTurn());
+                if (playing.getUser().equals(currentUser)) {
+                    manageTurnOfPlayer(game, playing);
+                }
             }
         }
     }
 
     @Transactional
-    public void gameInProcessSingle(Game game) {//Revisar se puede jugar
+    public void gameInProcessSingle(Game game, User currentUser) {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            initialTurn(game);
-            for (Player player : players) {
-                for (int i = 1; i <= 5; i++) {
-                    this.takeACard(player);
-                }
-            }
-            Player start = playerService.findPlayer(game.getTurn());
-            start.setTurnStarted(LocalDateTime.now());
-            playerService.updatePlayer(start, start.getId());
-            game.setNTurn(1);
-            this.updateGame(game, game.getId());
+            this.turn0(game, players, currentUser);
         } else {
             if (players.isEmpty()) {
                 game.setGameState(GameState.END);
@@ -373,27 +382,20 @@ public class GameService {
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
             } else {
-                manageTurnOfPlayer(game);
+                Player playing = playerService.findPlayer(game.getTurn());
+                if (playing.getUser().equals(currentUser)) {
+                    manageTurnOfPlayer(game, playing);
+                }
             }
         }
     }
 
     @Transactional
-    public void gameInProcessCoop(Game game) {//Revisar se puede jugar
+    public void gameInProcessCoop(Game game, User currentUser) {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            initialTurn(game);
-            for (Player player : players) {
-                for (int i = 1; i <= 5; i++) {
-                    this.takeACard(player);
-                }
-            }
-            Player start = playerService.findPlayer(game.getTurn());
-            start.setTurnStarted(LocalDateTime.now());
-            playerService.updatePlayer(start, start.getId());
-            game.setNTurn(1);
-            this.updateGame(game, game.getId());
+            this.turn0(game, players, currentUser);
         } else {
             if (players.size() < 2) {
                 for (Player loser:players) {
@@ -414,13 +416,16 @@ public class GameService {
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
             } else {
-                manageTurnOfPlayer(game);
+                Player playing = playerService.findPlayer(game.getTurn());
+                if (playing.getUser().equals(currentUser)) {
+                    manageTurnOfPlayer(game, playing);
+                }
             }
         }
     }
 
     @Transactional
-    public void gameInProcessTeam(Game game) {
+    public void gameInProcessTeam(Game game, User currentUser) {
         
     }
 
@@ -545,17 +550,17 @@ public class GameService {
     }
 
     @Transactional
-    public void manageGame(Game game) {
+    public void manageGame(Game game, User currentUser) {
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
             GameMode gameMode = game.getGameMode();
             if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
-                this.gameInProcessSingle(game);
+                this.gameInProcessSingle(game, currentUser);
             } else if (gameMode.equals(GameMode.PUZZLE_COOP)) {
-                this.gameInProcessCoop(game);
+                this.gameInProcessCoop(game, currentUser);
             } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
-                this.gameInProcessTeam(game);
+                this.gameInProcessTeam(game, currentUser);
             } else {
-                this.gameInProcess(game);
+                this.gameInProcess(game, currentUser);
             }
         }
     }
