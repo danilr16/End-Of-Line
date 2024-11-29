@@ -79,8 +79,7 @@ public class TableCardService {
         tableCard = createGenericTable(aux.get(numJugadores), numJugadores);
         for (int i = 0; i < numJugadores; i++) {
             Player player = players.get(i);
-            createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
-            Card nodePlayer = cardService.findCard(player.getPlayedCards().stream().findFirst().get());
+            Card nodePlayer = createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
             List<Map<String, Integer>> possiblePositions = getPossiblePositionsForPlayer(tableCard, player, nodePlayer);
             List<Integer> positions = new ArrayList<>();
             List<Integer> rotations = new ArrayList<>();
@@ -92,7 +91,6 @@ public class TableCardService {
             player.setPossibleRotations(rotations);
             playerService.updatePlayer(player, player.getId());
         }
-        updateTableCard(tableCard, tableCard.getId());
         return tableCard;
     }
 
@@ -119,7 +117,7 @@ public class TableCardService {
         return tableCard;
     }
 
-    private void createHomeNode(TableCard tableCard, Player player, Integer f, Integer c, Integer rotation) {//Actualiza la celda y crea ahí el nodo de inicio
+    private Card createHomeNode(TableCard tableCard, Player player, Integer f, Integer c, Integer rotation) {//Actualiza la celda y crea ahí el nodo de inicio
         Cell cell = tableCard.rows.get(f-1).getCells().get(c-1);
         Card card = Card.createByType(TypeCard.INICIO, player);
         card.setRotation(rotation);
@@ -129,6 +127,7 @@ public class TableCardService {
         cell.setCard(card);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());
+        return card;
     }
 
 

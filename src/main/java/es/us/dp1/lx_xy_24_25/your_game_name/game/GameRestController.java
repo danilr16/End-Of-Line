@@ -115,7 +115,8 @@ class GameRestController {
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
-        gameService.manageGame(game);
+        User user = userService.findCurrentUser();
+        gameService.manageGame(game, user);
         GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
@@ -191,7 +192,7 @@ class GameRestController {
             else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
                 player.setState(PlayerState.LOST);
                 playerService.updatePlayer(player, player.getId());
-                gameService.manageGame(game);
+                gameService.manageGame(game, user);
             }
             return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
         } else {
