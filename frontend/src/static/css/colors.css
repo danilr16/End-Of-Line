@@ -21,6 +21,16 @@
     --br-trans-grey: #ffffff0a;
     --br-trans-grey-light: #ffffff27;
     --br-trans-grey-very-light: #ffffff9b;
+
+
+    --player1-normal: var(--br-blue);
+    --player1-dark: var(--br-blue-dark);
+
+    --player2-normal: var(--br-green);
+    --player2-dark: var(--br-green-dark);
+
+    --player3-normal: var(--br-red);
+    --player3-dark: var(--br-red-dark);
 }
 
 html body {

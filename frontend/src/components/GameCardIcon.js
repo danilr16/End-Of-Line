@@ -14,7 +14,7 @@ import "../static/css/components/gameCardIcon.css"
 
 
 //Elemento icono, imagen renderizada sobre overlay y dropzone
-export const GameCardIcon = ({ iconName}) => {
+export const GameCardIcon = ({ iconName, rotation, color}) => {
     const iconData = {
         block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
         cross_0_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross0Card },
@@ -33,11 +33,18 @@ export const GameCardIcon = ({ iconName}) => {
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
     if (!IconComponent) return null;
+    
 
     return (
         <div
             className="game-card-icon"
-            style={{width:'100%',height:'100%'}}
+            style={{
+                width: '100%',
+                height: '100%',
+                transform: `rotate(${rotation * 90}deg)`, // Apply rotation
+                transformOrigin: 'center', // Set the rotation origin to the center
+                backgroundColor: `var(--player${color}-normal)`,
+            }}
         >
             <IconComponent
                 style={{
@@ -47,7 +54,7 @@ export const GameCardIcon = ({ iconName}) => {
                     top: iconPosition.top,
                     left: iconPosition.left,
                     transform: iconPosition.transform,
-                    color: 'var(--br-c-dark)',
+                    color: `var(--player${color}-dark)`,
                 }}
             />
         </div>

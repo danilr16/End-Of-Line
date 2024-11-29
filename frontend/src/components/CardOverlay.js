@@ -4,11 +4,12 @@ import { GameCardIcon } from "./GameCardIcon";
 import "../static/css/components/cardOverlay.css"
 
 
-export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,index}) => {
+export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,index, hoveredRotation, color}) => {
     const [currentPosition, setCurrentPosition] = useState(position);
     const [currentRotation, setCurrentRotation] = useState(0);
     const animationFrameRef = useRef(null);
     const lastUpdateTimeRef = useRef(Date.now());
+    const hoveredRotationRef = useRef(hoveredRotation);
 
     const speed = 0.3;
 
@@ -21,7 +22,7 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,in
             top: lerp(prevPosition.top, position.top, speed),
             left: lerp(prevPosition.left, position.left, speed),
         }));
-        setCurrentRotation((dropIndex === 13 && isDragging) ? 90 : 0);
+        setCurrentRotation(!isDragging ? 0: ((hoveredRotation+1)%4-1)*90);
         lastUpdateTimeRef.current = Date.now();
     };
 
@@ -61,7 +62,7 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,in
                 transform: `rotate(${currentRotation}deg)`
             }}
         >
-            {iconName && <GameCardIcon iconName={iconName} size={size} />}
+            {iconName && <GameCardIcon iconName={iconName} size={size} color = {color} />}
         </div>
     );
 };

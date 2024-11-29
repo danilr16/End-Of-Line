@@ -23,10 +23,11 @@ public class CardDTO {
     private Output output;
     private List<Integer> outputs;
     private Integer input;
+    private Integer playerId;
 
     public CardDTO(){}
 
-    public CardDTO(Integer id, TypeCard type,Integer inciative,Integer rotation,Output output,List<Integer> outputs,Integer input){
+    public CardDTO(Integer id, TypeCard type,Integer inciative,Integer rotation,Output output,List<Integer> outputs,Integer input, Integer playerId){
         this.id = id;
         this.type = type;
         this.iniciative = inciative;
@@ -34,12 +35,13 @@ public class CardDTO {
         this.output = output;
         this.outputs = outputs;
         this.input = input;
+        this.playerId = playerId;
     }
 
 //funcion para hacer playerDTO específica en esta 
     public static CardDTO cardToDTO(Card c){
         if(c==null)return null;
-        CardDTO  res = new CardDTO(c.getId(),c.getType(), c.getIniciative(), c.getRotation(), c.getOutput(), c.getOutputs(),c.getInput());
+        CardDTO  res = new CardDTO(c.getId(),c.getType(), c.getIniciative(), c.getRotation(), c.getOutput(), c.getOutputs(),c.getInput(),c.getPlayer().getId());
         return res;
     }
 

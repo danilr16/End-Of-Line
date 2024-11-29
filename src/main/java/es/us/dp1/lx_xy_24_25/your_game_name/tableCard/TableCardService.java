@@ -167,7 +167,7 @@ public class TableCardService {
         List<Map<String,Integer>> possiblePositions = new ArrayList<>();
 
         for (Integer outputIndex : placedCard.getOutputs()) {
-            Map<String, Integer> vector = rotationToVector.get(outputIndex);
+            Map<String, Integer> vector = rotationToVector.get((outputIndex+placedCard.getRotation())%4);
     
             int newX = Math.floorMod(lastPlacedPos.get("x") + vector.get("x")-1,tableCard.getNumRow())+1;
             int newY = Math.floorMod(lastPlacedPos.get("y") + vector.get("y")-1,tableCard.getNumColum())+1;
@@ -175,7 +175,7 @@ public class TableCardService {
             if (getCellAt(tableCard, newY, newX).getIsFull() == false) {
                 Map<String, Integer> newPosition = new HashMap<>();
                 newPosition.put("position", getCellIndexFromPosition(tableCard, newX, newY));
-                newPosition.put("rotation",(outputIndex+2)%4);
+                newPosition.put("rotation",(outputIndex+placedCard.getRotation()+2)%4);
                 possiblePositions.add(newPosition);
             }
         }
