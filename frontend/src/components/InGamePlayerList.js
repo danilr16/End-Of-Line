@@ -1,7 +1,7 @@
 import "../static/css/components/inGamePlayerList.css"
 import request from "../util/request";
 
-export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors}){
+export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors, playerTurnIndex}){
 
     const userIsPlayer = players.some((p)=>p.user.username === username);
     const userIsSpectator = spectators.some((p)=>p.username === username);
@@ -28,11 +28,25 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                 </h5>
 
                 {players.map((player, index) => (
-                    <div className="player-container" key={index}>
+                    <div 
+                        className="player-container" 
+                        key={index}
+                        style={{
+                            outline: index === playerTurnIndex 
+                                ? `2px solid var(--player${colors[index]}-normal)` 
+                                : "none",
+                            outlineOffset: "4px", // Creates space between the container and the outline
+                        }}
+                    >
                         <div>
-                            <p style={{
-                                color: `var(--player${colors[index]}-normal)`
-                            }} className="player-container-text">{player.user.username}</p>
+                            <p 
+                                style={{
+                                    color: `var(--player${colors[index]}-normal)`
+                                }} 
+                                className="player-container-text"
+                            >
+                                {player.user.username}
+                            </p>
                         </div>
                     </div>
                 ))}

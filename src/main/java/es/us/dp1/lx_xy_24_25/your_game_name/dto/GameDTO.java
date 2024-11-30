@@ -30,6 +30,7 @@ public class GameDTO {
     private GameMode gameMode;
     private GameState gameState;
     private LocalDateTime started;
+    private LocalDateTime timestamp;
 
     public GameDTO(){
         
@@ -37,7 +38,7 @@ public class GameDTO {
 
     public GameDTO( String gameCode, Boolean isPublic, Integer numPlayers,Integer turn,
         Integer duration, List<Integer> orderTurn, List<Integer> initialTurn,List<UserDTO> spectators,
-        List<PlayerDTO> players, TableCardDTO tableCard, UserDTO host, GameMode gameMode, GameState gameState,LocalDateTime started ){
+        List<PlayerDTO> players, TableCardDTO tableCard, UserDTO host, GameMode gameMode, GameState gameState,LocalDateTime started, LocalDateTime timestamp){
         this.gameCode = gameCode;
         this.isPublic = isPublic;
         this.numPlayers = numPlayers;
@@ -52,6 +53,7 @@ public class GameDTO {
         this.gameMode = gameMode;
         this.gameState = gameState;
         this.started = started;
+        this.timestamp = timestamp;
     }
 
 
@@ -82,7 +84,7 @@ public class GameDTO {
 
 
         GameDTO res = new GameDTO(g.getGameCode(),g.getIsPublic(),g.getNumPlayers(),g.getTurn(),g.getDuration(),g.getOrderTurn(),
-        g.getInitialTurn(),spectatorsConverted,playersConverted,tableDTO,hostConverted,g.getGameMode(),g.getGameState(),g.getStarted());
+        g.getInitialTurn(),spectatorsConverted,playersConverted,tableDTO,hostConverted,g.getGameMode(),g.getGameState(),g.getStarted(), LocalDateTime.now());
         return res;
 
         }

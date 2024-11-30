@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import "../static/css/components/dropZone.css"
 
 
-const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, setHoveredRotation }) => {
+const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, setHoveredRotation, canDrop }) => {
     const [showDrop, setShowDrop] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     
@@ -77,12 +77,13 @@ const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, set
     }, []);
 
     const canDropHere = () => {
-        return isDropPossible(index, possiblePositions);
+        return isDropPossible(index, possiblePositions) && canDrop;
     };
 
     const handleDrop = () => {
+        onDrop(index, hoveredRotationRef.current); 
         handleMouseLeave();
-        onDrop(index); 
+        
     };
 
     const isDropPossible = (index, possiblePositions) => {
@@ -95,7 +96,7 @@ const DropZone = ({ index, size, onDrop, cardIcon, isDragging, hoveredIndex, set
             key={index} 
             className={`drop-zone 
                 ${hoveredIndex === index && isDraggingRef.current && isHovered ? "drop-zone-show" : "drop-zone-hide"} 
-                ${(isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-possible" : ""} 
+                ${(isDropPossible(index, possiblePositions) && isDragging && canDrop) ? "drop-zone-possible" : ""} 
                 ${(!isDropPossible(index, possiblePositions) && isDragging) ? "drop-zone-darkened" : ""}
                 ${(!(cardIcon === null)) ? "drop-zone-trans-border" : ""}`}
             style={{
