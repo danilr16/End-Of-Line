@@ -185,7 +185,7 @@ public class GameService {
     }
 
     @Transactional
-    public void decideTurns(Game game, List<Player> ls) {//Decido los turnos a partir de la ronda 1
+    public Game decideTurns(Game game, List<Player> ls) {//Decido los turnos a partir de la ronda 1
         List<Integer> orderTurn = decideTurns(game, ls, new ArrayList<>(), 0);
         Integer turn = orderTurn.stream().findFirst().get();
         Player start = playerService.findPlayer(turn);
@@ -194,6 +194,7 @@ public class GameService {
         game.setTurn(turn);
         game.setOrderTurn(orderTurn);
         this.updateGame(game, game.getId());
+        return game; //Se ha añadido que devuelva game para la comprobación de los test
     }
 
     private List<Integer> decideTurns(Game game, List<Player> ls, List<Integer> orderTurn, Integer indexCard) {
@@ -211,7 +212,7 @@ public class GameService {
         Integer aux = cards.size();
         for (int i = cards.size()-1;i >= 0; i--) {
             Card card = cards.get(i);
-            if (card.getIniciative() != minIniciative) {
+            if (card.getIniciative() != minIniciative) { //NO ESTÁ TENIENDO EN CUENTA QUE PASA CUANDO HAY DOS CARTAS CON MISMA INICIATIVA PERO DISTINTAS DEL MINIMO
                 orderTurn.add(0, card.getPlayer().getId());
                 aux--;
             }
