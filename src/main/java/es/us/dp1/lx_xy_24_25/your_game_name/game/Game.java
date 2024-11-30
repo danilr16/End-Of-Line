@@ -76,6 +76,27 @@ public class Game extends BaseEntity {
     @OneToOne(cascade = CascadeType.REMOVE)
     TableCard table;
 
+    public Game(Game g){
+        this.gameCode = g.getGameCode();
+        this.host = g.getHost();
+        this.isPublic = g.getIsPublic();
+        this.numPlayers = g.getNumPlayers();
+        this.chat = g.getChat();
+        this.nTurn = g.getNTurn();
+        this.duration = g.getDuration();
+        this.started = g.getStarted();
+        this.turn = g.getTurn(); 
+        this.orderTurn = g.getOrderTurn();
+        this.initialTurn = g.getInitialTurn();
+        this.gameMode = g.getGameMode();
+        this.gameState = g.getGameState();
+        this.spectators = g.getSpectators();
+        this.players = g.getPlayers();
+        this.table = g.getTable();
+    }
+
+    public Game(){}
+
     @PrePersist
     @PreUpdate
     private void prePersist() {

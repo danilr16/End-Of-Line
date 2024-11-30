@@ -8,7 +8,9 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -370,11 +372,83 @@ public class GameServicetests {
         assertTrue(gameWithInitialTurn.getInitialTurn().size()==4);
     }
 
+
+    private Map<Integer,List<Card>> prepareTestDecideTurns1(){//Función auxiliar que prepara diferentes casos a comprobar para decidir el orden de los turnos.
+        //Caso 1: Las inciativas de las ultimas cartas de los jugadores son distintas
+        //Devuelve una map de entero lista de cartas
+        List<Player> players1 = new ArrayList<>(); 
+        Map<Integer,List<Card>> res = new HashMap<>();
+        for(Integer i=0; i<=3;i++){
+            Player p = simGame.getPlayers().get(i);
+            List<Integer> playedCards = new ArrayList<>();
+            switch (i) { //Hace una lista de cartas jugadas por cada jugador de la partida que simula la base de datos para cuando se ejecute el cardService.findCard()
+                case 0:
+                    Card c = Card.createByType(TypeCard.TYPE_1, p);
+                    c.setId(i);
+                    c.setPlayer(p);
+                    List<Card> cardsPlayed = List.of(c);
+                    res.put(i, cardsPlayed);
+                    playedCards.add(i); 
+                    break;
+                case 1:
+                    Card c1 = Card.createByType(TypeCard.TYPE_2_DER, p);
+                    c1.setId(i);
+                    c1.setPlayer(p);
+                    List<Card> cardsPlayed1 = List.of(c1);
+                    res.put(i, cardsPlayed1);
+                    playedCards.add(i);
+                    break;
+                case 2:
+                    Card c2 = Card.createByType(TypeCard.TYPE_3_DER, p);
+                    c2.setId(i);
+                    c2.setPlayer(p);
+                    List<Card> cardsPlayed2 = List.of(c2);
+                    res.put(i, cardsPlayed2);
+                    playedCards.add(i);
+                    break;
+                case 3:
+                    Card c3 = Card.createByType(TypeCard.TYPE_4, p);
+                    c3.setId(i);
+                    c3.setPlayer(p);
+                    List<Card> cardsPlayed3 = List.of(c3);
+                    res.put(i, cardsPlayed3);
+                    playedCards.add(i);
+                    break;
+                default:
+                    break;
+            }
+            p.setPlayedCards(playedCards);
+            players1.add(p);
+        }
+        simGame.setPlayers(players1);
+        return res;
+    }
+
     @Test
     @Transactional
-    void shouldDecideTurns(){
+    void shouldDecideTurnsCase1(){ //Todas las ultimas cartas jugadas son diferentes
+        //Datos necesarios para la simulación de la función: 
+        Map<Integer,List<Card>> lastPlayedCardsPlayed = prepareTestDecideTurns1();
+        when(cardService.findCard(anyInt())).thenAnswer(invocation -> {
+            int id = invocation.getArgument(0); //id será cero ya que la lista de playedCards solo tiene un id de carta
+            return lastPlayedCardsPlayed.get(id).get(0);//siempre van a tener una carta en este caso
+        });
+        when(playerService.findPlayer(anyInt())).thenAnswer( invocation -> {
+            int id = invocation.getArgument(0); //id será uno ya que es el primer jugador en la lista despues de ordenar el turno
+            return simGame.getPlayers().get(id);
+        });
+        when(playerService.updatePlayer(any(Player.class), anyInt())).thenReturn(null);
+        when(this.gameRepository.findById(1)).thenReturn(Optional.of(simGame));
+        when(this.gameService.updateGame(simGame, 1)).thenReturn(null);
+        Game gameTurnsOrder = gameService.decideTurns(simGame, simGame.getPlayers());
 
+        List<Integer> playersShouldBe = List.of(1,2,3,4);
+        assertEquals(playersShouldBe,gameTurnsOrder.getOrderTurn());
+        assertEquals(1, gameTurnsOrder.getTurn());
+        System.out.println(gameTurnsOrder.getOrderTurn());
     }
+
+ 
 
     @Test
     @Transactional
