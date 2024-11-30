@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.Comparator;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -200,32 +201,33 @@ public class GameService {
     private List<Integer> decideTurns(Game game, List<Player> ls, List<Integer> orderTurn, Integer indexCard) {
         List<Player> players = new ArrayList<>(ls);
         List<Card> cards = new ArrayList<>();
-        for (Player player: players) {
+        for (Player player: players) {//Cogemos las ultimas cartas jugadas de cada jugador o las anteriores (llamada recursiva que va comparando cartas hasta el caso base, llegada a nodo de inicio)
             Card card = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 1 - indexCard));
             if (card.getType().equals(TypeCard.INICIO)) {
                 return game.getInitialTurn();
             }
             cards.add(card);
         }
-        cards.sort(Comparator.comparing(Card::getIniciative));
-        Integer minIniciative = cards.stream().findFirst().get().getIniciative();
-        Integer aux = cards.size();
-        for (int i = cards.size()-1;i >= 0; i--) {
-            Card card = cards.get(i);
-            if (card.getIniciative() != minIniciative) { //NO ESTÁ TENIENDO EN CUENTA QUE PASA CUANDO HAY DOS CARTAS CON MISMA INICIATIVA PERO DISTINTAS DEL MINIMO
-                orderTurn.add(0, card.getPlayer().getId());
-                aux--;
+        cards.sort(Comparator.comparing(Card::getIniciative));//Las ordenamos de menor a mayor iniciativa
+        Integer maxIniciative = cards.get(cards.size()-1).getIniciative();
+        Map<Integer, List<Player>> iniciative_player = cards.stream().collect(Collectors.groupingBy(Card::getIniciative, //Keys las iniciativas sacadas y valores lista de los jugadores que la han sacado
+            Collectors.mapping(Card::getPlayer, Collectors.toList())));
+        for(int i=maxIniciative; i >= 0; i--) {//Si varios jugadores tienen la misma iniciativa, se hace llamada recursiva para decidir el orden entre esos jugadores y si no se añade a la lista del orden final
+            if (iniciative_player.get(i) != null) {
+                List<Player> sameIniciative = iniciative_player.get(i);
+                if (sameIniciative.size() == 1) {
+                    orderTurn.add(0, sameIniciative.stream().findFirst().get().getId());
+                } else {
+                    List<Integer> newOrder = decideTurns(game, new ArrayList<>(sameIniciative), new ArrayList<>(), indexCard + 1);
+                    if (newOrder.equals(game.getInitialTurn())) {//Si en algun momento se llega al caso base se devuelve el order de la ronda 1
+                        return game.getInitialTurn();
+                    } else {
+                        orderTurn.addAll(0, newOrder);
+                    }
+                }
             }
         }
-        if (aux == 1) {
-            Card card = cards.stream().findFirst().get();
-            orderTurn.add(0, card.getPlayer().getId());
-            return orderTurn;
-        } else {
-            List<Player> remaining = players.stream().filter(p -> !orderTurn.contains(p.getId()))
-                .collect(Collectors.toList());
-            return decideTurns(game, remaining, orderTurn, indexCard + 1);
-        }
+        return orderTurn;
     }
 
     @Transactional

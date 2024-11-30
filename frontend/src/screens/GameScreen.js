@@ -507,6 +507,9 @@ export default function GameScreen() {
         }
     };
 
+    const useEnergy = () => {
+        console.log(playerRef.current.energy);
+    };
     
     return (
         <div className="full-screen">
@@ -589,6 +592,20 @@ export default function GameScreen() {
                 >
                 </div>}
             </div>
+            {playerRef && playerRef.current != null && <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
+                <div className="icon-container">
+                    <GameCardIcon
+                        iconName={'energy_card'}
+                        color={findColorById(playerRef.current.id)}
+                        rotation={3 - playerRef.current.energy}
+                    />
+                    <button
+                        className="overlay-button"
+                        onClick={useEnergy}
+                    />
+                </div>
+            </div>
+            }
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game
             </button>}
