@@ -28,8 +28,14 @@ export default function GameScreen() {
         setVisible
     );
 
+    const [requestSentAt, setRequestSentAt] = useState(null); 
+    const [adjustedTimerStart, setAdjustedTimerStart] = useState(null);
+
     useEffect(() => {
         const fetchGameUpdates = () => {
+            // Record the local time when the request is made
+            setRequestSentAt(Date.now());
+
             fetch(`/api/v1/games/${gameCode}`, {
                 headers: {
                     Authorization: `Bearer ${jwt}`,
@@ -38,7 +44,7 @@ export default function GameScreen() {
                 .then(response => response.json())
                 .then(data => {
                     if (!data.message) {
-                        setGame(data); // Keep the previous state while updating
+                        setGame(data); // Update game state
                     } else {
                         if (setMessage !== null) {
                             setMessage(data.message);
@@ -59,6 +65,44 @@ export default function GameScreen() {
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
+
+    useEffect(() => {
+        if (game?.turn) {
+            const curPlayer = game.players[findPlayerIndexById(game.turn)]
+            if (game?.timestamp && curPlayer?.turnStarted && requestSentAt) {
+                // Parse backend and player timestamps
+                const backendTimestamp = new Date(game.timestamp).getTime();
+                const playerTurnStarted = new Date(curPlayer.turnStarted).getTime();
+    
+                // Calculate the local-adjusted timer start timestamp
+                const networkDelay = Date.now() - requestSentAt;
+                const adjustedTime = playerTurnStarted + networkDelay;
+    
+                setAdjustedTimerStart(new Date(adjustedTime).toISOString());
+            }
+        }
+        
+    }, [game?.timestamp, requestSentAt]);
+
+    const [secondsLeft, setSecondsLeft] = useState(null);
+
+    useEffect(() => {
+        if (adjustedTimerStart) {
+            const targetTime = new Date(adjustedTimerStart).getTime() + 5 * 60 * 1000; // Adjusted time + 5 minutes
+
+            const updateSecondsLeft = () => {
+                const currentTime = Date.now();
+                const diff = Math.max(0, Math.floor((targetTime - currentTime) / 1000)); // Calculate seconds left
+                setSecondsLeft(diff);
+            };
+
+            // Update the countdown every second
+            const interval = setInterval(updateSecondsLeft, 1000);
+            updateSecondsLeft(); // Initial call to set the state immediately
+
+            return () => clearInterval(interval); // Cleanup on unmount
+        }
+    }, [adjustedTimerStart]);
 
     const cardNameMapping = {
         "INICIO": "start_card",
@@ -199,27 +243,49 @@ export default function GameScreen() {
     );
     
     useEffect(() => {
-        setBoardItems(Array(gridSize).fill(null).map(() => Array(gridSize).fill(null)));
-    }, [gridSize]);
-    
-    useEffect(() => {
         if (game !== null && game.tableCard !== null) {
             const { rows } = game.tableCard;
+            let prevBoardItems = [...boardItems];  // Copy the current boardItems
+            
+            // Check if the boardItems is the correct size, if not, initialize a new one
+            if (boardItems.length !== gridSize || boardItems[0].length !== gridSize) {
+                prevBoardItems = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
+            }
 
-            const newBoardItems = rows.map((row, rowIndex) =>
-            row.cells.map((cell, colIndex) => {
-                
-                if (cell.isFull && cell.card) {
-                    const cardName = cell.card.type;
-                    return <GameCardIcon key={`${rowIndex}-${colIndex}`} iconName={cardNameMapping[cardName]} 
-                    rotation={cell.card.rotation} color = {findColorById(cell.card.playerId)}/>;
-                }
-                return null;
-            })
-            );
-            setBoardItems(newBoardItems);
+            // Iterate through rows and cells of game.tableCard
+            rows.forEach((row, rowIndex) => {
+                row.cells.forEach((cell, colIndex) => {
+                    if (cell.isFull && cell.card) {
+                        const cardName = cell.card.type;
+                        const updatedCell = (
+                            <GameCardIcon 
+                                key={`${rowIndex}-${colIndex}`} 
+                                iconName={cardNameMapping[cardName]} 
+                                rotation={cell.card.rotation} 
+                                color={findColorById(cell.card.playerId)} 
+                            />
+                        );
+
+                        // Ensure the row exists, initialize it if necessary
+                        if (!prevBoardItems[rowIndex]) {
+                            prevBoardItems[rowIndex] = [];
+                        }
+                        
+                        // Ensure the cell exists, initialize it if necessary
+                        if (prevBoardItems[rowIndex][colIndex] === undefined) {
+                            prevBoardItems[rowIndex][colIndex] = null;
+                        }
+
+                        // Now, update the cell at the given index
+                        prevBoardItems[rowIndex][colIndex] = updatedCell;
+                    }
+                });
+            });
+
+            // Set the boardItems to the updated prevBoardItems
+            setBoardItems(prevBoardItems);
         }
-      }, [game]);
+    }, [game]);
 
     // New state to track used cards
     const [usedCards, setUsedCards] = useState(new Set());
@@ -248,7 +314,7 @@ export default function GameScreen() {
 
     
 
-    const onDrop = (index) => {
+    const onDrop = (index, rot) => {
         if (beingDraggedCardRef.current !== null) {
             const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
             const card = currentCardsRef.current[droppedCardIndex];
@@ -256,10 +322,10 @@ export default function GameScreen() {
             const iconName = card.type;
             const rowIndex = Math.floor(index / gridSize);
             const colIndex = index % gridSize;
-    
+
             setBoardItems(prevBoardItems => {
                 const newBoardItems = [...prevBoardItems];
-                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} color={findColorById(playerRef.current.id)} rotation = {hoveredRotation} />;
+                newBoardItems[rowIndex][colIndex] = <GameCardIcon iconName={iconName} color={findColorById(playerRef.current.id)} rotation = {rot} />;
                 return newBoardItems;
             });
     
@@ -287,6 +353,20 @@ export default function GameScreen() {
             .then((data) => {
                 // Handle the response if needed
                 console.log("Card placed successfully:", data);
+                if (data.statusCode == 403) {
+                    setBoardItems(prevBoardItems => {
+                        const newBoardItems = [...prevBoardItems];
+                        newBoardItems[rowIndex][colIndex] = null;
+                        return newBoardItems;
+                    });
+                    setUsedCards((prev) => {
+                        const updatedSet = new Set(prev);
+                        if (updatedSet.has(cardId)) {
+                            updatedSet.delete(cardId);
+                        }
+                        return updatedSet;
+                    });
+                } 
             })
             .catch((error) => {
                 // Handle any errors that occur during the request
@@ -432,7 +512,7 @@ export default function GameScreen() {
         <div className="full-screen">
             <div className="half-screen">
                 <InGamePlayerList players = {players} spectators = {game.spectators} colors = {playerColors}
-                    gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers}/>
+                    gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers} playerTurnIndex = {game.gameState == "IN_PROCESS" ? findPlayerIndexById(game.turn): null}/>
 
                     {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0) && (
                         <Board 
@@ -450,6 +530,9 @@ export default function GameScreen() {
                                 position: position,
                                 rotation: player?.possibleRotations?.[index], 
                             })) || []} 
+                            canDrop = {player && game.turn === player.id && game.gameState == "IN_PROCESS"}
+                            secondsLeft = {secondsLeft}
+                            state = {game.gameState}
                         />
                     )}
 
@@ -477,6 +560,7 @@ export default function GameScreen() {
                             isUsed={usedCards.has(card.id)}
                             color = {player ? findColorById(player.id) : 1}
                             id = {card.id}
+                            canDrag = {game.turn === player.id && game.gameState == "IN_PROCESS"}
                         />
                     )).filter((card, index) => !usedCards.has(card.id))}
                 </div>

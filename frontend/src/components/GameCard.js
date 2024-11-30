@@ -4,7 +4,7 @@ import { CardOverlay } from './CardOverlay';
 import "../static/css/components/gameCard.css"
 
 
-const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex, hoveredRotation, color, isUsed }) => {
+const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeingDraggedCard, index, setDragging, dropIndex, hoveredRotation, color, isUsed, canDrag}) => {
     const cardRef = useRef(null);
     const [position, setPosition] = useState({ top: window.innerHeight* 0.9691, left: window.innerWidth* 0.25083});
     const [isHovered, setIsHovered] = useState(false); 
@@ -13,10 +13,12 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
     
 
     const handleDragStart = () => {
-        isDragging.current = true; 
-        setBeingDraggedCard(index);
-        document.body.classList.add('no-select');
-        setDragging(true);
+        if (true) {
+            isDragging.current = true; 
+            setBeingDraggedCard(index);
+            document.body.classList.add('no-select');
+            setDragging(true);
+        }
     };
     const handleDragEnd = () => {
         isDragging.current = false; 
