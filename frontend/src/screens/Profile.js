@@ -28,7 +28,7 @@ export default function Profile() {
     const roles = jwt_decode(jwt).authorities;
     const isAdmin = roles.includes("ADMIN");
     const [showEditAchievementModal, setEditAchievementModal] = useState(false); //Editar logros 
-
+    const [showDeleteAchievementModal, setDeleteAchievementModal] = useState(false); //Eliminar logros 
 
 
     const predefinedImages = [
@@ -181,16 +181,20 @@ export default function Profile() {
         }
     };
 
+    //Actualmente el sistema deja guardar dos nombres iguales al poner un espacio **cambiar**
     const handleEditAchievement = async (achievementID) => {
         try {
-            console.log("Id Achievement:", achievementID);
-            console.log("Name Achievement", newNameAchievement);
-            console.log("Description Achievement", newDescriptionAchievement);
+            if (!newNameAchievement?.trim()) {
+                setMessage('The name cannot be empty.');
+                setVisible(true);
+                return;        
+            }
+            
             const updatedAchievement = {
                 ...(newNameAchievement ? { name: newNameAchievement } : {}),
                 ...(newDescriptionAchievement ? { description: newDescriptionAchievement } : {}),
             };
-            console.log("UpdatedAchievement", updatedAchievement);
+
             const response = await fetch(`/api/v1/achievements/${achievementID}`, {
                 method: 'PUT',
                 headers: {
@@ -199,45 +203,52 @@ export default function Profile() {
                 },
                 body: JSON.stringify(updatedAchievement),
             });
-            console.log("Response", response);
-                        
+    
             if (response.ok) {
                 const updatedData = await response.json(); 
-              
-                setAchievements((prevAchievements) =>
-                    prevAchievements.map((achievement) =>
-                        achievement.id === achievementID
-                            ? { ...achievement, ...updatedData }
-                            : achievement
+                setAllAchievements((prev) =>
+                    prev.map((achievement) =>
+                        achievement.id === achievementID ? { ...achievement, ...updatedData } : achievement
                     )
                 );
-
-              
-                setAllAchievements((prevAllAchievements) =>
-                    prevAllAchievements.map((achievement) =>
-                        achievement.id === achievementID
-                            ? { ...achievement, ...updatedData }
-                            : achievement
-                    )
-                );
-
                 setEditAchievementModal(false); 
-                
             } else {
                 const errorData = await response.json();
-                setVisible(true); // Mostrar modal de error
-                setMessage(errorData.message || 'Error desconocido al actualizar el perfil.');
-                console.error("Error Response Data:", errorData);
+                setMessage(errorData.message || 'Error desconocido al actualizar el logro.');
+                setVisible(true);
             }
         } catch (error) {
             setMessage('Error al conectar con el servidor');
             console.error(error);
         }
     };
-     
+
+    const handleDeleteAchievement = async (achievementID) => {
+        try {
+            const response = await fetch(`/api/v1/achievements/${achievementID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            });
+            if (response.ok) {
+                setAllAchievements((prev) =>
+                    prev.filter((achievement) => achievement.id !== achievementID)
+                );
+                setEditAchievementModal(false);
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.message || 'Error desconocido al eliminar el logro.');
+                setVisible(true);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor');
+            console.error(error);
+        }
+    };
     
-    
-    
+        
     const renderAchievement = (achievement) => {
         const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
         if (isAdmin){
@@ -258,7 +269,13 @@ export default function Profile() {
                             setNewDescriptionAchievement(achievement.description);
                             setEditAchievementModal(true); 
                         }}>Edit</button> 
-                        <button className="button-edit" onClick={() => setEditAchievementModal(true)}>Delete</button> 
+                        <button className="button-delete" 
+                            onClick={() => {
+                                setEditingAchievementID(achievement.id); 
+                                setDeleteAchievementModal(true);       
+                            }}
+                        >Delete </button>
+                        <iframe width="110" height="200" src="https://www.myinstants.com/instant/nocilla-que-merendilla-17711/embed/" frameborder="0" scrolling="no"></iframe>
 
                     </div>
                     {showEditAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
@@ -282,6 +299,19 @@ export default function Profile() {
                                 <div className="modal-buttons">
                                     <button className="button-save" onClick={() => handleEditAchievement(editingAchievementID)}>Guardar</button>
                                     <button className="button-edit" onClick={() => setEditAchievementModal(false)}>Cancelar</button>
+                                    
+                                </div>
+                            </div>
+                        </div>,
+                        document.body
+                    )}
+                    {showDeleteAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
+                        <div className="modal-profile-overlay">
+                            <div className="modal-confirmation-container">
+                              <p>Are you sure you want to eliminate this achievement?</p>
+                                <div className="modal-buttons">
+                                    <button className="button-save" onClick={() => handleDeleteAchievement(editingAchievementID)}>Guardar</button>
+                                    <button className="button-edit" onClick={() => setDeleteAchievementModal(false)}>Cancelar</button>
                                 </div>
                             </div>
                         </div>,

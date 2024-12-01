@@ -83,6 +83,16 @@ public class AchievementServiceTests {
     }
 
     @Test
+    @Transactional
+    void shouldNotUpdateAchievementDuplicated() {
+        int idToUpdate = 1;
+		String newName="achievement2";
+		Achievement achievement = this.achievementService.findAchievement(idToUpdate);
+		achievement.setName(newName);
+        assertThrows(IllegalArgumentException.class, () -> achievementService.updateAchievement(achievement, idToUpdate));
+    }
+
+    @Test
 	@Transactional
 	void shouldDeleteAchivement() {
 		int count = ((Collection<Achievement>) this.achievementService.findAll()).size();
