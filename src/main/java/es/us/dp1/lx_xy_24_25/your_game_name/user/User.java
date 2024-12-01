@@ -24,6 +24,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "appusers")
 public class User extends BaseEntity {
+	
 
 	@Column(unique = true)
 	String username;
@@ -68,6 +69,7 @@ public class User extends BaseEntity {
 	public Boolean hasAuthority(String auth) {
 		return authority.getAuthority().equals(auth);
 	}
+	
 
 	public Boolean hasAnyAuthority(String... authorities) {
 		Boolean cond = false;

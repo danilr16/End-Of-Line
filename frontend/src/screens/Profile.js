@@ -3,6 +3,7 @@ import tokenService from '../services/token.service';
 import useFetchState from "../util/useFetchState";
 import "../static/css/screens/Profile.css";
 import ReactDOM from 'react-dom';
+import jwt_decode from "jwt-decode";
 
 
 
@@ -17,10 +18,17 @@ export default function Profile() {
     const [newPassword, setNewPassword] = useState(null);
     const [oldPassword, setOldPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState(''); 
+    const [editingAchievementID, setEditingAchievementID] = useState(null); // id del logro a edición
+    const [newNameAchievement, setNewNameAchievement] = useState(''); 
+    const [newDescriptionAchievement, setNewDescriptionAchievement] = useState(''); 
     const [showPasswordModal, setShowPasswordModal] = useState(false); // Cambiar contraseña
     const [showImageModal, setShowImageModal] = useState(false); //Cambiar imagen de perfil
     const [showConfirmationModal, setShowConfirmationModal] = useState(false); //Se confima el cambio de datos/usuario y se cierra sesión
-    
+    //Comprobamos si es administrador
+    const roles = jwt_decode(jwt).authorities;
+    const isAdmin = roles.includes("ADMIN");
+    const [showEditAchievementModal, setEditAchievementModal] = useState(false); //Editar logros 
+    const [showDeleteAchievementModal, setDeleteAchievementModal] = useState(false); //Eliminar logros 
 
 
     const predefinedImages = [
@@ -61,7 +69,6 @@ export default function Profile() {
         setShowImageModal(true); 
     };
     
-
     const handleEditClick = () => {
         setIsEditing(!isEditing);
         if (isEditing) {
@@ -173,22 +180,162 @@ export default function Profile() {
             console.error(error);
         }
     };
+
+    //Actualmente el sistema deja guardar dos nombres iguales al poner un espacio **cambiar**
+    const handleEditAchievement = async (achievementID) => {
+        try {
+            if (!newNameAchievement?.trim()) {
+                setMessage('The name cannot be empty.');
+                setVisible(true);
+                return;        
+            }
+            
+            const updatedAchievement = {
+                ...(newNameAchievement ? { name: newNameAchievement } : {}),
+                ...(newDescriptionAchievement ? { description: newDescriptionAchievement } : {}),
+            };
+
+            const response = await fetch(`/api/v1/achievements/${achievementID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+                body: JSON.stringify(updatedAchievement),
+            });
     
+            if (response.ok) {
+                const updatedData = await response.json(); 
+                setAllAchievements((prev) =>
+                    prev.map((achievement) =>
+                        achievement.id === achievementID ? { ...achievement, ...updatedData } : achievement
+                    )
+                );
+                setEditAchievementModal(false); 
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.message || 'Error desconocido al actualizar el logro.');
+                setVisible(true);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor');
+            console.error(error);
+        }
+    };
+
+    const handleDeleteAchievement = async (achievementID) => {
+        try {
+            const response = await fetch(`/api/v1/achievements/${achievementID}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            });
+            if (response.ok) {
+                setAllAchievements((prev) =>
+                    prev.filter((achievement) => achievement.id !== achievementID)
+                );
+                setEditAchievementModal(false);
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.message || 'Error desconocido al eliminar el logro.');
+                setVisible(true);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor');
+            console.error(error);
+        }
+    };
     
-    
-    
+        
     const renderAchievement = (achievement) => {
         const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
-        return (
-            <div key={achievement.id} className={`achievement-item${isAchieved ? '-achieved' : ''}`} 
-            >
-                <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  />
-                <div className="achievement-details">
-                    <h4>{achievement.name}</h4>
-                    <p>{achievement.description}</p>
+        if (isAdmin){
+            return (
+                <div key={achievement.id} className={`achievement-item${isAchieved ? '-achieved' : ''}`}>
+                    <div className="achievement-one">
+                        <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  />
+                        <div className="achievement-details">
+                            <h4>{achievement.name}</h4>
+                            <p>{achievement.description}</p>
+                        </div>
+                    </div>
+                    <div className="achievement-buttons">
+                        <button className="button-edit"
+                         onClick={() => {
+                            setEditingAchievementID(achievement.id);
+                            setNewNameAchievement(achievement.name); 
+                            setNewDescriptionAchievement(achievement.description);
+                            setEditAchievementModal(true); 
+                        }}>Edit</button> 
+                        <button className="button-delete" 
+                            onClick={() => {
+                                setEditingAchievementID(achievement.id); 
+                                setDeleteAchievementModal(true);       
+                            }}
+                        >Delete </button>
+                        <iframe width="110" height="200" src="https://www.myinstants.com/instant/nocilla-que-merendilla-17711/embed/" frameborder="0" scrolling="no"></iframe>
+
+                    </div>
+                    {showEditAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
+                        <div className="modal-profile-overlay">
+                            <div className="modal-profile-container">
+                                <h2>Editar logro</h2>
+                                <input
+                                    type="text"
+                                    value={newNameAchievement || ''}
+                                    placeholder="Nuevo nombre"
+                                    onChange={(e) => setNewNameAchievement(e.target.value)}
+                                    className="editable-input"
+                                />
+                                <input
+                                    type="text"
+                                    value={newDescriptionAchievement || ''}
+                                    placeholder="Nueva descripción"
+                                    onChange={(e) => setNewDescriptionAchievement(e.target.value)}
+                                    className="editable-input"
+                                />
+                                <div className="modal-buttons">
+                                    <button className="button-save" onClick={() => handleEditAchievement(editingAchievementID)}>Guardar</button>
+                                    <button className="button-edit" onClick={() => setEditAchievementModal(false)}>Cancelar</button>
+                                    
+                                </div>
+                            </div>
+                        </div>,
+                        document.body
+                    )}
+                    {showDeleteAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
+                        <div className="modal-profile-overlay">
+                            <div className="modal-confirmation-container">
+                              <p>Are you sure you want to eliminate this achievement?</p>
+                                <div className="modal-buttons">
+                                    <button className="button-save" onClick={() => handleDeleteAchievement(editingAchievementID)}>Guardar</button>
+                                    <button className="button-edit" onClick={() => setDeleteAchievementModal(false)}>Cancelar</button>
+                                </div>
+                            </div>
+                        </div>,
+                        document.body
+                    )}
                 </div>
-            </div>
-        );
+            );
+
+        }else{
+   
+            return (
+                <div key={achievement.id} className={`achievement-item${isAchieved ? '-achieved' : ''}`}>
+                    <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  />
+                    <div className="achievement-details">
+                        <h4>{achievement.name}</h4>
+                        <p>{achievement.description}</p>
+                    </div>
+                    
+                </div>
+                
+            );
+
+        }
+        
     };
     
     // Pantalla de carga (cambiar)
@@ -318,12 +465,12 @@ export default function Profile() {
         <div className="profile-text">
             <h3>Logros</h3>
         </div>
-        {allAchievements && allAchievements.length > 0 ? (
-            allAchievements.map(renderAchievement) 
-        ) : (
-            <p>No hay logros disponibles.</p>
-        )}
-    </div>
+            {allAchievements && allAchievements.length > 0 ? (
+                allAchievements.map(renderAchievement) 
+            ) : (
+                <p>No hay logros disponibles.</p>
+            )}
         </div>
+            </div>
     );
 }    
