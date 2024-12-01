@@ -357,6 +357,9 @@ public class GameService {
                 if (playing.getUser().equals(currentUser)) {
                     manageTurnOfPlayer(game, playing);
                 }
+                if (playing.getState().equals(PlayerState.LOST)) {
+                    nextTurn(game, playing);
+                }
             }
         }
     }
