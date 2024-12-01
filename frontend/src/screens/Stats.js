@@ -20,14 +20,22 @@ export default function Stats() {
         setVisible
     );
 
+    const [userStats, setUserStats] = useFetchState(
+        {},
+        '/api/v1/statistics/myGames',
+        jwt,
+        setMessage,
+        setVisible
+    )
+
     const drawDiagram = (diagram) => {
 
         const border = diagram.getContext("2d");
         const centerX = diagram.width / 2;
         const centerY = diagram.height / 2;
         const radius = 100;
-        const wins = 80;
-        const loses = 35;
+        const wins = userStats.victories.total;
+        const loses = userStats.defeats.total; 
     
         // Función para dibujar un segmento
         const drawSegment = (startAngle, endAngle, color) => {
@@ -88,8 +96,9 @@ export default function Stats() {
         }
     }, []);
 
-
-
+    if (!userStats || !userStats.victories || !userStats.defeats) {
+        return <p>Loading...</p>; //Para que no renderice los atributos de stats nada mas cargar la pagina
+    }
 
     return (
         
@@ -106,17 +115,16 @@ export default function Stats() {
                     <div className="win-lose-ratio">
                         <canvas ref={canvasRef} width={250} height={250}/>
                         <div className="user-games">
-                            <h3 className="won-games">Won: 80</h3>
-                            <h3 className="lost-games">Lost: 35</h3>
-                            <h3 className="total-games">Total: 115</h3>
+                            <h3 className="won-games">Won: {userStats.victories.total}</h3>
+                            <h3 className="lost-games">Lost: {userStats.defeats.total}</h3>
+                            <h3 className="total-games">Total: {userStats.victories.total + userStats.defeats.total}</h3>
                         </div>
                     </div>
                     
                 </div>
                 <div className="buttons-container">
                     <button className="sub-screen-button" onClick={()=>navigate("/individualStats")}>Individual stats</button>
-                    {/*cuando estén hechas las rutas esa seguramente sea /:currentUser/individualStats*/}
-                    <button className="sub-screen-button">Global stats</button>
+                    <button className="sub-screen-button" onClick={()=>navigate("/globalStats")}>Global stats</button>
                     <button className="sub-screen-button">Ranking</button>
                 </div>
             </div>

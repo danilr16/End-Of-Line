@@ -1,0 +1,134 @@
+@import "../colors.css";
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.screen-title {
+    align-self: center;
+    text-decoration: underline;
+    text-shadow: 0px 0px 10px var(--br-yellow);
+    color: white;
+    font-size: 300%;
+    margin-top: 3%;
+    animation: fallDown 2s ease forwards;
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.tables-container {
+    display: flex;
+    margin-top: 2%;
+    justify-content: space-between;
+}
+
+@keyframes slideFromLeft {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
+}
+
+.games-duration {
+    opacity: 0;
+    margin-left: 1%;
+    margin-top: 3%;
+    color: white;
+    text-decoration: underline;
+    font-size: 200%;
+    animation: slideFromLeft 2s ease forwards;
+}
+
+.longest-game-container {
+    background-color: var(--br-dark);
+    margin-left: 8%;
+}
+
+.shortest-game-container {
+    background-color: var(--br-dark);
+}
+
+.total-games-container {
+    background-color: var(--br-dark);
+    margin-right: 8%;
+}
+
+@keyframes smoothAppear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+table {
+    border-collapse: separate;
+}
+
+thead th {
+    opacity: 0;
+    background-color: var(--br-yellow);
+    color: black;
+    padding: 10px 30px;
+    border-bottom: 5px solid var(--br-dark);
+    white-space: nowrap;
+    text-align: center;
+    animation: smoothAppear 2s ease forwards;
+    animation-delay: 1.5s;
+}
+
+tbody td {
+    opacity: 0;
+    background-color: var(--br-trans-grey-very-light);
+    color: black;
+    padding: 10px 30px;
+    border-top: 3px solid var(--br-dark);
+    animation: smoothAppear 2s ease forwards;
+    animation-delay: 1.5s;
+}
+
+.popular-gamemodes {
+    opacity: 0;
+    text-decoration: underline;
+    font-size: 200%;
+    color: white;
+    margin-left: 1%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    animation: slideFromLeft 2s ease forwards;
+    animation-delay: 1s;
+}
+
+.popular-gamemodes-container {
+    display: flex;
+    justify-content: center;
+}
+
+.gamemode-container {
+    opacity: 0;
+    background-color: var(--br-trans-grey-very-light);
+    color: black;
+    text-align: center;
+    align-self: center;
+    margin-left: 2%;
+    white-space: pre-line;
+    border-radius: 10%;
+    padding: 1% 1.5%;
+    animation: smoothAppear 2s ease forwards;
+    animation-delay: 2.3s;
+}
