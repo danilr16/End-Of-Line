@@ -194,4 +194,15 @@ public class TableCardService {
         }
         return res;
     }
+
+    public List<Map<String, Integer>> fromListsToPossiblePositions(List<Integer> positions, List<Integer> rotations) {
+        List<Map<String, Integer>> res = new ArrayList<>();
+        for (int i=0; i<positions.size(); i++) {
+            Map<String,Integer> mp = new HashMap<>();
+            mp.put("position", positions.get(i));
+            mp.put("rotation", rotations.get(i));
+            res.add(mp);
+        }
+        return res;
+    }
 }
