@@ -33,6 +33,10 @@ public class User extends BaseEntity {
 
 	String image;
 
+	Integer winningStreak;
+
+    Integer maxStreak;
+
 	@NotNull
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "authority")
@@ -56,6 +60,12 @@ public class User extends BaseEntity {
 		if (friends == null) {
 			this.friends = new ArrayList<>();
 		}
+		if (winningStreak == null) {
+            winningStreak = 0;
+        }
+        if (maxStreak == null) {
+            maxStreak = 0;
+        }
     }
 
 	public void setImage(String image) {

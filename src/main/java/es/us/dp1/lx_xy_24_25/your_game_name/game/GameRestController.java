@@ -29,6 +29,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
@@ -115,8 +116,25 @@ class GameRestController {
     @GetMapping(value = "{gameCode}")
     public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
         Game game = gameService.findGameByGameCode(gameCode);
-        User user = userService.findCurrentUser();
-        gameService.manageGame(game, user);
+        User currentUser = userService.findCurrentUser();
+        gameService.manageGame(game, currentUser);
+        if (game.getGameState().equals(GameState.END)) {//Actualizamos las rachas de los usuario si el juego a terminado
+            List<Player> players = game.getPlayers();
+            for (Player player: players) {
+                User user = player.getUser();
+                if (player.getState().equals(PlayerState.LOST)) {
+                    user.setWinningStreak(0);
+                } else if (player.getState().equals(PlayerState.WON)) {
+                    Integer userStreak = user.getWinningStreak() + 1;
+                    user.setWinningStreak(userStreak);
+                    if (userStreak > user.getMaxStreak()) {
+                        user.setMaxStreak(userStreak);
+                    }
+                    user.setWinningStreak(null);
+                }
+                userService.updateUser(user, user.getId());
+            }
+        }
         GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
@@ -253,8 +271,13 @@ class GameRestController {
                     return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
                 }
             case EXTRA_GAS:
-                gameService.useExtraGas(player);
-                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                PackCard packCard = player.getPackCards().stream().findFirst().get();
+                if (packCard.getNumCards() > 0) {
+                    gameService.useExtraGas(player);
+                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                } else {
+                    return new ResponseEntity<>(new MessageResponse("You can not take a card now, because your deck is empty"), HttpStatus.BAD_REQUEST);
+                }
             default:
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
