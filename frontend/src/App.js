@@ -20,6 +20,7 @@ import MyGames from "./screens/MyGames";
 import Profile from './screens/Profile';
 import Stats from './screens/Stats';
 import IndividualStats from "./screens/IndividualStats";
+import GlobalStats from "./screens/GlobalStats"
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
 
@@ -85,7 +86,8 @@ function App() {
         <Route path="/rules" element={<Rules />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/stats" element={<Stats />} />
-        <Route path="/individualStats" element={<IndividualStats />} /> {/*añadele el usuario como parámetro segun el Dani haga las rutas*/}
+        <Route path="/individualStats" element={<IndividualStats />} />
+        <Route path="/globalStats" element={<GlobalStats />} />
         <Route path="/games/current" element={<CurrentGames />} />
         <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} />
         <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  

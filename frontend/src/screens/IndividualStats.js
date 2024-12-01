@@ -18,6 +18,30 @@ export default function IndividualStats() {
         setVisible
     );
 
+    const [userScoreStats, setUserScoreStats] = useFetchState(
+        {},
+        '/api/v1/statistics/games',
+        jwt,
+        setMessage,
+        setVisible
+    )
+
+    const [gameModeStats, setGameModeStats] = useFetchState(
+        {},
+        '/api/v1/statistics/players',
+        jwt,
+        setMessage,
+        setVisible
+    )
+
+    const [powersStats, setPowersStats] = useFetchState(
+        {},
+        '/api/v1/statistics/myGames',
+        jwt,
+        setMessage,
+        setVisible
+    )
+
     const OrdinalValue = (number) => {
         switch (number) {
             case 1: return 'st'
@@ -26,10 +50,15 @@ export default function IndividualStats() {
             default: return 'th'
         }
     }
+    
+    //Datos de prueba
+    const mostPlayedModes = {'versus': 247, 'singleplayer': 134}
+    const mostUsedPowers = {'accelerate': 385, 'back away': 264}
+    
 
-    //datos de prueba para poderes mas usados y modos mas jugados (vienen en forma de map, cuidado)
-    const mostPlayedModes = ["Team battle", "Versus", "Singleplayer", "Co-op"]
-    const mostUsedPowers = ["Accelerate", "Back away"]
+    if(!userScoreStats || !gameModeStats || !userScoreStats.user || !powersStats) {
+        return <p> Loading... </p>;
+    }
 
     return (
         <div className="main-container">
@@ -38,10 +67,10 @@ export default function IndividualStats() {
             </div>
             <div className="games-stats">
                 <div className="average-points">
-                    Average points:
+                    Average points: {userScoreStats.user.average}
                 </div>
                 <div className="max-points-obtained">
-                    Maximum points obtained:
+                    Maximum points obtained: {userScoreStats.user.max}
                 </div>
                 <div className="longest-victory-streak">
                     Longest victory streak:
@@ -52,9 +81,9 @@ export default function IndividualStats() {
                     <table className="most-played-modes">
                         <thead><th>Most played gamemodes</th></thead>
                         <tbody>
-                            {mostPlayedModes.map((mode, index) => (
+                            {Object.entries(/*gameModeStats.userMostPlayed*/mostPlayedModes).map(([key, value], index) => (
                                 <tr>
-                                    <td key={index}>{index + 1 + OrdinalValue(index + 1)}       {mode}</td>
+                                    <td key={index}>{index + 1 + OrdinalValue(index + 1)} {key} {value}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -65,8 +94,8 @@ export default function IndividualStats() {
                         <thead><th colSpan="2">Most used powers</th></thead>
                         <tbody>
                             <tr>
-                                {mostUsedPowers.map((power, index) => (
-                                    <td key={index}>{index + 1 + OrdinalValue(index + 1) + "\n"} {power + "\n"} 35 uses</td>
+                                {Object.entries(/*powersStats.powersMostUsed*/mostUsedPowers).map(([key, value], index) => (
+                                    <td key={index}>{index + 1 + OrdinalValue(index + 1) + "\n"} {key + "\n"} {value} uses</td>
                                 ))}
                             </tr>
                         </tbody>
@@ -75,5 +104,4 @@ export default function IndividualStats() {
             </div>
         </div>
     )
-
 }
