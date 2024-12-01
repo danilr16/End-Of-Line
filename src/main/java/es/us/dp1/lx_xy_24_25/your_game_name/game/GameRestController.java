@@ -29,7 +29,6 @@ import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
-import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
@@ -237,13 +236,13 @@ class GameRestController {
         Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard{
         Card cardToPlace = cardService.findCard(cardId);
         User currentUser = userService.findCurrentUser();
-        gameService.placeCard(currentUser, gameCode, index, cardToPlace, false);
+        gameService.placeCard(currentUser, gameCode, index, cardToPlace);
         return new ResponseEntity<>(new MessageResponse("You have placed the card successfully"), HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/{gameCode}/useEnergy")
-    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType, 
-        @RequestParam(required = false)Integer index, @RequestParam(required = false)Integer cardId) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType)
+        throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
@@ -254,33 +253,7 @@ class GameRestController {
             || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
             throw new AccessDeniedException("You can't use energy right now");
         }
-        switch (powerType) {
-            case ACCELERATE:
-                gameService.useAccelerate(player);
-                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
-            case BRAKE:
-                gameService.useBrake(player);
-                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
-            case BACK_AWAY:
-                if (cardId == null || index == null) {
-                    return new ResponseEntity<>(new MessageResponse("index and cardId cant be null if you want to use back away"), 
-                        HttpStatus.BAD_REQUEST);
-                } else {
-                    Card cardToPlace = cardService.findCard(cardId);
-                    gameService.useBackAway(user, player, gameCode, index, cardToPlace);
-                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
-                }
-            case EXTRA_GAS:
-                PackCard packCard = player.getPackCards().stream().findFirst().get();
-                if (packCard.getNumCards() > 0) {
-                    gameService.useExtraGas(player);
-                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
-                } else {
-                    return new ResponseEntity<>(new MessageResponse("You can not take a card now, because your deck is empty"), HttpStatus.BAD_REQUEST);
-                }
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return gameService.manageUseOfEnergy(powerType, player, game);
     }
 
     @PatchMapping("/{gameCode}/changeInitialHand")//Permite cambiar tu mano inicial, en tu turno y en la primera ronda
