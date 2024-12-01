@@ -243,6 +243,7 @@ class GameRestController {
     @PatchMapping("/{gameCode}/useEnergy")
     public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType)
         throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        //Comprobamos condiciones para poder usar las energías
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
@@ -253,6 +254,7 @@ class GameRestController {
             || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
             throw new AccessDeniedException("You can't use energy right now");
         }
+        //Una vez comprobado gestionamos que energía se usa
         return gameService.manageUseOfEnergy(powerType, player, game);
     }
 

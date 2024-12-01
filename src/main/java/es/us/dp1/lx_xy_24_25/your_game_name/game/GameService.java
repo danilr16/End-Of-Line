@@ -584,23 +584,7 @@ public class GameService {
                 this.useBrake(player);
                 return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
             case BACK_AWAY:
-                if (player.getPlayedCards().size() >= 2) {
-                    Card cardToBackAway = cardService
-                            .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
-                    List<Map<String, Integer>> newPossiblePositions = tableCardService
-                            .getPossiblePositionsForPlayer(game.getTable(), player, cardToBackAway);
-                    if (newPossiblePositions.isEmpty()) {
-                        return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
-                                HttpStatus.BAD_REQUEST);
-                    } else {
-                        this.useBackAway(player, newPossiblePositions);
-                        return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"),
-                            HttpStatus.ACCEPTED);
-                    }
-                } else {
-                    return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
-                                HttpStatus.BAD_REQUEST);
-                }
+                return this.manageUseOfBackAway(player, game, powerType);
             case EXTRA_GAS:
                 PackCard packCard = player.getPackCards().stream().findFirst().get();
                 if (packCard.getNumCards() > 0) {
@@ -611,6 +595,26 @@ public class GameService {
                 }
             default:
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private ResponseEntity<MessageResponse> manageUseOfBackAway(Player player, Game game, PowerType powerType) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        if (player.getPlayedCards().size() >= 2) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
+            Card cardToBackAway = cardService
+                    .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
+            List<Map<String, Integer>> newPossiblePositions = tableCardService
+                    .getPossiblePositionsForPlayer(game.getTable(), player, cardToBackAway);
+            if (newPossiblePositions.isEmpty()) {//Si la carta anterior no tiene posiciones posibles donde colocar cartas, no puedes usar marcha atrás
+                return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                this.useBackAway(player, newPossiblePositions);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"),
+                    HttpStatus.ACCEPTED);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
         }
     }
 }
