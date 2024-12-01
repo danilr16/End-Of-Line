@@ -1,5 +1,10 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
+import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -9,13 +14,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
-import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
-
 import lombok.Getter;
 import lombok.Setter;
 
