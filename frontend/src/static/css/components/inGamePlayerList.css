@@ -30,6 +30,7 @@
     padding: 15px;
     border-radius: 10px; 
     width: 100%;
+    position: relative; /* Add this to scope child absolute positioning */
 }
 
 .player-container-text {
@@ -52,4 +53,15 @@
     color:var(--br-dark);
     border: 1px solid var(--br-c-dark);
     border-radius: 5px;
+}
+
+.greyed-out-container {
+    position: absolute; /* Position it relative to the parent container */
+    top: 0;
+    left: 0;
+    width: 100%; /* Cover the full width */
+    height: 100%; /* Cover the full height */
+    background-color: var(--br-trans-dark); /* Use semi-transparent grey */
+    z-index: 1; /* Ensure it overlays the content */
+    border-radius: 10px; 
 }

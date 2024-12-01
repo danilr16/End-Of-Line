@@ -41,19 +41,24 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                         <div>
                             <p 
                                 style={{
-                                    color: `var(--player${colors[index]}-normal)`
+                                    color: `var(--player${colors[index]}-normal)`,
+                                    textDecoration: player.playerState === "LOST" ? "line-through" : "none", // Add condition here
                                 }} 
                                 className="player-container-text"
                             >
                                 {player.user.username}
                             </p>
                         </div>
+                        {player.playerState === "LOST" && (
+                            <div className="greyed-out-container">
+                                
+                            </div>
+                        )}
                     </div>
                 ))}
                 {gamestate === "WAITING" && 
                 <button className="player-list-button" onClick={handleSwitch}>{`Switch to ${userSwitchRole}`}</button>}
             </ul>
-            
         </div>
     );
 

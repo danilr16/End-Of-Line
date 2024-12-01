@@ -233,9 +233,18 @@ export default function GameScreen() {
         return playerColorsRef.current[findPlayerIndexById(id)];
     }
 
+    const colorMapping = {
+        'PUZZLE_COOP':[2,1,3,4,5,6,7,8,9,10],
+        'PUZZLE_SINGLE':[2,1,3,4,5,6,7,8,9,10],
+        'VERSUS':[1,2,3,4,5,6,7,8,9,10],
+        'TEAM_BATTLE':[3,2,1,4,5,6,7,8,9,10]
+    } 
+
     useEffect(() => {
-        setPlayerColors(randomShuffle(gameCode,players.length));
-    }, [players])
+        if (game && game.gameMode) {
+            setPlayerColors(randomShuffle(gameCode,players.length,colorMapping[game.gameMode]));
+        }
+    }, [players,game?.gameMode])
 
     const [gridItemSize, setGridItemSize] = useState(0);
     const [boardItems, setBoardItems] = useState(
