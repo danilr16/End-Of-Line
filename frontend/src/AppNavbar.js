@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Navbar, NavbarBrand, NavLink, NavItem, Nav,  NavbarToggler, Collapse } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import tokenService from './services/token.service';
@@ -7,6 +7,7 @@ import NavBarDropdown from './components/NavBarDropdown';
 import { FaBell } from "react-icons/fa";
 import { useColors } from './ColorContext'
 import "./static/css/home/home.css";
+import NotificationPanel from './components/NotificationPanel';
 
 
 function AppNavbar() {
@@ -15,8 +16,24 @@ function AppNavbar() {
     const jwt = tokenService.getLocalAccessToken();
     const [collapsed, setCollapsed] = useState(true);
     const { colors, updateColors } = useColors();
+    const [showNotifications,setShowNotification] = useState(false);
+    const notPanelRef = useRef(null);
 
     const toggleNavbar = () => setCollapsed(!collapsed);
+
+    useEffect(() => { //Close NotificationPanel when clicking outisde it
+        const handleClickOutside = (event) => {
+        if (notPanelRef.current && !notPanelRef.current.contains(event.target)) {
+            setShowNotification(false);
+        }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [notPanelRef]);
+
 
     useEffect(() => {
         if (jwt) {
@@ -50,12 +67,6 @@ function AppNavbar() {
     if (!jwt) {
         publicLinks = (
             <>
-                {/* <NavItem>
-                    <NavLink style={{ color: "white" }} id="docs" tag={Link} to="/docs">Docs</NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink style={{ color: "white" }} id="plans" tag={Link} to="/plans">Pricing Plans</NavLink>
-                </NavItem> */}
                 <NavItem>
                     <NavLink style={{ color: "#1A1207" }} id="register" tag={Link} to="/register">Register</NavLink>
                 </NavItem>
@@ -99,12 +110,14 @@ function AppNavbar() {
                         {ownerLinks} */} 
                     </Nav>
                     <Nav className="ms-auto mb-2 mb-lg-0" navbar>
-                        <FaBell style={{ marginRight: '20px',top: '6px',position: 'relative', color: 'white', fontSize: '1.5rem' , color:"#1A1207"}} />
+                        <FaBell onClick={()=>{setShowNotification(!showNotifications)}} style={{ marginRight: '20px',top: '6px',position: 'relative', fontSize: '1.5rem' , color:"#1A1207"}} />
+                        
                         {publicLinks}
                         {userLogout} 
                     </Nav>
                 </Collapse>
             </Navbar>
+            {showNotifications && <NotificationPanel ref={notPanelRef}/>}
         </div>
     );
 }
