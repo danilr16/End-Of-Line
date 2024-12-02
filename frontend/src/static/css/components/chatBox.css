@@ -32,6 +32,8 @@
     overflow-x: hidden;
     margin-bottom: 15px;
     margin-right: 50px;
+    scrollbar-width: thin; /* Compatibilidad con Firefox */
+    scrollbar-color: var(--br-trans-grey-light) var(--br-dark); /* fallback para navegadores no compatibles */
 }
 
 .message-container::-webkit-scrollbar {

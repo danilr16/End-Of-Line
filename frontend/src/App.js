@@ -23,7 +23,7 @@ import IndividualStats from "./screens/IndividualStats";
 import GlobalStats from "./screens/GlobalStats"
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
-import Friends from "./screens/Friends";
+import Friends from "./components/Friends";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
