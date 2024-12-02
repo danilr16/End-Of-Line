@@ -20,6 +20,7 @@ INSERT INTO appusers(id,image,username,password,authority) VALUES (16,'https://c
 INSERT INTO appusers(id,image,username,password,authority) VALUES (17,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','jct6889','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (18,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','vwn3805','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (19,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','lfb9498','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
+INSERT INTO appusers(id,image,username,password,authority) VALUES (20,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','aVeryChillGuy','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 
 
 
@@ -41,4 +42,31 @@ INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,outp
 INSERT INTO app_table_cards(id, num_colum,num_row,type) VALUES (1,6,6,'JUGADORES_2');
 INSERT INTO app_rows(id,table_id) VALUES (1,1);
 INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (1,1,false,1);
+
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (1,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (4,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (5,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (6,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (7,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (8,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (10,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (11,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (12,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (13,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (14,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (15,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (16,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (17,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (18,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (19,20);
+
+
+
+
+
+
+
+
+
+
 
