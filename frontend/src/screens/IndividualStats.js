@@ -50,7 +50,6 @@ export default function IndividualStats() {
             default: return 'th'
         }
     }
-    
     //Datos de prueba
     const mostPlayedModes = {'versus': 247, 'singleplayer': 134}
     const mostUsedPowers = {'accelerate': 385, 'back away': 264}
@@ -73,7 +72,7 @@ export default function IndividualStats() {
                     Maximum points obtained: {userScoreStats.user.max}
                 </div>
                 <div className="longest-victory-streak">
-                    Longest victory streak:
+                    Longest victory streak: {powersStats.maxStreak==null ? 0 : powersStats.maxStreak}
                 </div>
             </div>
             <div className="tables">
