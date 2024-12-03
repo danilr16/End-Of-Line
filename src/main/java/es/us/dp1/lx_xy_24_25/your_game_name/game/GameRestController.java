@@ -1,5 +1,6 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -117,22 +118,10 @@ class GameRestController {
         Game game = gameService.findGameByGameCode(gameCode);
         User currentUser = userService.findCurrentUser();
         gameService.manageGame(game, currentUser);
-        if (game.getGameState().equals(GameState.END)) {//Actualizamos las rachas de los usuario si el juego a terminado
-            List<Player> players = game.getPlayers();
-            for (Player player: players) {
-                User user = player.getUser();
-                if (player.getState().equals(PlayerState.LOST)) {
-                    user.setWinningStreak(0);
-                } else if (player.getState().equals(PlayerState.WON)) {
-                    Integer userStreak = user.getWinningStreak() + 1;
-                    user.setWinningStreak(userStreak);
-                    if (userStreak > user.getMaxStreak()) {
-                        user.setMaxStreak(userStreak);
-                    }
-                    user.setWinningStreak(null);
-                }
-                userService.updateUser(user, user.getId());
-            }
+        if (game.getGameState().equals(GameState.END) && 
+            Duration.between(game.getStarted(), LocalDateTime.now()).toMinutes() < 1) {
+            game.getPlayers().stream().map(p -> p.getUser()).forEach(u -> userService.updateUser(u, u.getId()));
+            //Actualizamos los users para actualizar racha de victorias
         }
         GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
         return new ResponseEntity<>(gameDTO,HttpStatus.OK);

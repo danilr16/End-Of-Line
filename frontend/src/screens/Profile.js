@@ -275,8 +275,6 @@ export default function Profile() {
                                 setDeleteAchievementModal(true);       
                             }}
                         >Delete </button>
-                        <iframe width="110" height="200" src="https://www.myinstants.com/instant/nocilla-que-merendilla-17711/embed/" frameborder="0" scrolling="no"></iframe>
-
                     </div>
                     {showEditAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
                         <div className="modal-profile-overlay">
