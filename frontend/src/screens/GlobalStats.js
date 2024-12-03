@@ -55,7 +55,7 @@ export default function IndividualStats() {
     const mostPlayedModes = { 'versus': 247, 'singleplayer': 134 }
 
 
-    if (!gameModeStats || !durationStats.global || !durationStats.user || !gameStats) {
+    if (!gameModeStats || !durationStats.global || !durationStats.user || !gameStats || !gameStats.global) {
         return <p> Loading... </p>;
     }
 

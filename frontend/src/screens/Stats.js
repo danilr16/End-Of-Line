@@ -125,7 +125,7 @@ export default function Stats() {
                 <div className="buttons-container">
                     <button className="sub-screen-button" onClick={()=>navigate("/individualStats")}>Individual stats</button>
                     <button className="sub-screen-button" onClick={()=>navigate("/globalStats")}>Global stats</button>
-                    <button className="sub-screen-button">Ranking</button>
+                    <button className="sub-screen-button" onClick={()=>navigate("/ranking")}>Ranking</button>
                 </div>
             </div>
         </div>

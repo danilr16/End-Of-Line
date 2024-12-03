@@ -1,0 +1,151 @@
+@import "../colors.css";
+
+.main-container {
+    display: column;
+}
+
+.upper-part {
+    display: flex;
+    margin-top: 1%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ranking-title {
+    color: white;
+    text-decoration: underline;
+    text-shadow: 0px 0px 10px var(--br-yellow);
+    font-size: 250%;
+    animation: fallDown 2s ease forwards;
+    margin-left: 43.5%;
+}
+
+.ranking-switching {
+    background-color: var(--br-yellow);
+    color: black;
+    padding: 0.5%;
+    border: none;
+    border-radius: 10px;
+    justify-self: flex-end;
+    margin-right: 1%;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    animation: fallDown 2s ease forwards;
+}
+
+.ranking-switching:hover {
+    background-color: white;
+    box-shadow: 0px 0px 10px var(--br-yellow);
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+    100%{
+        transform: translateY(0%);
+        opacity: 1;
+    }
+}
+
+.podium {
+    margin-top: 1%;
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+    align-items: flex-end;
+}
+
+@keyframes grow {
+    0% {
+        transform: scaleY(0);
+    }
+
+    100% {
+        transform: scaleY(1);
+        visibility: visible;
+    }
+}
+
+.podium-player-1 {
+    background-color: gold;
+    box-shadow: 0px 0px 10px gold;
+    color: black;
+    white-space: pre-line;
+    text-align: center;
+    order: 0;
+    padding: 5% 2%;
+    visibility: hidden;
+    transform-origin: bottom;
+    animation: grow 2s ease forwards;
+    animation-delay: 1.6s;
+}
+
+.podium-player-2 {
+    background-color: silver;
+    box-shadow: 0px 0px 10px silver;
+    color: black;
+    white-space: pre-line;
+    text-align: center;
+    order: -1;
+    padding: 3% 2%;
+    visibility: hidden;
+    transform-origin: bottom;
+    animation: grow 2s ease forwards;
+    animation-delay: 0.8s;
+}
+
+.podium-player-3 {
+    background-color: #CD7F32;
+    box-shadow: 0px 0px 10px #CD7F32;
+    color: black;
+    white-space: pre-line;
+    text-align: center;
+    order: 1;
+    padding: 1% 2%;
+    visibility: hidden;
+    transform-origin: bottom;
+    animation: grow 2s ease forwards;
+}
+
+.below-3rd {
+    margin-top: 1.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@keyframes smoothAppear {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.rank-player {
+    opacity: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5%;
+    background-color: var(--br-trans-grey-very-light);
+    color: black;
+    padding: 0.3%;
+    border-radius: 10px;
+    width: 60%;
+    animation: smoothAppear 3s ease forwards;
+    animation-delay: 3s;
+}
+
+.rank-player .name {
+    flex: 1;
+    white-space: pre;
+    margin-left: 3%;
+}
+
+.rank-player .stats {
+    white-space: nowrap;
+    margin-right: 3%;
+}
