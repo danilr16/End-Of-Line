@@ -8,8 +8,9 @@ function stringToSeed(seed) {
     return hash;
 }
 
-export default function randomShuffle(seed, n){
-    let shuffledArray = Array.from({ length: n }, (_, index) => index + 1);
+export default function randomShuffle(seed, n, colors){
+
+    let shuffledArray = colors.slice(0, n);
 
     let seedValue = stringToSeed(seed);
 

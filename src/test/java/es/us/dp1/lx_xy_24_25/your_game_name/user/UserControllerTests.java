@@ -104,6 +104,7 @@ class UserControllerTests {
 		user.setUsername("user");
 		user.setPassword("password");
 		user.setAuthority(auth);
+		user.setFriends(new ArrayList<>());
 
 		when(this.userService.findCurrentUser()).thenReturn(getUserFromDetails(
 				(UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
@@ -280,9 +281,8 @@ class UserControllerTests {
 		mockMvc.perform(get(BASE_URL + "/games"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.size()").value(1))
-				.andExpect(jsonPath("$[?(@.id == 1)].gameCode").value("ZYXWV"))
-				.andExpect(jsonPath("$[?(@.id == 1)].gameMode").value("PUZZLE_SINGLE"))
-				.andExpect(jsonPath("$[?(@.id == 1)].host.username").value(user.getUsername()));
+				.andExpect(jsonPath("$[?(@.gameCode == 'ZYXWV')].gameMode").value("PUZZLE_SINGLE"))
+				.andExpect(jsonPath("$[?(@.gameCode == 'ZYXWV')].host.username").value(user.getUsername()));
 
 		verify(userService, times(1)).findCurrentUser();
 		verify(userService, times(1)).findAllGamesByUserHost(any(User.class));
@@ -380,6 +380,7 @@ class UserControllerTests {
 	public Player createValidPlayer() {
 		Hand hand = new Hand();
 		hand.setId(1);
+		hand.setCards(new ArrayList<>());
 		Player player = new Player();
 		player.setHand(hand);
 		player.setUser(user);
@@ -398,6 +399,7 @@ class UserControllerTests {
 		game.setNumPlayers(1);
 		game.setIsPublic(false);
 		game.setPlayers(List.of(player));
+		game.setSpectators(new ArrayList<>());
 		games.add(game);
 		return games;
 	}

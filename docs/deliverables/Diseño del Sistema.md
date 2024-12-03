@@ -641,3 +641,165 @@ En esta refactorización rehicimos por completo el sistema de drag and drop de c
 _Comenzamos creando un sistema basado en la propiedad draggable de html. Este sistema habría funcionado perfectamente si las cartas no tuviesen que rotar al colocarse en el tablero. Sin embargo el "espectro" que se creaba al arrastrar las cartas era completamente inmóvil y era difícilmete modificable, sobre todo si pretendíamos animarlo. Además, no encontramos ninguna librería o tutorial que permitiese hacer lo que queríamos hacer, por lo que nos vimos obligados a crear el sistema desde cerp, controlando todas las interacciones con JavaScript, lo que terminó resultando uno de los mayores retos del frontend de este proyecto, si no el mayor._ 
 #### Ventajas que presenta la nueva versión del código respecto de la versión original
 _Podemos animar la rotación de cartas al pasar por encima de una posición del tablero en la que puedan ser colocadas._
+
+### Refactorización 5: 
+
+En esta refactorización se cambio el sistema para usar la energía con el marcha atrás y se traslado la funcionalidad de usar energía del controlador a GameService para facilitar su lectura.
+
+#### Estado inicial del código
+
+```Java 
+class GameRestController
+{
+    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType, 
+        @RequestParam(required = false)Integer index, @RequestParam(required = false)Integer cardId) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't use energy, because you aren't in this game");
+        }
+        if (!game.getGameState().equals(GameState.IN_PROCESS) || game.getNTurn() < 3 
+            || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
+            throw new AccessDeniedException("You can't use energy right now");
+        }
+        switch (powerType) {
+            case ACCELERATE:
+                gameService.useAccelerate(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BRAKE:
+                gameService.useBrake(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BACK_AWAY:
+                if (cardId == null || index == null) {
+                    return new ResponseEntity<>(new MessageResponse("index and cardId cant be null if you want to use back away"), 
+                        HttpStatus.BAD_REQUEST);
+                } else {
+                    Card cardToPlace = cardService.findCard(cardId);
+                    gameService.useBackAway(user, player, gameCode, index, cardToPlace);
+                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                }
+            case EXTRA_GAS:
+                PackCard packCard = player.getPackCards().stream().findFirst().get();
+                if (packCard.getNumCards() > 0) {
+                    gameService.useExtraGas(player);
+                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                } else {
+                    return new ResponseEntity<>(new MessageResponse("You can not take a card now, because your deck is empty"), HttpStatus.BAD_REQUEST);
+                }
+            default:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        }
+}
+```
+
+```Java
+class GameService
+{
+    public void useBackAway(User currentUser, Player player, String gameCode, Integer index, Card cardToPlace) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        player.getUsedPowers().add(PowerType.BACK_AWAY);
+        playerService.updatePlayer(player, player.getId());
+    }
+}
+```
+
+Las clases **GameRestController.java** y **GameService.java** quedaron de la siguiente manera luego del cambio:
+
+```Java 
+class GameRestController
+{
+    @PatchMapping("/{gameCode}/useEnergy")
+    public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType)
+        throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        //Comprobamos condiciones para poder usar las energías
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().orElse(null);
+        if (player == null) {
+            throw new AccessDeniedException("You can't use energy, because you aren't in this game");
+        }
+        if (!game.getGameState().equals(GameState.IN_PROCESS) || game.getNTurn() < 3 
+            || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
+            throw new AccessDeniedException("You can't use energy right now");
+        }
+        //Una vez comprobado gestionamos que energía se usa
+        return gameService.manageUseOfEnergy(powerType, player, game);
+    }
+}
+```
+
+```Java
+class GameService
+{
+    @Transactional
+    public void useBackAway(Player player, List<Map<String, Integer>> newPossiblePositions) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        player.setEnergy(player.getEnergy()-1);
+        player.setEnergyUsedThisRound(true);
+        player.getUsedPowers().add(PowerType.BACK_AWAY);
+        List<Integer> positions = new ArrayList<>();
+        List<Integer> rotations = new ArrayList<>();
+        for (Map<String,Integer> mp:newPossiblePositions) {
+            positions.add(mp.get("position"));
+            rotations.add(mp.get("rotation"));
+        }
+        player.setPossiblePositions(positions);
+        player.setPossibleRotations(rotations);
+        playerService.updatePlayer(player, player.getId());
+    }
+
+    @Transactional
+    public ResponseEntity<MessageResponse> manageUseOfEnergy(PowerType powerType, Player player, Game game) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        switch (powerType) {
+            case ACCELERATE:
+                this.useAccelerate(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BRAKE:
+                this.useBrake(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BACK_AWAY:
+                return this.manageUseOfBackAway(player, game, powerType);
+            case EXTRA_GAS:
+                PackCard packCard = player.getPackCards().stream().findFirst().get();
+                if (packCard.getNumCards() > 0) {
+                    this.useExtraGas(player);
+                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                } else {
+                    return new ResponseEntity<>(new MessageResponse("You can not take a card now, because your deck is empty"), HttpStatus.BAD_REQUEST);
+                }
+            default:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private ResponseEntity<MessageResponse> manageUseOfBackAway(Player player, Game game, PowerType powerType) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        if (player.getPlayedCards().size() >= 2) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
+            Card cardToBackAway = cardService
+                    .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
+            List<Map<String, Integer>> newPossiblePositions = tableCardService
+                    .getPossiblePositionsForPlayer(game.getTable(), player, cardToBackAway);
+            if (newPossiblePositions.isEmpty()) {//Si la carta anterior no tiene posiciones posibles donde colocar cartas, no puedes usar marcha atrás
+                return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                this.useBackAway(player, newPossiblePositions);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"),
+                    HttpStatus.ACCEPTED);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
+        }
+    }
+}
+```
+
+#### Problema que nos hizo realizar la refactorización
+
+En el frontend en una partida no se mostraban las casillas donde podías colocar cartas al usar marcha atrás tal y como estaba hecho el anterior sistema. Al implementar la nueva solución la función que manejaba el uso de energías en el controlador se había vuelto demasiado grande como para manejarla y leerla claramente.
+
+#### Ventajas que presenta la nueva versión del código respecto de la versión original
+
+El frontend puede mostrar las casillas posibles donde colocar tus cartas al usar marcha atrás. Además, con esta refactorización se ha mejorado la limpieza y legibilidad del código.

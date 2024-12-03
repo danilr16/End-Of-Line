@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -32,6 +33,7 @@ public class AchievementService {
     }
 
     @Transactional
+    //No puede existir dos achievement con el mismo nombre/descripcion
     public Achievement saveAchievement(Achievement achievement) throws DataAccessException {
         repository.save(achievement);
         return achievement;
@@ -43,12 +45,25 @@ public class AchievementService {
 	}	
 
     @Transactional
-	public Achievement updateAchievement(@Valid Achievement achievement, Integer idToUpdate) {
-		Achievement toUpdate = findAchievement(idToUpdate);
-		BeanUtils.copyProperties(achievement, toUpdate, "id");
-		repository.save(toUpdate);
-		return toUpdate;
-	}
+    public Achievement updateAchievement(@Valid Achievement achievement, Integer idToUpdate) {
+        Achievement toUpdate = findAchievement(idToUpdate);
+
+        //No puede existir dos achievement con el mismo nombre/descripcion
+        List<Achievement> existing = repository.findByNameOrDescription(achievement.getName(), achievement.getDescription());
+        existing.removeIf(a -> a.getId().equals(idToUpdate));
+    
+        if (!existing.isEmpty()) {
+            throw new IllegalArgumentException("There is already an achievement with the same name or description.");
+        }
+    
+        toUpdate.setName(achievement.getName());
+        toUpdate.setDescription(achievement.getDescription());
+        
+        repository.save(toUpdate);
+        return toUpdate;
+    }
+    
+    
 
     @Transactional
 	public void deleteAchievement(Integer id) {

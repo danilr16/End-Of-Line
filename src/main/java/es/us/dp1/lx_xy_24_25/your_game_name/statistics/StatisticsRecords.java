@@ -21,10 +21,10 @@ public class StatisticsRecords {
         }
     }
 
-    public record MyGamesStatistics (BasicStatistics victories, BasicStatistics defeats, Map<PowerType, Integer> powersMostUsed) {
+    public record MyGamesStatistics (BasicStatistics victories, BasicStatistics defeats, Map<PowerType, Integer> powersMostUsed, Integer maxStreak) {
 
-        public static MyGamesStatistics of(BasicStatistics victories, BasicStatistics defeats, Map<PowerType, Integer> powersMostUsed) {
-            return new MyGamesStatistics(victories, defeats, powersMostUsed);
+        public static MyGamesStatistics of(BasicStatistics victories, BasicStatistics defeats, Map<PowerType, Integer> powersMostUsed, Integer maxStreak) {
+            return new MyGamesStatistics(victories, defeats, powersMostUsed, maxStreak);
         }
     }
 

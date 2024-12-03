@@ -57,7 +57,7 @@
     border: none;
     position: absolute;
     bottom: 10%;
-    right: 5%;
+    right: 10%;
     display: flex;
     justify-content: center;
     align-items: bottom;
@@ -82,7 +82,7 @@
     background: rgba(0, 0, 0, 0.5);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 13%;
     cursor: pointer;
     display: flex;
     justify-content: center;

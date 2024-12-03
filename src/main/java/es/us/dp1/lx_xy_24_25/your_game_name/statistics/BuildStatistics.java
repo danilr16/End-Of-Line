@@ -87,7 +87,7 @@ public class BuildStatistics {
         BasicStatistics victories = BasicStatistics.of(totalVictories.intValue(), averageVictories, null, null);
         BasicStatistics defeats = BasicStatistics.of(myGames.size() - totalVictories.intValue(), 100 - averageVictories, null, null);
         Map<PowerType, Integer> mostUsedPowers = mostUsedPowers(myGames, currentUser);
-        MyGamesStatistics res = MyGamesStatistics.of(victories, defeats, mostUsedPowers);
+        MyGamesStatistics res = MyGamesStatistics.of(victories, defeats, mostUsedPowers, currentUser.getMaxStreak());
         return res;
     }
 

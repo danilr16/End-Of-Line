@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import jakarta.validation.Valid;
+import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
@@ -150,27 +153,23 @@ public class GameService {
     @Transactional
     public Pair<Player,Card> takeACard(Player player) {
         PackCard packCard = player.getPackCards().stream().findFirst().get();
-        if (packCard.getNumCards() != 0) {
-            SecureRandom rand = new SecureRandom();
-            Integer i = rand.nextInt(packCard.getNumCards());
-            Card card = packCard.getCards().get(i);
-            packCard.getCards().remove(card);
-            packCard.setNumCards(packCard.getNumCards() - 1);
-            packCardService.updatePackCard(packCard, packCard.getId());
-            Hand hand = player.getHand();
-            hand.getCards().add(card);
-            hand.setNumCards(hand.getNumCards() + 1);
-            handService.updateHand(hand, hand.getId());
-            //Actualizo player para devolverlo junto a la carta
-            List<PackCard> pcUpdated = new ArrayList<>();
-            pcUpdated.add(packCard);
-            player.setPackCards(pcUpdated);
-            player.setHand(hand);
-            Pair<Player,Card> res = new Pair<>(player, card);
-            return res;
-        } else {
-            return null;
-        }
+        SecureRandom rand = new SecureRandom();
+        Integer i = rand.nextInt(packCard.getNumCards());
+        Card card = packCard.getCards().get(i);
+        packCard.getCards().remove(card);
+        packCard.setNumCards(packCard.getNumCards() - 1);
+        packCardService.updatePackCard(packCard, packCard.getId());
+        Hand hand = player.getHand();
+        hand.getCards().add(card);
+        hand.setNumCards(hand.getNumCards() + 1);
+        handService.updateHand(hand, hand.getId());
+        // Actualizo player para devolverlo junto a la carta
+        List<PackCard> pcUpdated = new ArrayList<>();
+        pcUpdated.add(packCard);
+        player.setPackCards(pcUpdated);
+        player.setHand(hand);
+        Pair<Player, Card> res = new Pair<>(player, card);
+        return res;
     }
 
     @Transactional
@@ -298,7 +297,8 @@ public class GameService {
             decideTurns(game, players);
             for (Player player : players) {
                 Hand hand = player.getHand();
-                while (hand.getNumCards() < 5) {
+                PackCard packCard = player.getPackCards().stream().findFirst().get();
+                while (hand.getNumCards() < 5 && packCard.getNumCards() > 0) {
                     this.takeACard(player);
                 }
             }
@@ -359,6 +359,9 @@ public class GameService {
                 Player playing = playerService.findPlayer(game.getTurn());
                 if (playing.getUser().equals(currentUser)) {
                     manageTurnOfPlayer(game, playing);
+                }
+                if (playing.getState().equals(PlayerState.LOST)) {
+                    nextTurn(game, playing);
                 }
             }
         }
@@ -451,12 +454,19 @@ public class GameService {
     }
 
     @Transactional
-    public void useBackAway(User currentUser, Player player, String gameCode, Integer index, Card cardToPlace) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public void useBackAway(Player player, List<Map<String, Integer>> newPossiblePositions) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         player.getUsedPowers().add(PowerType.BACK_AWAY);
+        List<Integer> positions = new ArrayList<>();
+        List<Integer> rotations = new ArrayList<>();
+        for (Map<String,Integer> mp:newPossiblePositions) {
+            positions.add(mp.get("position"));
+            rotations.add(mp.get("rotation"));
+        }
+        player.setPossiblePositions(positions);
+        player.setPossibleRotations(rotations);
         playerService.updatePlayer(player, player.getId());
-        this.placeCard(currentUser, gameCode, index, cardToPlace, true);
     }
 
     @Transactional
@@ -470,7 +480,7 @@ public class GameService {
     }
 
     @Transactional
-    public void placeCard(User currentUser, String gameCode, Integer index, Card cardToPlace, Boolean backAway) 
+    public void placeCard(User currentUser, String gameCode, Integer index, Card cardToPlace) 
         throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
         Game currentGame = this.findGameByGameCode(gameCode);
         TableCard currentTable = currentGame.getTable();
@@ -479,13 +489,9 @@ public class GameService {
         //Excepciones relacionadas con permisos y roles
         checkConditionsPlaceCard(currentPlayer, cardToPlace, currentGame, currentTable, index);
 
-        Card lastPlacedCard = cardService.getLastPlaced(currentPlayer);
-        if (backAway != null && backAway) {//Si vas a usar marcha atras, entonces se coloca en la penultima carta jugada
-            lastPlacedCard = cardService.findCard(currentPlayer.getPlayedCards().get(currentPlayer.getPlayedCards().size()-2));
-        }
-        List<Map<String, Integer>> possiblePositions = tableCardService.getPossiblePositionsForPlayer(currentTable, currentPlayer, 
-            lastPlacedCard);
         // A continuación comprobamos que la posición de la carta está entre las posibles
+        List<Map<String, Integer>> possiblePositions = tableCardService.fromListsToPossiblePositions(currentPlayer.getPossiblePositions(), 
+            currentPlayer.getPossibleRotations());
         Boolean cardCanBePlaced = false; 
         Integer i = null;
         for(Map<String, Integer> position: possiblePositions){
@@ -565,6 +571,50 @@ public class GameService {
             } else {
                 this.gameInProcess(game, currentUser);
             }
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<MessageResponse> manageUseOfEnergy(PowerType powerType, Player player, Game game) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        switch (powerType) {
+            case ACCELERATE:
+                this.useAccelerate(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BRAKE:
+                this.useBrake(player);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+            case BACK_AWAY:
+                return this.manageUseOfBackAway(player, game, powerType);
+            case EXTRA_GAS:
+                PackCard packCard = player.getPackCards().stream().findFirst().get();
+                if (packCard.getNumCards() > 0) {
+                    this.useExtraGas(player);
+                    return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"), HttpStatus.ACCEPTED);
+                } else {
+                    return new ResponseEntity<>(new MessageResponse("You can not take a card now, because your deck is empty"), HttpStatus.BAD_REQUEST);
+                }
+            default:
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private ResponseEntity<MessageResponse> manageUseOfBackAway(Player player, Game game, PowerType powerType) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        if (player.getPlayedCards().size() >= 2) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
+            Card cardToBackAway = cardService
+                    .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
+            List<Map<String, Integer>> newPossiblePositions = tableCardService
+                    .getPossiblePositionsForPlayer(game.getTable(), player, cardToBackAway);
+            if (newPossiblePositions.isEmpty()) {//Si la carta anterior no tiene posiciones posibles donde colocar cartas, no puedes usar marcha atrás
+                return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
+            } else {
+                this.useBackAway(player, newPossiblePositions);
+                return new ResponseEntity<>(new MessageResponse("You have used " + powerType.toString() + " successfully"),
+                    HttpStatus.ACCEPTED);
+            }
+        } else {
+            return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
+                        HttpStatus.BAD_REQUEST);
         }
     }
 }
