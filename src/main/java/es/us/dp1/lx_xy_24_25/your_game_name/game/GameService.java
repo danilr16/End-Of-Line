@@ -260,7 +260,7 @@ public class GameService {
             if (!game.getGameMode().equals(GameMode.PUZZLE_SINGLE)) {
                 nextTurn(game, playing);
             }
-        } else if (playing.getCardsPlayedThisTurn() >= 2) {
+        } else if (playing.getCardsPlayedThisTurn() >= 2 || (playing.getCardsPlayedThisTurn() >= 1 && game.getNTurn() == 1)) {
             nextTurn(game, playing);
         }
     }
@@ -352,6 +352,7 @@ public class GameService {
                 Player winner = players.stream().findFirst().get();
                 winner.setState(PlayerState.WON);
                 playerService.updatePlayer(winner, winner.getId());
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
@@ -522,7 +523,8 @@ public class GameService {
         }
         // Comprobamos que es el turno del jugador y puede colocar carta
         Player turnOfPlayer = playerService.findPlayer(currentGame.getTurn());
-        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2)) {
+        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2) || 
+            (!(currentPlayer.getCardsPlayedThisTurn() < 1) && currentGame.getNTurn() == 1)) {
             throw new AccessDeniedException("You can't place this card, because it's not your turn");
         }
     }
@@ -615,6 +617,28 @@ public class GameService {
         } else {
             return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
                         HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void updateStreaks(Game game) {
+        List<Player> players = game.getPlayers();
+        for (Player player: players) {
+            User user = player.getUser();
+            if (user.getWinningStreak() == null) {
+                user.setWinningStreak(0);
+            }
+            if (user.getMaxStreak() == null) {
+                user.setMaxStreak(0);
+            }
+            if (player.getState().equals(PlayerState.LOST)) {
+                user.setWinningStreak(0);
+            } else if (player.getState().equals(PlayerState.WON)) {
+                Integer userStreak = user.getWinningStreak() + 1;
+                user.setWinningStreak(userStreak);
+                if (userStreak > user.getMaxStreak()) {
+                    user.setMaxStreak(userStreak);
+                }
+            }
         }
     }
 }
