@@ -10,6 +10,7 @@ import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
 import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
+import EnergyCard from "../components/EnergyCard";
 import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 import randomShuffle from "../util/randomShuffle";
 
@@ -601,20 +602,15 @@ export default function GameScreen() {
                 >
                 </div>}
             </div>
-            {playerRef && playerRef.current != null && <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
-                <div className="icon-container">
-                    <GameCardIcon
-                        iconName={'energy_card'}
-                        color={findColorById(playerRef.current.id)}
-                        rotation={3 - playerRef.current.energy}
-                    />
-                    <button
-                        className="overlay-button"
-                        onClick={useEnergy}
-                    />
-                </div>
-            </div>
-            }
+
+            {playerRef && playerRef.current != null && (
+                <EnergyCard
+                    gridItemSize={gridItemSize}
+                    playerRef={playerRef}
+                    useEnergy={useEnergy}
+                    color = {findColorById(playerRef.current.id)}
+                />
+            )}
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game
             </button>}

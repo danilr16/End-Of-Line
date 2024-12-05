@@ -32,6 +32,12 @@
 
     --player3-normal: var(--br-red);
     --player3-dark: var(--br-red-dark);
+
+    --player4-normal: var(--br-yellow);
+    --player4-dark: var(--br-yellow-dark);
+
+    --player5-normal: #9a88d3;
+    --player5-dark: #3b226e;
 }
 
 html body {
