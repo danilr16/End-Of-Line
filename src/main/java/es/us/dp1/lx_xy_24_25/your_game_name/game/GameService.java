@@ -385,6 +385,7 @@ public class GameService {
                 Integer sumInicHand = winner.getHand().getCards().stream().mapToInt(c -> c.getIniciative()).sum();
                 winner.setScore(sumInicHand + winner.getEnergy());
                 playerService.updatePlayer(winner, winner.getId());
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
@@ -409,6 +410,7 @@ public class GameService {
                     loser.setState(PlayerState.LOST);
                     playerService.updatePlayer(loser, loser.getId());
                 }
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game, game.getId());
@@ -529,6 +531,7 @@ public class GameService {
         }
     }
 
+    @Transactional
     private void updatePlaceCard(List<Map<String, Integer>> possiblePositions, Card cardToPlace, 
         Player currentPlayer, TableCard currentTable, Integer index, Integer i) {
         Integer rotationToPlace = possiblePositions.get(i).get("rotation");

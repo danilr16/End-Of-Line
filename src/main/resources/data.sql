@@ -4,7 +4,7 @@ INSERT INTO appusers(id,username,image,password,authority) VALUES (1,'admin1','h
 
 -- Ten player users, named player1 with passwor 0wn3r
 INSERT INTO authorities(id,authority) VALUES (2,'PLAYER');
-INSERT INTO appusers(id,image,username,password,authority) VALUES (4,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','player1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
+INSERT INTO appusers(id,image,username,password,authority,max_streak) VALUES (4,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','player1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2,3);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (5,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','player2','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (6,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','player3','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (7,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','player4','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
@@ -30,9 +30,9 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
 
-INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',0,0,'ABCDE','WAITING');
+INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',5,4,'ABCDE','END');
 INSERT INTO app_hands(id,num_cards) VALUES (1,0);
-INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn,energy_used_this_round,hand_changed,score,state) VALUES (1,1,1,4,3,0,false,false,0,'PLAYING');
+INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn,energy_used_this_round,hand_changed,score,state) VALUES (1,1,1,4,3,0,false,false,7,'WON');
 
 
 INSERT INTO app_hands(id,num_cards) VALUES (2,5);
