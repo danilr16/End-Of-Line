@@ -55,13 +55,14 @@
 .energy-card {
     border-radius: 10px;
     border: none;
-    position: absolute;
-    bottom: 10%;
-    right: 10%;
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
-    align-items: bottom;
-    margin-right: 5%;
+    align-items: center;
+
 }
 
 .icon-container {
@@ -269,4 +270,83 @@
     100% {
         color: var(--br-trans-grey-light); 
     }
+}
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.circle {
+    position: absolute; 
+    bottom: 10%; 
+    right: 10%; 
+    width: 15vw; 
+    height: 15vw; 
+    max-width: 190px; 
+    max-height: 190px; 
+    border-radius: 50%; 
+    overflow: hidden;
+    background: white;
+}
+
+.segment {
+    position: absolute;
+    width: 50%; 
+    height: 50%;
+    background: black; 
+    border: 2px solid black; 
+}
+
+.top-left {
+    background: green; 
+    top: 0;
+    left: 0;
+    border-top-left-radius: 100%; 
+}
+
+.top-right {
+    background: red; 
+    top: 0;
+    right: 0;
+    border-top-right-radius: 100%; 
+}
+
+.bottom-left {
+    background: yellow; 
+    bottom: 0;
+    left: 0;
+    border-bottom-left-radius: 100%; 
+}
+
+.bottom-right {
+    background: blue; 
+    bottom: 0;
+    right: 0;
+    border-bottom-right-radius: 100%;
+}
+
+.message {
+    margin-bottom: 50px; 
+    color: var(--br-trans-grey-very-light);
+    font-size: 16px; 
+    text-align: center; 
+    font-size: 25px;
+}
+
+.rotate {
+    animation: rotate 1s linear;
+}
+
+
+
+.message {
+    margin-bottom: 50px; 
+    color: var(--br-trans-grey-very-light);
+    font-size: 16px; 
+    text-align: center; 
+    font-size: 25px;
 }
