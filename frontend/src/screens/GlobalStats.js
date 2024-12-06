@@ -10,14 +10,6 @@ export default function IndividualStats() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
 
-    const [user, setUser] = useFetchState(
-        [],
-        '/api/v1/users/currentUser',
-        jwt,
-        setMessage,
-        setVisible
-    );
-
     const [gameModeStats, setGameModeStats] = useFetchState(
         {},
         '/api/v1/statistics/players',
@@ -50,10 +42,6 @@ export default function IndividualStats() {
             default: return 'th'
         }
     }
-    //Datos de prueba
-    console.log(gameStats)
-    const mostPlayedModes = { 'versus': 247, 'singleplayer': 134 }
-
 
     if (!gameModeStats || !durationStats.global || !durationStats.user || !gameStats || !gameStats.global) {
         return <p> Loading... </p>;
@@ -95,11 +83,9 @@ export default function IndividualStats() {
                 </div>
             </div>
 
-            <span className="popular-gamemodes">Popular gamemodes</span>
-            <div className="popular-gamemodes-container">
-                {Object.entries(/*gameModeStats.globalMostPlayed*/mostPlayedModes).map(([key, value], index) => (
-                    <div className="gamemode-container" key={index}> {index + 1 + OrdinalValue(index + 1) + "\n"} {key + "\n"} {value} games </div>
-                ))}
+            <span className="popular-gamemode">Most popular gamemode</span>
+            <div className="popular-gamemode-container">
+                <div className="gamemode-container"> {String(gameModeStats.globalMostPlayed).replace("_", " ")} </div>
             </div>
 
         </div>
