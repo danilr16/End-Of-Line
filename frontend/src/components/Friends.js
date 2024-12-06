@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import tokenService from '../services/token.service';
 import request from '../util/request';
 import "../static/css/components/friends.css"
+import NewFriendModal from './NewFriendModal';
 
 
 export default function Friends(){
     const jwt = tokenService.getLocalAccessToken();
+    const [isModalOpen,setIsModalOpen] = useState(false);
+    const [friendName,setFriendName] = useState("");
     const [user,setUser] = useState(null);
     useEffect(() => {
         const fetchUser = async () => {
@@ -16,7 +19,7 @@ export default function Friends(){
     },[jwt])
     
     const handleAddFriend =  () => {
-        alert("To be implemented");
+        setIsModalOpen(true)
     }
     const parseToFriend = (f) => {
         return (
@@ -33,9 +36,9 @@ export default function Friends(){
 
     return(
     <>
-        
+        {isModalOpen &&<NewFriendModal friendName={friendName} setFriendName={setFriendName} jwt={jwt} closeModal={() => setIsModalOpen(false)}/>}
         <div className='friend-list-container'>
-            <button className='add-friend-button'>Add friend</button>
+            <button onClick= {handleAddFriend} className='add-friend-button'>Add friend</button>
             {friends?
             <ul className='friend-list'>
                 {friends}

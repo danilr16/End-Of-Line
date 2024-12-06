@@ -1,5 +1,7 @@
 import React, { useState, useEffect,useRef } from 'react';
 import { Navbar, NavbarBrand, NavLink, NavItem, Nav,  NavbarToggler, Collapse } from 'reactstrap';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 import { Link } from 'react-router-dom';
 import tokenService from './services/token.service';
 import jwt_decode from "jwt-decode";
@@ -17,6 +19,8 @@ function AppNavbar() {
     const [collapsed, setCollapsed] = useState(true);
     const { colors, updateColors } = useColors();
     const [showNotifications,setShowNotification] = useState(false);
+    const [notifications,setNotifications] = useState([]);
+    const [client, setClient] = useState(null);
     const notPanelRef = useRef(null);
 
     const toggleNavbar = () => setCollapsed(!collapsed);
@@ -33,6 +37,32 @@ function AppNavbar() {
         document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [notPanelRef]);
+
+    useEffect(() => { //Connection to WebSocket
+        const sock = new SockJS("http://localhost:8080/ws");
+        const stompClient = new Client({
+            webSocketFactory: () => sock,
+            connectHeaders: {
+                Authorization: `Bearer ${jwt}`,
+            },
+            onConnect: () => {
+                console.log("Connected to WebSocket");
+                stompClient.subscribe(`/topic/notifications/${username}`, (msg) => {
+                    const receivedNotification = JSON.parse(msg.body);
+                    setNotifications((prevNotifications) => [...prevNotifications, receivedNotification]);
+                });
+            },
+            onStompError: (frame) => {
+                console.error("STOMP error:", frame.headers["message"]);
+                console.error("Details:", frame.body);
+            },
+        });
+    
+        stompClient.activate();
+        setClient(stompClient);
+    
+        return () => stompClient.deactivate();
+    }, [jwt,username]);
 
 
     useEffect(() => {

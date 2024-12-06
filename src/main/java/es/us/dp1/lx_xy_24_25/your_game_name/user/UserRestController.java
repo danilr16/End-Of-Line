@@ -18,15 +18,10 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
-import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
-import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,12 +34,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -184,5 +182,30 @@ class UserRestController {
      }
 	}
 	 
+
+	@PatchMapping("/addFriend")
+	public ResponseEntity<User> addFriend(@RequestBody String username){
+		try{
+		User currentUser = userService.findCurrentUser();
+		User newFriend = userService.findUser(username);
+		currentUser.getFriends().add(newFriend);
+		userService.updateUser(currentUser, currentUser.getId());
+		return new ResponseEntity<>(currentUser,HttpStatus.OK);
+	}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@PatchMapping("/removeFriend")
+	public ResponseEntity<User> removeFriend(@RequestBody String username){
+		User currentUser = userService.findCurrentUser();
+		User toRemoveFriend = userService.findUser(username);
+		currentUser.getFriends().remove(toRemoveFriend);
+		userService.updateUser(currentUser, currentUser.getId());
+		return new ResponseEntity<>(currentUser,HttpStatus.OK);
+	}
+
 
 }
