@@ -10,7 +10,6 @@ import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
 import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
-import EnergyCard from "../components/EnergyCard";
 import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 import randomShuffle from "../util/randomShuffle";
 
@@ -19,6 +18,10 @@ export default function GameScreen() {
     const navigate = useNavigate();
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
+    const [messageEnergy, setMessageEnergy] = useState(false);
+    const circleRef = useRef(null);
+    const [isRotating, setIsRotating] = useState(false);
+
     const { gameCode } = useParams();
 
     const [game, setGame] = useFetchState(
@@ -517,9 +520,38 @@ export default function GameScreen() {
         }
     };
 
-    const useEnergy = () => {
-        console.log(playerRef.current.energy);
+    const handleEnergy = (powerType) => {
+        console.log(powerType)
+        if (game && players && game.numPlayers && user && user.username) {
+            request(`/api/v1/games/${gameCode}/useEnergy?powerType=${powerType}`, "PATCH", {}, jwt)
+            .then((response) => {
+                    showMessage(response.resContent.message);
+                    console.log("Energy used successfully:", response);
+                })
+            
+            .catch((error) => {
+                    console.error("Error using energy:", error);
+            });
+        }
     };
+
+    const handleButtonClick = (energyType) => {
+        handleEnergy(energyType);
+        setIsRotating(true);
+        
+        setTimeout(() => {
+            setIsRotating(false);
+        }, 1000); 
+    };
+
+    const showMessage = (msg) => {
+        setMessage(msg);
+        setTimeout(() => {
+            setMessage(null); 
+        }, 5000); 
+    };
+    
+    
     
     return (
         <div className="full-screen">
@@ -558,6 +590,7 @@ export default function GameScreen() {
                 <ChatBox gameCode={gameCode} user={user} jwt={jwt} colors = {playerColors}/>
             </div>
             <div className="bottom-container">
+                 {message && <div className="message">{message}</div>} 
                 <div className="card-container">
                     {currentCards.map((card, index) => (
                         <GameCard
@@ -602,15 +635,29 @@ export default function GameScreen() {
                 >
                 </div>}
             </div>
+            
+            <div 
+            className={`circle ${isRotating ? 'rotate' : ''}`} 
+            ref={circleRef}
+        >               
+                <button className="segment top-left" onClick={() => handleButtonClick("ACCELERATE")}></button>
+                <button className="segment top-right" onClick={() => handleButtonClick("BRAKE")}></button>
+                <button className="segment bottom-left" onClick={() => handleButtonClick("BACK_AWAY")}></button>
+                <button className="segment bottom-right" onClick={() => handleButtonClick("EXTRA_GAS")}></button>
 
-            {playerRef && playerRef.current != null && (
-                <EnergyCard
-                    gridItemSize={gridItemSize}
-                    playerRef={playerRef}
-                    useEnergy={useEnergy}
-                    color = {findColorById(playerRef.current.id)}
-                />
-            )}
+            {playerRef && playerRef.current != null && <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
+                    <div className="icon-container">
+                        <GameCardIcon
+                            iconName={'energy_card'}
+                            color={findColorById(playerRef.current.id)}
+                            rotation={3 - playerRef.current.energy}
+                        />
+                        
+                    </div>
+                </div>
+                }
+            </div>
+
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game
             </button>}
