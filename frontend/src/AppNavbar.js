@@ -9,6 +9,7 @@ import NavBarDropdown from './components/NavBarDropdown';
 import { FaBell } from "react-icons/fa";
 import { useColors } from './ColorContext'
 import "./static/css/home/home.css";
+import request from './util/request';
 import NotificationPanel from './components/NotificationPanel';
 
 
@@ -37,6 +38,16 @@ function AppNavbar() {
         document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [notPanelRef]);
+
+    useEffect(() => {
+        async function fetchChat() {
+            if (!jwt || !username) return; 
+            const response = await request(`/api/v1/notifications/user/${username}`, 'GET', null, jwt);
+            console.log("Fetched messages:", response.resContent);
+            setNotifications(Array.isArray(response.resContent)?response.resContent:[]);  // Actualizar el chat con los mensajes previos
+        }
+        fetchChat();
+    }, [jwt,username]);
 
     useEffect(() => { //Connection to WebSocket
         const sock = new SockJS("http://localhost:8080/ws");
@@ -147,7 +158,7 @@ function AppNavbar() {
                     </Nav>
                 </Collapse>
             </Navbar>
-            {showNotifications && <NotificationPanel ref={notPanelRef}/>}
+            {showNotifications && <NotificationPanel ref={notPanelRef} notifications={notifications}/>}
         </div>
     );
 }

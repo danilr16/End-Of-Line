@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import "../static/css/components/modal.css";
-import { useNavigate } from 'react-router-dom';
-import request from '../util/request';
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
-export default function NewFriendModal({friendName, setFriendName,closeModal,jwt}){
+export default function NewFriendModal({friendName, setFriendName,closeModal,jwt,user}){
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const [client, setClient] = useState(null);
 
+
+    useEffect(() => {
+        const sock = new SockJS("http://localhost:8080/ws");
+        const stompClient = new Client({
+            webSocketFactory: () => sock,
+            connectHeaders: {
+                Authorization: `Bearer ${jwt}`, // Agrega el token JWT aquí
+            },
+            onConnect: () => {
+                console.log("Connected to WebSocket");
+            },
+            onStompError: (frame) => {
+                console.error("STOMP error:", frame.headers["message"]);
+                console.error("Details:", frame.body);
+            },
+        });
+    
+        stompClient.activate();
+        setClient(stompClient);
+    
+        return () => stompClient.deactivate();
+    }, [jwt]);
 
     const handleChange = (e) => {
         setFriendName(e.target.value);
@@ -15,7 +37,24 @@ export default function NewFriendModal({friendName, setFriendName,closeModal,jwt
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        request('/api/v1/users/addFriend',"PATCH",{username:friendName},jwt)
+        const notification = {
+            username: friendName,
+            type: "FRIEND_REQUEST",
+            senderUsername: user.username,
+            gamecode:null,
+            achievementName:null,
+            jwt: jwt
+        }
+        try{
+            client.publish({
+                destination: "/app/notifications",
+                body: JSON.stringify(notification),
+                });
+                console.log("Friend request sent");
+        }
+        catch(error){
+            console.log("Error sending friend request",error);
+        }
     };
 
     return (

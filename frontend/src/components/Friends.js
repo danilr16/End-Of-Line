@@ -32,11 +32,9 @@ export default function Friends(){
     
     const friends = user?.friends && user.friends.length>0 ? user.friends.map((f)=>parseToFriend(f)) : null;
     
-    console.log(user)
-
     return(
     <>
-        {isModalOpen &&<NewFriendModal friendName={friendName} setFriendName={setFriendName} jwt={jwt} closeModal={() => setIsModalOpen(false)}/>}
+        {isModalOpen &&<NewFriendModal friendName={friendName} setFriendName={setFriendName} jwt={jwt} user={user} closeModal={() => setIsModalOpen(false)}/>}
         <div className='friend-list-container'>
             <button onClick= {handleAddFriend} className='add-friend-button'>Add friend</button>
             {friends?

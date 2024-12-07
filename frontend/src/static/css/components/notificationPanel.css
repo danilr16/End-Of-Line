@@ -9,3 +9,33 @@
     border-radius: 5px;
     z-index: 1000;
 }
+
+.notification{
+    display:flex;
+    flex-direction: column;
+    width: 275px;
+    height: 100px;
+    background-color: gray;
+    align-items: center;
+}
+
+.notification-message{
+font-weight: bold;
+}
+
+.button-container{
+display: flex;
+gap:50px
+}
+
+.accept-button{
+background-color: greenyellow;
+border-radius: 12%;
+height: 30px;
+width: 70px;
+font-weight: bold;
+}
+
+.reject-button{
+background-color: red;
+}

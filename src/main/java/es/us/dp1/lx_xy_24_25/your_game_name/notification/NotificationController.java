@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.NotificationDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import jakarta.validation.Valid;
@@ -28,12 +29,13 @@ public class NotificationController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Notification>> getNotificationsByUser(@PathVariable Integer userId) {
-        User user = userService.findUser(userId);
+    @GetMapping("/user/{userName}")
+    public ResponseEntity<List<NotificationDTO>> getNotificationsByUser(@PathVariable String userName) {
+        User user = userService.findUser(userName);
             Optional<List<Notification>> notifications = notificationService.findByUser(user);
             if (notifications.isPresent()) {
-                return new ResponseEntity<>(notifications.get(), HttpStatus.OK);
+                List<NotificationDTO> ndto = notifications.get().stream().map(notification -> notification.toDTO()).toList();
+                return new ResponseEntity<>(ndto, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(List.of(), HttpStatus.NOT_FOUND);
         }
