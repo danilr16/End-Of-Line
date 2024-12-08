@@ -12,11 +12,15 @@ export default function Friends(){
     const [user,setUser] = useState(null);
     useEffect(() => {
         const fetchUser = async () => {
-            const {resContent } = await request(`/api/v1/users/currentUser`,"GET",null,jwt,null);
-            setUser(resContent);
-        }
+            try {
+                const { resContent } = await request(`/api/v1/users/currentUserDTO`, "GET", null, jwt, null);
+                setUser(resContent);
+            } catch (error) {
+                console.error("Error fetching user:", error);
+            }
+        };
         fetchUser();
-    },[jwt])
+    }, [jwt]);
     
     const handleAddFriend =  () => {
         setIsModalOpen(true)
@@ -24,7 +28,7 @@ export default function Friends(){
     const parseToFriend = (f) => {
         return (
         <li className='friend-container' key = {f.username}>
-            <img alt ="Profile img" src ={f.image} className='friend-image'/>
+            <img alt ="Profile img" src ={f.profileImg} className='friend-image'/>
             <p className='friend-name'>{f.username}</p>
         </li>
         );

@@ -158,7 +158,7 @@ function AppNavbar() {
                     </Nav>
                 </Collapse>
             </Navbar>
-            {showNotifications && <NotificationPanel ref={notPanelRef} notifications={notifications}/>}
+            {showNotifications && <NotificationPanel ref={notPanelRef} notifications={notifications} jwt={jwt}/>}
         </div>
     );
 }

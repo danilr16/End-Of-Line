@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
@@ -143,6 +144,12 @@ class UserRestController {
 		User user = userService.findCurrentUser();
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
+	@GetMapping("/currentUserDTO")
+	public ResponseEntity<UserDTO> findCurrentUserDTO() {
+		User user = userService.findCurrentUser();
+		UserDTO userDTO = UserDTO.convertUserToDTO(user);
+		return new ResponseEntity<>(userDTO, HttpStatus.OK);
+	}
 	
   @PatchMapping("/myProfile/update-password")
      public ResponseEntity<User> updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
@@ -183,14 +190,23 @@ class UserRestController {
 	}
 	 
 
-	@PatchMapping("/addFriend")
-	public ResponseEntity<User> addFriend(@RequestBody String username){
+	@PatchMapping("/addFriend/{username}")
+	public ResponseEntity<List<User>> addFriend(@PathVariable String username){
 		try{
 		User currentUser = userService.findCurrentUser();
 		User newFriend = userService.findUser(username);
+		if(currentUser.getFriends().contains(newFriend)){
+			throw new AccessDeniedException("You are already friends with this user!");
+		}
+		if(currentUser.equals(newFriend)){
+			throw new AccessDeniedException("You can't add yourself as a friend!");
+		}
 		currentUser.getFriends().add(newFriend);
+		newFriend.getFriends().add(currentUser);
 		userService.updateUser(currentUser, currentUser.getId());
-		return new ResponseEntity<>(currentUser,HttpStatus.OK);
+		userService.updateUser(newFriend, newFriend.getId());
+		List<User> newFriends = List.of(currentUser,newFriend); 
+		return new ResponseEntity<>(newFriends,HttpStatus.OK);
 	}
 		catch(Exception e){
 			e.printStackTrace();

@@ -3,6 +3,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import jakarta.persistence.Column;
@@ -44,6 +46,7 @@ public class User extends BaseEntity {
 	List<Achievement> achievements;
 
 	@ManyToMany
+	@JsonIgnore
 	List<User> friends;
 
 	@PrePersist
