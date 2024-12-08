@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.player;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -49,16 +48,14 @@ public class PlayerService {
 		Player p = new Player();
 		p.setUser(u);
 		p.setHand(h);
-		playerRepository.save(p);
+		this.savePlayer(p);
 		return p;
 	}
 
 	@Transactional
-	public Player updatePlayer(@Valid Player player, Integer idToUpdate) {
-		Player toUpdate = findPlayer(idToUpdate);
-		BeanUtils.copyProperties(player, toUpdate, "id");
-		playerRepository.save(toUpdate);
-		return toUpdate;
+	public Player updatePlayer(@Valid Player player) {
+		playerRepository.save(player);
+		return player;
 	}
 	@Transactional
 	public void deletePlayer(@Valid Player player){

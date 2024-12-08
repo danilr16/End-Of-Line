@@ -52,31 +52,30 @@ public class TableCardService {
     }
 
     @Transactional(readOnly = true)
-	public TableCard findTableCard(Integer id) {
-		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TableCard", "id", id));
-	}	
+    public TableCard findTableCard(Integer id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TableCard", "id", id));
+    }	
 
     @Transactional
-	public TableCard updateTableCard(@Valid TableCard tableCard, Integer idToUpdate) {
-		TableCard toUpdate = findTableCard(idToUpdate);
-		BeanUtils.copyProperties(tableCard, toUpdate, "id");
-		repository.save(toUpdate);
-		return toUpdate;
-	}
+    public TableCard updateTableCard(@Valid TableCard tableCard, Integer idToUpdate) {
+        TableCard toUpdate = findTableCard(idToUpdate);
+        BeanUtils.copyProperties(tableCard, toUpdate, "id");
+        repository.save(toUpdate);
+        return toUpdate;
+    }
 
     @Transactional
-	public void deleteTableCard(Integer id) {
-		TableCard toDelete = findTableCard(id);
-		this.repository.delete(toDelete);
-	}
+    public void deleteTableCard(Integer id) {
+        TableCard toDelete = findTableCard(id);
+        this.repository.delete(toDelete);
+    }
 
     @Transactional
-    public TableCard creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) {
-        TableCard tableCard = null;
+    public Integer creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) {
         Map<Integer, List<nodeCoordinates>> mp = TableCard.homeNodes();//Coordenadas de los nodos de inicio según el número de jugadores
         Map<Integer, Integer> aux = Map.of(1, 5, 2, 7, 3, 7, 4, 9, 5, 9, 6, 11, 7, 11, 8, 13);//Tamaño del tablero según el número de jugadores
         List<nodeCoordinates> ls = mp.get(numJugadores);
-        tableCard = createGenericTable(aux.get(numJugadores), numJugadores);
+        TableCard tableCard = createGenericTable(aux.get(numJugadores), numJugadores);
         for (int i = 0; i < numJugadores; i++) {
             Player player = players.get(i);
             Card nodePlayer = createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
@@ -89,9 +88,9 @@ public class TableCardService {
             }
             player.setPossiblePositions(positions);
             player.setPossibleRotations(rotations);
-            playerService.updatePlayer(player, player.getId());
+            playerService.updatePlayer(player);
         }
-        return tableCard;
+        return tableCard.getId();
     }
 
     private TableCard createGenericTable(Integer n, Integer numJugadores) {//Crea tablero nxn
@@ -118,12 +117,12 @@ public class TableCardService {
     }
 
     private Card createHomeNode(TableCard tableCard, Player player, Integer f, Integer c, Integer rotation) {//Actualiza la celda y crea ahí el nodo de inicio
-        Cell cell = tableCard.rows.get(f-1).getCells().get(c-1);
+        Cell cell = tableCard.getRows().get(f-1).getCells().get(c-1);
         Card card = Card.createByType(TypeCard.INICIO, player);
         card.setRotation(rotation);
         cardService.saveCard(card);
         player.getPlayedCards().add(card.getId());
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
         cell.setCard(card);
         cell.setIsFull(true);
         cellService.updateCell(cell, cell.getId());

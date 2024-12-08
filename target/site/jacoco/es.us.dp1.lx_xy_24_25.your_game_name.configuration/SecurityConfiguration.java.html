@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DP1 Game Template</a> &gt; <a href="index.source.html" class="el_package">es.us.dp1.lx_xy_24_25.your_game_name.configuration</a> &gt; <span class="el_source">SecurityConfiguration.java</span></div><h1>SecurityConfiguration.java</h1><pre class="source lang-java linenums">package es.us.dp1.lx_xy_24_25.your_game_name.configuration;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">2024-2025-L4-02</a> &gt; <a href="index.source.html" class="el_package">es.us.dp1.lx_xy_24_25.your_game_name.configuration</a> &gt; <span class="el_source">SecurityConfiguration.java</span></div><h1>SecurityConfiguration.java</h1><pre class="source lang-java linenums">package es.us.dp1.lx_xy_24_25.your_game_name.configuration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 /*
@@ -43,20 +43,20 @@ import es.us.dp1.lx_xy_24_25.your_game_name.configuration.services.UserDetailsSe
 	DataSource dataSource;
 
 	private static final String ADMIN = &quot;ADMIN&quot;;
-	private static final String CLINIC_OWNER = &quot;CLINIC_OWNER&quot;;
 	
 
 	@Bean
 	protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		
-<span class="fc" id="L52">		http</span>
-<span class="fc" id="L53">			.cors(withDefaults())		</span>
-<span class="fc" id="L54">			.csrf(AbstractHttpConfigurer::disable)		</span>
-<span class="fc" id="L55">			.sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))			</span>
-<span class="fc" id="L56">			.headers((headers) -&gt; headers.frameOptions((frameOptions) -&gt; frameOptions.disable()))</span>
-<span class="fc" id="L57">			.exceptionHandling((exepciontHandling) -&gt; exepciontHandling.authenticationEntryPoint(unauthorizedHandler))			</span>
+<span class="fc" id="L51">		http</span>
+<span class="fc" id="L52">			.cors(withDefaults())		</span>
+<span class="fc" id="L53">			.csrf(AbstractHttpConfigurer::disable)		</span>
+<span class="fc" id="L54">			.sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))			</span>
+<span class="fc" id="L55">			.headers((headers) -&gt; headers.frameOptions((frameOptions) -&gt; frameOptions.disable()))</span>
+<span class="fc" id="L56">			.exceptionHandling((exepciontHandling) -&gt; exepciontHandling.authenticationEntryPoint(unauthorizedHandler))			</span>
 			
-<span class="fc" id="L59">			.authorizeHttpRequests(authorizeRequests -&gt;	authorizeRequests</span>
+<span class="fc" id="L58">			.authorizeHttpRequests(authorizeRequests -&gt;	authorizeRequests</span>
+<span class="fc" id="L59">			.requestMatchers(&quot;/api/v1/developers&quot;).permitAll()</span>
 <span class="fc" id="L60">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/resources/**&quot;)).permitAll()</span>
 <span class="fc" id="L61">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/webjars/**&quot;)).permitAll() </span>
 <span class="fc" id="L62">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/static/**&quot;)).permitAll() </span>
@@ -69,28 +69,39 @@ import es.us.dp1.lx_xy_24_25.your_game_name.configuration.services.UserDetailsSe
 <span class="fc" id="L69">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/swagger-ui/**&quot;)).permitAll()												</span>
 <span class="fc" id="L70">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/developers&quot;)).permitAll()												</span>
 <span class="fc" id="L71">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/plan&quot;)).permitAll()</span>
-<span class="fc" id="L72">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/users/**&quot;)).hasAuthority(ADMIN)</span>
-<span class="fc" id="L73">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
-<span class="fc" id="L74">			.anyRequest().authenticated())					</span>
+<span class="fc" id="L72">			.requestMatchers(HttpMethod.GET, &quot;/api/v1/users/games&quot;).authenticated()</span>
+<span class="fc" id="L73">			.requestMatchers(HttpMethod.PATCH, &quot;/api/v1/users/myProfile&quot;).authenticated()</span>
+<span class="fc" id="L74">			.requestMatchers(HttpMethod.PATCH, &quot;/api/v1/users/myProfile/update-password&quot;).authenticated()</span>
+<span class="fc" id="L75">			.requestMatchers(HttpMethod.GET, &quot;/api/v1/users/currentUser&quot;).authenticated()</span>
+<span class="fc" id="L76">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/users/**&quot;)).hasAuthority(ADMIN)</span>
+<span class="fc" id="L77">			.requestMatchers(HttpMethod.GET, &quot;/api/v1/games&quot;).hasAuthority(ADMIN)</span>
+<span class="fc" id="L78">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/games/**&quot;)).authenticated()</span>
+<span class="fc" id="L79">			.requestMatchers(HttpMethod.GET, &quot;/api/v1/achievements&quot;).authenticated()</span>
+<span class="fc" id="L80">			.requestMatchers(HttpMethod.GET, &quot;/api/v1/achievements/myAchievement&quot;).authenticated()</span>
+<span class="fc" id="L81">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/achievements/**&quot;)).hasAuthority(ADMIN)</span>
+<span class="fc" id="L82">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/api/v1/statistics&quot;)).authenticated()</span>
+<span class="fc" id="L83">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
+<span class="fc" id="L84">			.requestMatchers(AntPathRequestMatcher.antMatcher(&quot;/ws/**&quot;)).permitAll()</span>
+<span class="fc" id="L85">			.anyRequest().authenticated())					</span>
 			
-<span class="fc" id="L76">			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);		</span>
-<span class="fc" id="L77">		return http.build();</span>
+<span class="fc" id="L87">			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);		</span>
+<span class="fc" id="L88">		return http.build();</span>
 	}
 
 	@Bean
 	public AuthTokenFilter authenticationJwtTokenFilter() {
-<span class="fc" id="L82">		return new AuthTokenFilter();</span>
+<span class="fc" id="L93">		return new AuthTokenFilter();</span>
 	}
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-<span class="fc" id="L87">		return config.getAuthenticationManager();</span>
+<span class="fc" id="L98">		return config.getAuthenticationManager();</span>
 	}	
 
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-<span class="fc" id="L93">		return new BCryptPasswordEncoder();</span>
+<span class="fc" id="L104">		return new BCryptPasswordEncoder();</span>
 	}
 	
 	

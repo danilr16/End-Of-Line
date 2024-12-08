@@ -101,6 +101,7 @@ public class GameServicetests {
         simGame.setDuration(20);
         simGame.setGameCode("ABCDE");
         simGame.setId(1);
+        simGame.setVersion(0);
 
         User host = new User();
         //Datos de jugadores
@@ -262,7 +263,7 @@ public class GameServicetests {
         when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
         when(gameRepository.save(simGame)).thenReturn(gameToUpdated);
 
-        Game gameUpdated = gameService.updateGame(gameToUpdated, gameToUpdated.getId());
+        Game gameUpdated = gameService.updateGame(gameToUpdated);
         assertNotNull(gameUpdated);
         assertEquals(30,gameToUpdated.getDuration());      
     }
@@ -365,8 +366,6 @@ public class GameServicetests {
     void shouldInitialTurn(){
         //Comprobar que se ha creado un orden(la propiedad initialTurn no es null ni vacía)
         //Simulación de servicios y repos
-        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
-        when(gameRepository.save(simGame)).thenReturn(simGame);
         Game gameWithInitialTurn = gameService.initialTurn(simGame);
         assertNotNull(gameWithInitialTurn.getInitialTurn());
         assertTrue(gameWithInitialTurn.getInitialTurn().size()==4);
@@ -437,9 +436,7 @@ public class GameServicetests {
             int id = invocation.getArgument(0); //id será uno ya que es el primer jugador en la lista despues de ordenar el turno
             return simGame.getPlayers().get(id);
         });
-        when(playerService.updatePlayer(any(Player.class), anyInt())).thenReturn(null);
-        when(this.gameRepository.findById(1)).thenReturn(Optional.of(simGame));
-        when(this.gameService.updateGame(simGame, 1)).thenReturn(null);
+        when(playerService.updatePlayer(any(Player.class))).thenReturn(null);
         Game gameTurnsOrder = gameService.decideTurns(simGame, simGame.getPlayers());
 
         List<Integer> playersShouldBe = List.of(1,2,3,4);

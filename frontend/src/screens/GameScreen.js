@@ -89,7 +89,7 @@ export default function GameScreen() {
 
     useEffect(() => {
         if (adjustedTimerStart) {
-            const targetTime = new Date(adjustedTimerStart).getTime() + 5 * 60 * 1000; // Adjusted time + 5 minutes
+            const targetTime = new Date(adjustedTimerStart).getTime() + 2 * 60 * 1000; // Adjusted time + 5 minutes
 
             const updateSecondsLeft = () => {
                 const currentTime = Date.now();
