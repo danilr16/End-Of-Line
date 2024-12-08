@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -26,6 +27,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ConflictException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
@@ -35,7 +37,6 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
-import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
@@ -114,17 +115,21 @@ class GameRestController {
 
 
     @GetMapping(value = "{gameCode}")
-    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ){
-        Game game = gameService.findGameByGameCode(gameCode);
-        User currentUser = userService.findCurrentUser();
-        gameService.manageGame(game, currentUser);
-        if (game.getGameState().equals(GameState.END) && 
-            Duration.between(game.getStarted(), LocalDateTime.now()).toMinutes() < 1) {
-            game.getPlayers().stream().map(p -> p.getUser()).forEach(u -> userService.updateUser(u, u.getId()));
-            //Actualizamos los users para actualizar racha de victorias
+    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ) throws ConflictException {
+        try {
+            Game game = gameService.findGameByGameCode(gameCode);
+            User currentUser = userService.findCurrentUser();
+            gameService.manageGame(game, currentUser);
+            if (game.getGameState().equals(GameState.END) &&
+                    Duration.between(game.getStarted(), LocalDateTime.now()).toMinutes() < 1) {
+                game.getPlayers().stream().map(p -> p.getUser()).forEach(u -> userService.updateUser(u, u.getId()));
+                // Actualizamos los users para actualizar racha de victorias
+            }
+            GameDTO gameDTO = GameDTO.convertGameToDTO(game);
+            return new ResponseEntity<>(gameDTO, HttpStatus.OK);            
+        } catch (ObjectOptimisticLockingFailureException ex) {
+            throw new ConflictException("Another transaction has modified the game. Please retry.");
         }
-        GameDTO  gameDTO = GameDTO.convertGameToDTO(game);
-        return new ResponseEntity<>(gameDTO,HttpStatus.OK);
     }
 
     @PatchMapping("/{gameCode}/joinAsPlayer")
@@ -138,7 +143,7 @@ class GameRestController {
                 Hand initialUserHand = handService.saveVoidHand();
                 Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
                 game.getPlayers().add(userPlayer);
-                gameService.updateGame(game, game.getId());
+                gameService.updateGame(game);
                 return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't join this room");
@@ -156,7 +161,7 @@ class GameRestController {
                 Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
                 userPlayer.setState(PlayerState.SPECTATING);
                 game.getSpectators().add(userPlayer);
-                gameService.updateGame(game, game.getId());
+                gameService.updateGame(game);
                 return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't join this room");
@@ -171,14 +176,14 @@ class GameRestController {
             if (game.getPlayers().size() == 1) {
                 game.setGameMode(GameMode.PUZZLE_SINGLE);
             }
+            packCardService.creaPackCards(game.getPlayers());
+            Integer tableCardId = tableService.creaTableCard(game.getNumPlayers(), game.getGameMode(),
+                    game.getPlayers());
             game.setNumPlayers(game.getPlayers().size());
             game.setStarted(LocalDateTime.now());
             game.setGameState(GameState.IN_PROCESS);
-            packCardService.creaPackCards(game.getPlayers());
-            TableCard tableCard = tableService.creaTableCard(game.getNumPlayers(), game.getGameMode(),
-                    game.getPlayers());
-            game.setTable(tableCard);
-            gameService.updateGame(game, game.getId());
+            game.setTable(tableService.findTableCard(tableCardId));
+            gameService.updateGame(game);
             return new ResponseEntity<>(new MessageResponse("Game started!"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't start this game");
@@ -186,7 +191,7 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/leaveAsPlayer")
-    public ResponseEntity<MessageResponse> leaveAsPlayer(@PathVariable("gameCode") @Valid String gameCode) {
+    public ResponseEntity<MessageResponse> leaveAsPlayer(@PathVariable("gameCode") @Valid String gameCode) throws ConflictException {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if (game.getPlayers().stream().anyMatch(p -> p.getUser().equals(user))){
@@ -197,7 +202,7 @@ class GameRestController {
                 }
             else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
                 player.setState(PlayerState.LOST);
-                playerService.updatePlayer(player, player.getId());
+                playerService.updatePlayer(player);
                 gameService.manageGame(game, user);
             }
             return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
@@ -222,7 +227,7 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/placeCard")
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, 
-        Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard{
+        Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
         Card cardToPlace = cardService.findCard(cardId);
         User currentUser = userService.findCurrentUser();
         gameService.placeCard(currentUser, gameCode, index, cardToPlace);
@@ -274,7 +279,7 @@ class GameRestController {
         User user = userService.findCurrentUser();
         if (game.getPlayers().stream().map(p -> p.getUser()).toList().contains(user) && cm.getUserName().equals(user.getUsername())) {
                 game.getChat().add(cm);
-                List<ChatMessage> newChat = gameService.updateGame(game, game.getId()).getChat();
+                List<ChatMessage> newChat = gameService.updateGame(game).getChat();
                 return new ResponseEntity<>(newChat, HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't chat in this room");
