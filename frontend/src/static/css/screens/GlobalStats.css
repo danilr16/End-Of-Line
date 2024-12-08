@@ -102,19 +102,20 @@ tbody td {
     animation-delay: 1.5s;
 }
 
-.popular-gamemodes {
+.popular-gamemode {
     opacity: 0;
     text-decoration: underline;
     font-size: 200%;
     color: white;
     margin-left: 1%;
-    margin-top: 2%;
+    margin-top: 4%;
     margin-bottom: 2%;
     animation: slideFromLeft 2s ease forwards;
     animation-delay: 1s;
+    align-self: center;
 }
 
-.popular-gamemodes-container {
+.popular-gamemode-container {
     display: flex;
     justify-content: center;
 }
@@ -122,13 +123,11 @@ tbody td {
 .gamemode-container {
     opacity: 0;
     background-color: var(--br-trans-grey-very-light);
+    box-shadow: 0px 0px 10px var(--br-trans-grey-very-light);
     color: black;
-    text-align: center;
-    align-self: center;
-    margin-left: 2%;
-    white-space: pre-line;
-    border-radius: 10%;
-    padding: 1% 1.5%;
+    margin-left: 1%;
+    border-radius: 10px;
+    padding: 1% 10%;
     animation: smoothAppear 2s ease forwards;
     animation-delay: 2.3s;
 }

@@ -20,7 +20,8 @@ import MyGames from "./screens/MyGames";
 import Profile from './screens/Profile';
 import Stats from './screens/Stats';
 import IndividualStats from "./screens/IndividualStats";
-import GlobalStats from "./screens/GlobalStats"
+import GlobalStats from "./screens/GlobalStats";
+import Ranking from "./screens/Ranking";
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
 import Friends from "./components/Friends";
@@ -89,6 +90,7 @@ function App() {
         <Route path="/stats" element={<Stats />} />
         <Route path="/individualStats" element={<IndividualStats />} />
         <Route path="/globalStats" element={<GlobalStats />} />
+        <Route path="/ranking" element={<Ranking />} />
         <Route path="/games/current" element={<CurrentGames />} />
         <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} />
         <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  

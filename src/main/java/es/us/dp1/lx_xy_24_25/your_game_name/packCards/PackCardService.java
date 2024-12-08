@@ -66,7 +66,7 @@ public class PackCardService {
             packCard.setCards(cards);
             savePackCard(packCard);
             player.getPackCards().add(packCard);
-            playerService.updatePlayer(player, player.getId());
+            playerService.updatePlayer(player);
         }
     }
     

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
+
 import jakarta.validation.Valid;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ConflictException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
@@ -95,11 +96,9 @@ public class GameService {
     }
 
     @Transactional
-    public Game updateGame(@Valid Game game, Integer idToUpdate) {
-        Game toUpdate = findGame(idToUpdate);
-		BeanUtils.copyProperties(game, toUpdate, "id");
-		gameRepository.save(toUpdate);
-		return toUpdate;
+    public Game updateGame(@Valid Game game) {
+        gameRepository.save(game);
+        return game;
     }
 
     @Transactional
@@ -114,11 +113,11 @@ public class GameService {
         return gameRepository.findGameChat(gameCode).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",gameCode));
     }
     @Transactional
-    public List<ChatMessage> sendChatMessage(ChatMessage cm){
+    public List<ChatMessage> sendChatMessage(ChatMessage cm) {
         Game game = gameRepository.findGameByGameCode(cm.getGameCode()).orElseThrow(() -> new ResourceNotFoundException("Game","gameCode",cm.getGameCode()));
         game.getChat().add(cm);
         List<ChatMessage> newChat = game.getChat();
-        this.updateGame(game, game.getId());
+        this.updateGame(game);
         return newChat;
 
     }
@@ -180,7 +179,6 @@ public class GameService {
         game.setTurn(players.stream().findFirst().get());
         game.setOrderTurn(players);
         game.setInitialTurn(players);
-        this.updateGame(game, game.getId());
         return game; //Se ha añadido que devuelva game para la comprobación de los test
     }
 
@@ -190,10 +188,9 @@ public class GameService {
         Integer turn = orderTurn.stream().findFirst().get();
         Player start = playerService.findPlayer(turn);
         start.setTurnStarted(LocalDateTime.now());
-        playerService.updatePlayer(start, start.getId());
+        playerService.updatePlayer(start);
         game.setTurn(turn);
         game.setOrderTurn(orderTurn);
-        this.updateGame(game, game.getId());
         return game; //Se ha añadido que devuelva game para la comprobación de los test
     }
 
@@ -203,7 +200,9 @@ public class GameService {
         for (Player player: players) {//Cogemos las ultimas cartas jugadas de cada jugador o las anteriores (llamada recursiva que va comparando cartas hasta el caso base, llegada a nodo de inicio)
             Card card = cardService.findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 1 - indexCard));
             if (card.getType().equals(TypeCard.INICIO)) {
-                return game.getInitialTurn();
+                List<Integer> res = game.getInitialTurn().stream().map(id -> playerService.findPlayer(id))//Conseguir el orden de la ronda inicial de los players
+                    .filter(p -> players.contains(p)).map(p -> p.getId()).collect(Collectors.toList());   //que quedan por decidir
+                return res;
             }
             cards.add(card);
         }
@@ -249,18 +248,18 @@ public class GameService {
             this.takeACard(player);
         }
         player.setHandChanged(true);
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
     }
 
     @Transactional
-    public void manageTurnOfPlayer(Game game, Player playing) { //Gestiona las acciones del jugador al que le toca
-        if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 5 || cantContinuePlaying(game, playing)) {
+    public void manageTurnOfPlayer(Game game, Player playing) throws ConflictException { //Gestiona las acciones del jugador al que le toca
+        if (playing.getTurnStarted() == null) {
+            throw new ConflictException("Another transaction has modified the player. Please retry.");
+        }
+        if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 2 || cantContinuePlaying(game, playing)) {
             playing.setState(PlayerState.LOST);
-            playerService.updatePlayer(playing, playing.getId());
-            if (!game.getGameMode().equals(GameMode.PUZZLE_SINGLE)) {
-                nextTurn(game, playing);
-            }
-        } else if (playing.getCardsPlayedThisTurn() >= 2) {
+            playerService.updatePlayer(playing); 
+        } else if (playing.getCardsPlayedThisTurn() >= 2 || (playing.getCardsPlayedThisTurn() >= 1 && game.getNTurn() == 1)) {
             nextTurn(game, playing);
         }
     }
@@ -289,12 +288,12 @@ public class GameService {
         playing.setCardsPlayedThisTurn(0);
         playing.setTurnStarted(null);
         playing.setEnergyUsedThisRound(false);
-        playerService.updatePlayer(playing, playing.getId());
-        if (i == game.getOrderTurn().size()-1) {
+        playerService.updatePlayer(playing);
+        if (i.equals(game.getOrderTurn().size()-1)) {
             game.setNTurn(game.getNTurn() + 1);
             List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
-            decideTurns(game, players);
+            game = decideTurns(game, players);
             for (Player player : players) {
                 Hand hand = player.getHand();
                 PackCard packCard = player.getPackCards().stream().findFirst().get();
@@ -306,60 +305,57 @@ public class GameService {
             i++;
             Player nextPlaying = playerService.findPlayer(game.getOrderTurn().get(i));
             nextPlaying.setTurnStarted(LocalDateTime.now());
-            playerService.updatePlayer(nextPlaying, nextPlaying.getId());
+            playerService.updatePlayer(nextPlaying);
             game.setTurn(nextPlaying.getId());
-            this.updateGame(game, game.getId());
         }
+        this.updateGame(game);
     }
 
     @Transactional
     private void turn0(Game game, List<Player> players, User currentUser) {
-        initialTurn(game);
-            for (Player player : players) {
-                User user = player.getUser();
-                if (user.equals(currentUser)) {
-                    Hand hand = player.getHand();
-                    while (hand.getNumCards() < 5) {
-                        this.takeACard(player);
-                    }
-                    break;
-                }
+        for (Player player : players) {
+            Hand hand = player.getHand();
+            while (hand.getNumCards() < 5) {
+                this.takeACard(player);
             }
-            Boolean todosConCartas = true;
-            for (Player player: players) {
-                if (player.getHand().getNumCards() != 5) {
-                    todosConCartas = false;
-                    break;
-                }
+        }
+        Boolean todosConCartas = true;
+        for (Player player : players) {
+            if (player.getHand().getNumCards() != 5) {
+                todosConCartas = false;
+                break;
             }
-            if (todosConCartas) {
-                Player start = playerService.findPlayer(game.getTurn());
-                start.setTurnStarted(LocalDateTime.now());
-                playerService.updatePlayer(start, start.getId());
-                game.setNTurn(1);
-            }
-            this.updateGame(game, game.getId());
+        }
+        if (todosConCartas) {
+            game = initialTurn(game);
+            Player start = playerService.findPlayer(game.getTurn());
+            start.setTurnStarted(LocalDateTime.now());
+            playerService.updatePlayer(start);
+            game.setNTurn(1);
+            this.updateGame(game);
+        }
     }
 
     @Transactional
-    public void gameInProcess(Game game, User currentUser) {//Lógica de gestión de una partida VERSUS en progreso
+    public void gameInProcess(Game game, User currentUser) throws ConflictException {// Lógica de gestión de una partida VERSUS en progreso
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            this.turn0(game, players, currentUser);
+            if (currentUser.equals(game.getHost())) {
+                this.turn0(game, players, currentUser);
+            }
         } else {
             if (players.size() == 1) {
                 Player winner = players.stream().findFirst().get();
                 winner.setState(PlayerState.WON);
-                playerService.updatePlayer(winner, winner.getId());
+                playerService.updatePlayer(winner);
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
-                this.updateGame(game, game.getId());
+                this.updateGame(game);
             } else {
                 Player playing = playerService.findPlayer(game.getTurn());
-                if (playing.getUser().equals(currentUser)) {
-                    manageTurnOfPlayer(game, playing);
-                }
+                manageTurnOfPlayer(game, playing);
                 if (playing.getState().equals(PlayerState.LOST)) {
                     nextTurn(game, playing);
                 }
@@ -368,7 +364,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessSingle(Game game, User currentUser) {//Revisar se puede jugar
+    public void gameInProcessSingle(Game game, User currentUser) throws ConflictException {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -377,27 +373,29 @@ public class GameService {
             if (players.isEmpty()) {
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
-                this.updateGame(game, game.getId());
+                this.updateGame(game);
             } else if (tableCardService.tableCardFull(game.getTable())) {
                 Player winner = players.stream().findFirst().get();
                 winner.setState(PlayerState.WON);
                 Integer sumInicHand = winner.getHand().getCards().stream().mapToInt(c -> c.getIniciative()).sum();
                 winner.setScore(sumInicHand + winner.getEnergy());
-                playerService.updatePlayer(winner, winner.getId());
+                playerService.updatePlayer(winner);
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
-                this.updateGame(game, game.getId());
+                this.updateGame(game);
             } else {
                 Player playing = playerService.findPlayer(game.getTurn());
-                if (playing.getUser().equals(currentUser)) {
-                    manageTurnOfPlayer(game, playing);
+                manageTurnOfPlayer(game, playing);
+                if (playing.getState().equals(PlayerState.LOST)) {
+                    nextTurn(game, playing);
                 }
             }
         }
     }
 
     @Transactional
-    public void gameInProcessCoop(Game game, User currentUser) {//Revisar se puede jugar
+    public void gameInProcessCoop(Game game, User currentUser) throws ConflictException {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -406,25 +404,27 @@ public class GameService {
             if (players.size() < 2) {
                 for (Player loser:players) {
                     loser.setState(PlayerState.LOST);
-                    playerService.updatePlayer(loser, loser.getId());
+                    playerService.updatePlayer(loser);
                 }
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
-                this.updateGame(game, game.getId());
+                this.updateGame(game);
             } else if (tableCardService.tableCardFull(game.getTable())) {
                 for (Player winner:players) {
                     winner.setState(PlayerState.WON);
                     Integer sumInicHand = winner.getHand().getCards().stream().mapToInt(c -> c.getIniciative()).sum();
                     winner.setScore(sumInicHand + winner.getEnergy());
-                    playerService.updatePlayer(winner, winner.getId());
+                    playerService.updatePlayer(winner);
                 }
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
-                this.updateGame(game, game.getId());
+                this.updateGame(game);
             } else {
                 Player playing = playerService.findPlayer(game.getTurn());
-                if (playing.getUser().equals(currentUser)) {
-                    manageTurnOfPlayer(game, playing);
+                manageTurnOfPlayer(game, playing);
+                if (playing.getState().equals(PlayerState.LOST)) {
+                    nextTurn(game, playing);
                 }
             }
         }
@@ -441,7 +441,7 @@ public class GameService {
         player.setEnergyUsedThisRound(true);
         player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() - 1);
         player.getUsedPowers().add(PowerType.ACCELERATE);
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
     }
 
     @Transactional
@@ -450,7 +450,7 @@ public class GameService {
         player.setEnergyUsedThisRound(true);
         player.setCardsPlayedThisTurn(player.getCardsPlayedThisTurn() + 1);
         player.getUsedPowers().add(PowerType.BRAKE);
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
     }
 
     @Transactional
@@ -466,7 +466,7 @@ public class GameService {
         }
         player.setPossiblePositions(positions);
         player.setPossibleRotations(rotations);
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
     }
 
     @Transactional
@@ -475,7 +475,7 @@ public class GameService {
         player.setEnergyUsedThisRound(true);
         this.takeACard(player);
         player.getUsedPowers().add(PowerType.EXTRA_GAS);
-        playerService.updatePlayer(player, player.getId());
+        playerService.updatePlayer(player);
 
     }
 
@@ -522,11 +522,13 @@ public class GameService {
         }
         // Comprobamos que es el turno del jugador y puede colocar carta
         Player turnOfPlayer = playerService.findPlayer(currentGame.getTurn());
-        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2)) {
+        if (!turnOfPlayer.equals(currentPlayer) || !(currentPlayer.getCardsPlayedThisTurn() < 2) || 
+            (!(currentPlayer.getCardsPlayedThisTurn() < 1) && currentGame.getNTurn() == 1)) {
             throw new AccessDeniedException("You can't place this card, because it's not your turn");
         }
     }
 
+    @Transactional
     private void updatePlaceCard(List<Map<String, Integer>> possiblePositions, Card cardToPlace, 
         Player currentPlayer, TableCard currentTable, Integer index, Integer i) {
         Integer rotationToPlace = possiblePositions.get(i).get("rotation");
@@ -555,11 +557,11 @@ public class GameService {
         currentPlayer.setPossibleRotations(rotations);
         currentPlayer.getPlayedCards().add(cardToPlace.getId());
         currentPlayer.setCardsPlayedThisTurn(currentPlayer.getCardsPlayedThisTurn() + 1);
-        playerService.updatePlayer(currentPlayer, currentPlayer.getId());
+        playerService.updatePlayer(currentPlayer);
     }
 
     @Transactional
-    public void manageGame(Game game, User currentUser) {
+    public void manageGame(Game game, User currentUser) throws ConflictException {
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
             GameMode gameMode = game.getGameMode();
             if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
@@ -615,6 +617,28 @@ public class GameService {
         } else {
             return new ResponseEntity<>(new MessageResponse("You can not use back away right now"),
                         HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void updateStreaks(Game game) {
+        List<Player> players = game.getPlayers();
+        for (Player player: players) {
+            User user = player.getUser();
+            if (user.getWinningStreak() == null) {
+                user.setWinningStreak(0);
+            }
+            if (user.getMaxStreak() == null) {
+                user.setMaxStreak(0);
+            }
+            if (player.getState().equals(PlayerState.LOST)) {
+                user.setWinningStreak(0);
+            } else if (player.getState().equals(PlayerState.WON)) {
+                Integer userStreak = user.getWinningStreak() + 1;
+                user.setWinningStreak(userStreak);
+                if (userStreak > user.getMaxStreak()) {
+                    user.setMaxStreak(userStreak);
+                }
+            }
         }
     }
 }

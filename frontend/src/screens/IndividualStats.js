@@ -10,14 +10,6 @@ export default function IndividualStats() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
 
-    const [user, setUser] = useFetchState(
-        [],
-        '/api/v1/users/currentUser',
-        jwt,
-        setMessage,
-        setVisible
-    );
-
     const [userScoreStats, setUserScoreStats] = useFetchState(
         {},
         '/api/v1/statistics/games',
@@ -50,13 +42,12 @@ export default function IndividualStats() {
             default: return 'th'
         }
     }
-    
-    //Datos de prueba
-    const mostPlayedModes = {'versus': 247, 'singleplayer': 134}
-    const mostUsedPowers = {'accelerate': 385, 'back away': 264}
-    
 
-    if(!userScoreStats || !gameModeStats || !userScoreStats.user || !powersStats) {
+    //Datos de prueba
+    const mostUsedPowers = { 'accelerate': 385, 'back away': 264 }
+
+
+    if (!userScoreStats || !gameModeStats || !userScoreStats.user || !powersStats) {
         return <p> Loading... </p>;
     }
 
@@ -73,19 +64,17 @@ export default function IndividualStats() {
                     Maximum points obtained: {userScoreStats.user.max}
                 </div>
                 <div className="longest-victory-streak">
-                    Longest victory streak:
+                    Longest victory streak: {powersStats.maxStreak == null ? 0 : powersStats.maxStreak}
                 </div>
             </div>
             <div className="tables">
                 <div className="most-played-modes-container">
                     <table className="most-played-modes">
-                        <thead><th>Most played gamemodes</th></thead>
+                        <thead><th>Most played gamemode</th></thead>
                         <tbody>
-                            {Object.entries(/*gameModeStats.userMostPlayed*/mostPlayedModes).map(([key, value], index) => (
-                                <tr>
-                                    <td key={index}>{index + 1 + OrdinalValue(index + 1)} {key} {value}</td>
-                                </tr>
-                            ))}
+                            <tr>
+                                <td>{String(gameModeStats.userMostPlayed).replace("_", " ")}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

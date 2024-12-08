@@ -101,4 +101,13 @@ public class ExceptionHandlerController {
 
 		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(ConflictException.class)
+	@ResponseStatus(value = HttpStatus.CONFLICT)
+	public ResponseEntity<ErrorMessage> ConflictException(ConflictException ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), new Date(), ex.getMessage(),
+				request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.CONFLICT);
+	}
 }

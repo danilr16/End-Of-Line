@@ -35,7 +35,7 @@ export default function Stats() {
         const centerY = diagram.height / 2;
         const radius = 100;
         const wins = userStats.victories.total;
-        const loses = userStats.defeats.total; 
+        const loses = userStats.defeats.total;
     
         // Función para dibujar un segmento
         const drawSegment = (startAngle, endAngle, color) => {
@@ -94,7 +94,7 @@ export default function Stats() {
         if(canvas) { //Este if es para asegurarnos de que el diagrama está disponible (si no se pone puede dar error el useRef)
             drawDiagram(canvas);
         }
-    }, []);
+    }, [userStats]);
 
     if (!userStats || !userStats.victories || !userStats.defeats) {
         return <p>Loading...</p>; //Para que no renderice los atributos de stats nada mas cargar la pagina
@@ -125,7 +125,7 @@ export default function Stats() {
                 <div className="buttons-container">
                     <button className="sub-screen-button" onClick={()=>navigate("/individualStats")}>Individual stats</button>
                     <button className="sub-screen-button" onClick={()=>navigate("/globalStats")}>Global stats</button>
-                    <button className="sub-screen-button">Ranking</button>
+                    <button className="sub-screen-button" onClick={()=>navigate("/ranking")}>Ranking</button>
                 </div>
             </div>
         </div>

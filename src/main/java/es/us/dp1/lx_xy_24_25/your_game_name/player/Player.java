@@ -18,6 +18,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -33,6 +34,9 @@ public class Player extends BaseEntity{
     public enum PlayerState {
         PLAYING, WON, LOST , SPECTATING
     }
+
+    @Version
+    private Integer version;
 
     @Min(0)
     Integer score;
