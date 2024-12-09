@@ -260,7 +260,6 @@ public class GameServicetests {
         Game gameToUpdated = gameService.saveGame(simGame);
 
         gameToUpdated.setDuration(30);
-        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
         when(gameRepository.save(simGame)).thenReturn(gameToUpdated);
 
         Game gameUpdated = gameService.updateGame(gameToUpdated);
@@ -332,7 +331,6 @@ public class GameServicetests {
         when(gameRepository.findGameChat("ABCDE")).thenReturn(Optional.of(simGame.getChat()));
         int iniChatSize = gameService.getGameChat("ABCDE").size();
         when(gameRepository.findGameByGameCode("ABCDE")).thenReturn(Optional.of(simGame));
-        when(gameRepository.findById(1)).thenReturn(Optional.of(simGame));
         when(gameRepository.save(simGame)).thenReturn(simGame);
         ChatMessage cm = new ChatMessage();
         cm.setGameCode("ABCDE");

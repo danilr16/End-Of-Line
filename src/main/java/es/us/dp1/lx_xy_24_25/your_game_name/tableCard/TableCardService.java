@@ -10,6 +10,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToJumpTeam;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
@@ -71,7 +72,7 @@ public class TableCardService {
     }
 
     @Transactional
-    public Integer creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) {
+    public Integer creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) throws UnfeasibleToJumpTeam {
         Map<Integer, List<nodeCoordinates>> mp = TableCard.homeNodes();//Coordenadas de los nodos de inicio según el número de jugadores
         Map<Integer, Integer> aux = Map.of(1, 5, 2, 7, 3, 7, 4, 9, 5, 9, 6, 11, 7, 11, 8, 13);//Tamaño del tablero según el número de jugadores
         List<nodeCoordinates> ls = mp.get(numJugadores);
@@ -79,7 +80,7 @@ public class TableCardService {
         for (int i = 0; i < numJugadores; i++) {
             Player player = players.get(i);
             Card nodePlayer = createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
-            List<Map<String, Integer>> possiblePositions = getPossiblePositionsForPlayer(tableCard, player, nodePlayer);
+            List<Map<String, Integer>> possiblePositions = getPossiblePositionsForPlayer(tableCard, player, nodePlayer, null, false);
             List<Integer> positions = new ArrayList<>();
             List<Integer> rotations = new ArrayList<>();
             for (Map<String, Integer> position: possiblePositions) {
@@ -157,19 +158,30 @@ public class TableCardService {
     }
 
     @Transactional
-    public List<Map<String, Integer>> getPossiblePositionsForPlayer(TableCard tableCard, Player player, Card placedCard) {
+    public List<Map<String, Integer>> getPossiblePositionsForPlayer(TableCard tableCard, Player player, Card placedCard, Player team, Boolean jumpTeam) throws UnfeasibleToJumpTeam {
         Map<String, Integer> lastPlacedPos = getPositionOfCard(tableCard, placedCard);
 
         List<Map<String, Integer>> rotationToVector = RotationVectors.createRotationToVector();
 
         List<Map<String,Integer>> possiblePositions = new ArrayList<>();
 
+        Boolean canJumpTeam = false;
         for (Integer outputIndex : placedCard.getOutputs()) {
             Map<String, Integer> vector = rotationToVector.get((outputIndex+placedCard.getRotation())%4);
     
             int newX = Math.floorMod(lastPlacedPos.get("x") + vector.get("x")-1,tableCard.getNumRow())+1;
             int newY = Math.floorMod(lastPlacedPos.get("y") + vector.get("y")-1,tableCard.getNumColum())+1;
     
+            if (jumpTeam && team != null) {// Comprobar posiciones posibles para un salto en Team Battle
+                Cell cell = getCellAt(tableCard, newY, newX);
+                if (cell.getIsFull() == true && cell.getCard() != null) {
+                    if (cell.getCard().getPlayer().equals(team)) {
+                        newX = Math.floorMod(newX + vector.get("x") - 1, tableCard.getNumRow()) + 1;
+                        newY = Math.floorMod(newY + vector.get("y") - 1, tableCard.getNumColum()) + 1;
+                        canJumpTeam = true;
+                    }
+                }
+            }
             if (getCellAt(tableCard, newY, newX).getIsFull() == false) {
                 Map<String, Integer> newPosition = new HashMap<>();
                 newPosition.put("position", getCellIndexFromPosition(tableCard, newX, newY));
@@ -177,7 +189,10 @@ public class TableCardService {
                 possiblePositions.add(newPosition);
             }
         }
-    
+        
+        if (jumpTeam && team != null && !canJumpTeam) {
+            throw new UnfeasibleToJumpTeam();
+        }
         return possiblePositions;
     }
 

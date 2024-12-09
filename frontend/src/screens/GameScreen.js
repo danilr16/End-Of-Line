@@ -50,11 +50,13 @@ export default function GameScreen() {
                     if (!data.message) {
                         setGame(data); // Update game state
                     } else {
-                        if (setMessage !== null) {
-                            setMessage(data.message);
-                            setVisible(true);
-                        } else {
-                            window.alert(data.message);
+                        if (data.statusCode !== 409) {
+                            if (setMessage !== null) {
+                                setMessage(data.message);
+                                setVisible(true);
+                            } else {
+                                window.alert(data.message);
+                            }
                         }
                     }
                 })
@@ -65,7 +67,7 @@ export default function GameScreen() {
                 });
         };
 
-        const interval = setInterval(fetchGameUpdates, 1000);
+        const interval = setInterval(fetchGameUpdates, 1500);
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, [gameCode, jwt, setMessage, setVisible, setGame]);

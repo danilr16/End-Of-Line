@@ -104,10 +104,20 @@ public class ExceptionHandlerController {
 
 	@ExceptionHandler(ConflictException.class)
 	@ResponseStatus(value = HttpStatus.CONFLICT)
-	public ResponseEntity<ErrorMessage> ConflictException(ConflictException ex, WebRequest request) {
+	public ResponseEntity<ErrorMessage> conflictException(ConflictException ex, WebRequest request) {
 		ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), new Date(), ex.getMessage(),
 				request.getDescription(false));
 
 		return new ResponseEntity<>(message, HttpStatus.CONFLICT);
+	}
+
+	@ExceptionHandler(UnfeasibleToJumpTeam.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ResponseEntity<ErrorMessage> unfeasibleToJumpTeam(UnfeasibleToJumpTeam ex, WebRequest request) {
+		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), 
+			"You can not jump your team, because there isn't a card of your team near your last card",
+			request.getDescription(false));
+
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}
 }
