@@ -5,6 +5,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.team.Team;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -79,6 +80,10 @@ public class Game extends BaseEntity {
 
     @OneToOne(cascade = CascadeType.REMOVE)
     TableCard table;
+
+    @OneToMany(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name="game_id")
+    List<Team> teams;
 
     public Game(Game g){
         this.gameCode = g.getGameCode();

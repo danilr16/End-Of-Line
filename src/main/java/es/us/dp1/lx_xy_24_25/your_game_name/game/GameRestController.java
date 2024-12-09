@@ -29,6 +29,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ConflictException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToJumpTeam;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
@@ -38,6 +39,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.team.Team;
+import es.us.dp1.lx_xy_24_25.your_game_name.team.TeamService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -57,11 +60,13 @@ class GameRestController {
     private final TableCardService tableService;
     private final PackCardService packCardService;
     private final CardService cardService;
+    private final TeamService teamService;
 
     @Autowired
     public GameRestController(GameService gameService, UserService userService, 
         PlayerService playerService, HandService handService, 
-        TableCardService tableService, PackCardService packCardService, CardService cardService){
+        TableCardService tableService, PackCardService packCardService, 
+        CardService cardService, TeamService teamService){
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
@@ -69,6 +74,7 @@ class GameRestController {
         this.tableService = tableService;
         this.packCardService = packCardService;
         this.cardService = cardService;
+        this.teamService = teamService;
     }
 
     @InitBinder("game")
@@ -96,6 +102,10 @@ class GameRestController {
         newGame.setIsPublic(isPublic);
         newGame.setNumPlayers(numPlayers);
         newGame.setGameMode(gameMode);
+        if (gameMode.equals(GameMode.TEAM_BATTLE)) {
+            Team team1 = teamService.saveTeamByPlayers(userPlayer, null);
+            newGame.setTeams(new ArrayList<>(List.of(team1)));
+        }
         Game savedGame = gameService.saveGame(newGame);
         return new ResponseEntity<>(savedGame, HttpStatus.CREATED);
     }
@@ -115,7 +125,7 @@ class GameRestController {
 
 
     @GetMapping(value = "{gameCode}")
-    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ) throws ConflictException {
+    public ResponseEntity<GameDTO> findGameByGameCode(@PathVariable("gameCode") @Valid String gameCode ) throws ConflictException, UnfeasibleToJumpTeam {
         try {
             Game game = gameService.findGameByGameCode(gameCode);
             User currentUser = userService.findCurrentUser();
@@ -133,20 +143,27 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/joinAsPlayer")
-    public ResponseEntity<MessageResponse> joinAsPlayer(@PathVariable("gameCode") @Valid String gameCode) {
-        Game game = gameService.findGameByGameCode(gameCode);
-        User user = userService.findCurrentUser();
-        if (game.getGameState().equals(GameState.WAITING)
-            && game.getPlayers().size() < game.getNumPlayers()
-            && game.getPlayers().stream().allMatch(p -> !p.getUser().equals(user))
-            && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
-                Hand initialUserHand = handService.saveVoidHand();
-                Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
-                game.getPlayers().add(userPlayer);
-                gameService.updateGame(game);
-                return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
-        } else {
-            throw new AccessDeniedException("You can't join this room");
+    public ResponseEntity<MessageResponse> joinAsPlayer(@PathVariable("gameCode") @Valid String gameCode) throws ConflictException {
+        try {
+            Game game = gameService.findGameByGameCode(gameCode);
+            User user = userService.findCurrentUser();
+            if (game.getGameState().equals(GameState.WAITING)
+                && game.getPlayers().size() < game.getNumPlayers()
+                && game.getPlayers().stream().allMatch(p -> !p.getUser().equals(user))
+                && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
+                    Hand initialUserHand = handService.saveVoidHand();
+                    Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
+                    game.getPlayers().add(userPlayer);
+                    if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
+                        game = teamService.joinATeam(game, userPlayer);
+                    }
+                    gameService.updateGame(game);
+                    return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
+            } else {
+                throw new AccessDeniedException("You can't join this room");
+            }            
+        } catch (ObjectOptimisticLockingFailureException ex) {
+            throw new ConflictException("Another transaction has modified the game. Please retry.");
         }
     }
 
@@ -169,15 +186,16 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/startGame")
-    public ResponseEntity<MessageResponse> startGame(@PathVariable("gameCode") @Valid String gameCode) {
+    public ResponseEntity<MessageResponse> startGame(@PathVariable("gameCode") @Valid String gameCode) throws UnfeasibleToJumpTeam {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if (game.getGameState().equals(GameState.WAITING) && game.getHost().equals(user)) {
             if (game.getPlayers().size() == 1) {
                 game.setGameMode(GameMode.PUZZLE_SINGLE);
             }
+            game = gameService.checkTeamBattle(game, user);
             packCardService.creaPackCards(game.getPlayers());
-            Integer tableCardId = tableService.creaTableCard(game.getNumPlayers(), game.getGameMode(),
+            Integer tableCardId = tableService.creaTableCard(game.getPlayers().size(), game.getGameMode(),
                     game.getPlayers());
             game.setNumPlayers(game.getPlayers().size());
             game.setStarted(LocalDateTime.now());
@@ -191,13 +209,13 @@ class GameRestController {
     }
 
     @PatchMapping("/{gameCode}/leaveAsPlayer")
-    public ResponseEntity<MessageResponse> leaveAsPlayer(@PathVariable("gameCode") @Valid String gameCode) throws ConflictException {
+    public ResponseEntity<MessageResponse> leaveAsPlayer(@PathVariable("gameCode") @Valid String gameCode) throws ConflictException, UnfeasibleToJumpTeam {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if (game.getPlayers().stream().anyMatch(p -> p.getUser().equals(user))){
             Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get(); 
             if(game.getGameState().equals(GameState.WAITING)){
-                game.players.remove(player);
+                game.getPlayers().remove(player);
                 playerService.deletePlayer(player);
                 }
             else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
@@ -227,7 +245,7 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/placeCard")
     public ResponseEntity<MessageResponse> placeCard(@PathVariable("gameCode") @Valid String gameCode, 
-        Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard {
+        Integer cardId, Integer index) throws UnfeasibleToPlaceCard, InvalidIndexOfTableCard, UnfeasibleToJumpTeam {
         Card cardToPlace = cardService.findCard(cardId);
         User currentUser = userService.findCurrentUser();
         gameService.placeCard(currentUser, gameCode, index, cardToPlace);
@@ -236,7 +254,7 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/useEnergy")
     public ResponseEntity<MessageResponse> useEnergy(@PathVariable("gameCode") @Valid String gameCode, @Valid @RequestParam(required = true)PowerType powerType)
-        throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+        throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard, UnfeasibleToJumpTeam {
         //Comprobamos condiciones para poder usar las energías
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
@@ -245,7 +263,7 @@ class GameRestController {
             throw new AccessDeniedException("You can't use energy, because you aren't in this game");
         }
         if (!game.getGameState().equals(GameState.IN_PROCESS) || game.getNTurn() < 3 
-            || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() == 0) {
+            || player.getEnergyUsedThisRound() || !game.getTurn().equals(player.getId()) || player.getEnergy() <= 0) {
             throw new AccessDeniedException("You can't use energy right now");
         }
         //Una vez comprobado gestionamos que energía se usa
