@@ -258,14 +258,16 @@ public class GameService {
 
     @Transactional
     public void manageTurnOfPlayer(Game game, Player playing) throws ConflictException, UnfeasibleToJumpTeam { //Gestiona las acciones del jugador al que le toca
-        if (playing.getTurnStarted() == null) {
-            throw new ConflictException("Another transaction has modified the player. Please retry.");
-        }
-        if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 2 || cantContinuePlaying(game, playing)) {
-            playing.setState(PlayerState.LOST);
-            playerService.updatePlayer(playing); 
-        } else if (playing.getCardsPlayedThisTurn() >= 2 || (playing.getCardsPlayedThisTurn() >= 1 && game.getNTurn() == 1)) {
+        if (playing.getCardsPlayedThisTurn() >= 2 || (playing.getCardsPlayedThisTurn() >= 1 && game.getNTurn() == 1)) {
             nextTurn(game, playing);
+        } else {
+            if (playing.getTurnStarted() == null) {
+                throw new ConflictException("Another transaction has modified the player. Please retry.");
+            }
+            if (Duration.between(playing.getTurnStarted(), LocalDateTime.now()).toMinutes() >= 2 || cantContinuePlaying(game, playing)) {
+                playing.setState(PlayerState.LOST);
+                playerService.updatePlayer(playing);
+            }
         }
     }
 
@@ -279,7 +281,12 @@ public class GameService {
             if (possiblePositions.isEmpty() && playing.getEnergy() == 0) {
                 return true;
             } else if (possiblePositions.isEmpty() && game.getNTurn() >= 3) {
-                return cantUsePowers(playing, game, tableCard, lastPlaced);
+                if (!playing.getEnergyUsedThisRound()) {
+                    return cantUsePowers(playing, game, tableCard, lastPlaced);
+                } else {
+                    PowerType pwr = playing.getUsedPowers().get(playing.getUsedPowers().size()-1);
+                    return !(pwr.equals(PowerType.BACK_AWAY) || pwr.equals(PowerType.JUMP_TEAM));
+                }
             } else if (possiblePositions.isEmpty() && game.getNTurn() < 3) {
                 return true;
             } else {
