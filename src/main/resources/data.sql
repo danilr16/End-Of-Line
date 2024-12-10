@@ -20,6 +20,7 @@ INSERT INTO appusers(id,image,username,password,authority) VALUES (16,'https://c
 INSERT INTO appusers(id,image,username,password,authority) VALUES (17,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','jct6889','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (18,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','vwn3805','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 INSERT INTO appusers(id,image,username,password,authority) VALUES (19,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','lfb9498','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
+INSERT INTO appusers(id,image,username,password,authority) VALUES (20,'https://cdn-icons-png.flaticon.com/512/3135/3135768.png','aVeryChillGuy','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',2);
 
 
 
@@ -30,7 +31,7 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
 
-INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',5,4,'ABCDE','END');
+INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state) VALUES (1,4,true,1,'PUZZLE_SINGLE',5,4,'ABCDE','IN_PROCESS');
 INSERT INTO app_hands(id,num_cards) VALUES (1,0);
 INSERT INTO app_players(id,game_id,hand_id,user_id,energy,cards_played_this_turn,energy_used_this_round,hand_changed,score,state,version) VALUES (1,1,1,4,3,0,false,false,7,'WON',0);
 
@@ -41,4 +42,51 @@ INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,outp
 INSERT INTO app_table_cards(id, num_colum,num_row,type) VALUES (1,6,6,'JUGADORES_2');
 INSERT INTO app_rows(id,table_id) VALUES (1,1);
 INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (1,1,false,1);
+
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (1,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (4,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (5,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (6,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (7,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (8,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (10,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (11,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (12,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (13,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (14,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (15,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (16,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (17,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (18,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (19,20);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,1);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,4);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,5);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,6);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,7);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,8);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,9);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,10);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,11);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,12);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,13);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,14);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,15);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,16);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,17);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,18);
+INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,19);
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -25,7 +25,7 @@ export default function NavBarDropdown(props){
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/profile")} >Profile</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users/games")} >My Games</DropdownItem>
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/stats")} >Stats</DropdownItem>
-            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/rules")} >Friends</DropdownItem>
+            <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users/friends")} >Friends</DropdownItem>
             {isAdmin&&<DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/users")} >Users</DropdownItem>}
             <DropdownItem className="custom-dropdown-item" onClick={()=>navigate("/logout")} >Logout</DropdownItem>
             </DropdownMenu>

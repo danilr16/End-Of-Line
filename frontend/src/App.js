@@ -24,6 +24,7 @@ import GlobalStats from "./screens/GlobalStats";
 import Ranking from "./screens/Ranking";
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
+import Friends from "./components/Friends";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -93,6 +94,8 @@ function App() {
         <Route path="/games/current" element={<CurrentGames />} />
         <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} />
         <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  
+        <Route path="/users/friends" exact={true} element={<PrivateRoute><Friends /></PrivateRoute>} />
+
       </>
   )
   }

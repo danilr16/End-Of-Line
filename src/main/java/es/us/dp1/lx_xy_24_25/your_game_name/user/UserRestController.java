@@ -18,15 +18,10 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
-import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
-import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,12 +34,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -145,6 +144,12 @@ class UserRestController {
 		User user = userService.findCurrentUser();
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
+	@GetMapping("/currentUserDTO")
+	public ResponseEntity<UserDTO> findCurrentUserDTO() {
+		User user = userService.findCurrentUser();
+		UserDTO userDTO = UserDTO.convertUserToDTO(user);
+		return new ResponseEntity<>(userDTO, HttpStatus.OK);
+	}
 	
   @PatchMapping("/myProfile/update-password")
      public ResponseEntity<User> updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
@@ -184,5 +189,39 @@ class UserRestController {
      }
 	}
 	 
+
+	@PatchMapping("/addFriend/{username}")
+	public ResponseEntity<List<User>> addFriend(@PathVariable String username){
+		try{
+		User currentUser = userService.findCurrentUser();
+		User newFriend = userService.findUser(username);
+		if(currentUser.getFriends().contains(newFriend)){
+			throw new AccessDeniedException("You are already friends with this user!");
+		}
+		if(currentUser.equals(newFriend)){
+			throw new AccessDeniedException("You can't add yourself as a friend!");
+		}
+		currentUser.getFriends().add(newFriend);
+		newFriend.getFriends().add(currentUser);
+		userService.updateUser(currentUser, currentUser.getId());
+		userService.updateUser(newFriend, newFriend.getId());
+		List<User> newFriends = List.of(currentUser,newFriend); 
+		return new ResponseEntity<>(newFriends,HttpStatus.OK);
+	}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@PatchMapping("/removeFriend")
+	public ResponseEntity<User> removeFriend(@RequestBody String username){
+		User currentUser = userService.findCurrentUser();
+		User toRemoveFriend = userService.findUser(username);
+		currentUser.getFriends().remove(toRemoveFriend);
+		userService.updateUser(currentUser, currentUser.getId());
+		return new ResponseEntity<>(currentUser,HttpStatus.OK);
+	}
+
 
 }
