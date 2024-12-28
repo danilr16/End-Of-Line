@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.tableCard;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -11,7 +10,6 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToJumpTeam;
-import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
@@ -58,11 +56,9 @@ public class TableCardService {
     }	
 
     @Transactional
-    public TableCard updateTableCard(@Valid TableCard tableCard, Integer idToUpdate) {
-        TableCard toUpdate = findTableCard(idToUpdate);
-        BeanUtils.copyProperties(tableCard, toUpdate, "id");
-        repository.save(toUpdate);
-        return toUpdate;
+    public TableCard updateTableCard(@Valid TableCard tableCard) {
+        repository.save(tableCard);
+        return tableCard;
     }
 
     @Transactional
@@ -72,7 +68,8 @@ public class TableCardService {
     }
 
     @Transactional
-    public Integer creaTableCard(Integer numJugadores, GameMode gameMode, List<Player> players) throws UnfeasibleToJumpTeam {
+    public TableCard creaTableCard(List<Player> players) throws UnfeasibleToJumpTeam {
+        Integer numJugadores = players.size();
         Map<Integer, List<nodeCoordinates>> mp = TableCard.homeNodes();//Coordenadas de los nodos de inicio según el número de jugadores
         Map<Integer, Integer> aux = Map.of(1, 5, 2, 7, 3, 7, 4, 9, 5, 9, 6, 11, 7, 11, 8, 13);//Tamaño del tablero según el número de jugadores
         List<nodeCoordinates> ls = mp.get(numJugadores);
@@ -91,7 +88,7 @@ public class TableCardService {
             player.setPossibleRotations(rotations);
             playerService.updatePlayer(player);
         }
-        return tableCard.getId();
+        return tableCard;
     }
 
     private TableCard createGenericTable(Integer n, Integer numJugadores) {//Crea tablero nxn
@@ -132,12 +129,12 @@ public class TableCardService {
 
 
     @Transactional
-    public Cell getCellAt(TableCard tableCard, Integer f, Integer c) {
+    private Cell getCellAt(TableCard tableCard, Integer f, Integer c) {
         return tableCard.getRows().get(f-1).getCells().get(c-1);
     }
 
     @Transactional
-    public Map<String, Integer> getPositionOfCard(TableCard tableCard, Card card) {
+    private Map<String, Integer> getPositionOfCard(TableCard tableCard, Card card) {
         for (int row = 0; row < tableCard.getRows().size(); row++) {
             List<Cell> cells = tableCard.getRows().get(row).getCells();
             for (int col = 0; col < cells.size(); col++) {
@@ -153,7 +150,7 @@ public class TableCardService {
         return null; 
     }
 
-    public Integer getCellIndexFromPosition(TableCard tableCard, Integer x, Integer y) {
+    private Integer getCellIndexFromPosition(TableCard tableCard, Integer x, Integer y) {
         return ((y-1)*tableCard.getNumColum())+x;
     }
 

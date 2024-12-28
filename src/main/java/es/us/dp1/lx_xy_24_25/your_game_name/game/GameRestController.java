@@ -195,8 +195,7 @@ class GameRestController {
             }
             game = gameService.checkTeamBattle(game, user);
             packCardService.creaPackCards(game.getPlayers());
-            Integer tableCardId = tableService.creaTableCard(game.getPlayers().size(), game.getGameMode(),
-                    game.getPlayers());
+            Integer tableCardId = tableService.creaTableCard(game.getPlayers()).getId();
             game.setNumPlayers(game.getPlayers().size());
             game.setStarted(LocalDateTime.now());
             game.setGameState(GameState.IN_PROCESS);
