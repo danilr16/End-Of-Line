@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.FriendDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
@@ -189,6 +190,13 @@ class UserRestController {
      }
 	}
 	 
+	@GetMapping("/friends")
+	public ResponseEntity<List<FriendDTO>> findFriends() {
+		User currentUser = userService.findCurrentUser();
+		List<User> friends = currentUser.getFriends();
+		List<FriendDTO> friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());
+		return new ResponseEntity<>(friendsDTO, HttpStatus.OK);
+	}
 
 	@PatchMapping("/addFriend/{username}")
 	public ResponseEntity<List<User>> addFriend(@PathVariable String username){

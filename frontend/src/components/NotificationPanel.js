@@ -1,8 +1,13 @@
 import React, { forwardRef } from 'react';
 import "../static/css/components/notificationPanel.css";
 import request from '../util/request';
+import { useNavigate } from 'react-router-dom';
+
 
 const NotificationPanel = forwardRef((props, ref) => {
+
+        const navigate = useNavigate();
+    
 
 
     const handleAcceptFriend = async (username) => {
@@ -20,6 +25,18 @@ const NotificationPanel = forwardRef((props, ref) => {
         }
     };
 
+    const handleAcceptGame = (n) => {
+        navigate(`/game/${n.gamecode}`);
+    }
+
+    const parseNotification = (n,index) => {
+        if (n.type === "FRIEND_REQUEST") {
+            return parseToFRNotification(n,index);
+        } else if (n.type === "GAME_INVITATION") {
+            return parseToGINotification(n,index);
+        }
+    }
+
     const parseToFRNotification = (n,index) => {
         return (
             <li className="notification" key={index}>
@@ -32,7 +49,20 @@ const NotificationPanel = forwardRef((props, ref) => {
         );
     };
 
-    const notifications = props.notifications && props.notifications.length > 0 ? props.notifications.map((n,index) => parseToFRNotification(n,index)) : null;
+    
+    const parseToGINotification = (n,index) => {
+        return (
+            <li className="notification" key={index}>
+                <p className = "notification-message"><strong>{n.senderUsername}</strong> wants you to join their game</p>
+                <div className="notification-button-container">
+                    <button className="reject-button">Reject</button>
+                    <button className="accept-button" onClick={() => handleAcceptGame(n)}>Accept</button>
+                </div>
+            </li>
+        );
+    };
+
+    const notifications = props.notifications && props.notifications.length > 0 ? props.notifications.map((n,index) => parseNotification(n,index)) : null;
 
     return (
         <section ref={ref} className="panel">

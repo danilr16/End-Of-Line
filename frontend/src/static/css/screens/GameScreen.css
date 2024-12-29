@@ -284,8 +284,8 @@
     position: absolute; 
     bottom: 10%; 
     right: 10%; 
-    width: 15vw; 
-    height: 15vw; 
+    width: 8vw; 
+    height: 8vw; 
     max-width: 190px; 
     max-height: 190px; 
     border-radius: 50%; 
@@ -302,28 +302,28 @@
 }
 
 .top-left {
-    background: green; 
+    background: var(--br-green); 
     top: 0;
     left: 0;
     border-top-left-radius: 100%; 
 }
 
 .top-right {
-    background: red; 
+    background:  var(--br-red); 
     top: 0;
     right: 0;
     border-top-right-radius: 100%; 
 }
 
 .bottom-left {
-    background: yellow; 
+    background:  var(--br-yellow);  
     bottom: 0;
     left: 0;
     border-bottom-left-radius: 100%; 
 }
 
 .bottom-right {
-    background: blue; 
+    background:  var(--br-blue);  
     bottom: 0;
     right: 0;
     border-bottom-right-radius: 100%;

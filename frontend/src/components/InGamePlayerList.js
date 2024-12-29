@@ -1,5 +1,6 @@
 import "../static/css/components/inGamePlayerList.css"
 import request from "../util/request";
+import InviteFriendsIcon from "./InviteFriendsIcon";
 
 export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors, playerTurnIndex}){
 
@@ -58,6 +59,8 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                 ))}
                 {gamestate === "WAITING" && 
                 <button className="player-list-button" onClick={handleSwitch}>{`Switch to ${userSwitchRole}`}</button>}
+                {gamestate === "WAITING" && 
+                <InviteFriendsIcon username = {username} gameCode = {gameCode}/>}
             </ul>
         </div>
     );
