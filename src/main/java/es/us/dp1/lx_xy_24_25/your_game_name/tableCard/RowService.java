@@ -33,14 +33,6 @@ public class RowService {
     @Transactional(readOnly = true)
 	public Row findRow(Integer id) {
 		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Row", "id", id));
-	}	
-
-    @Transactional
-	public Row updateRow(@Valid Row row, Integer idToUpdate) {
-		Row toUpdate = findRow(idToUpdate);
-		BeanUtils.copyProperties(row, toUpdate, "id");
-		repository.save(toUpdate);
-		return toUpdate;
 	}
 
     @Transactional
