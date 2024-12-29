@@ -67,7 +67,7 @@ export default function GameScreen() {
                 });
         };
 
-        const interval = setInterval(fetchGameUpdates, 1500);
+        const interval = setInterval(fetchGameUpdates, 1000);
 
         return () => clearInterval(interval); // Cleanup on unmount
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
@@ -638,7 +638,7 @@ export default function GameScreen() {
                 </div>}
             </div>
             
-            <div 
+            {game.gameState != "WAITING" && <div 
             className={`circle ${isRotating ? 'rotate' : ''}`} 
             ref={circleRef}
         >               
@@ -647,7 +647,7 @@ export default function GameScreen() {
                 <button className="segment bottom-left" onClick={() => handleButtonClick("BACK_AWAY")}></button>
                 <button className="segment bottom-right" onClick={() => handleButtonClick("EXTRA_GAS")}></button>
 
-            {playerRef && playerRef.current != null && <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
+            <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
                     <div className="icon-container">
                         <GameCardIcon
                             iconName={'energy_card'}
@@ -657,8 +657,8 @@ export default function GameScreen() {
                         
                     </div>
                 </div>
-                }
-            </div>
+                
+            </div>}
 
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game

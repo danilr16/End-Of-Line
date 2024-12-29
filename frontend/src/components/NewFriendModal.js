@@ -5,7 +5,6 @@ import SockJS from "sockjs-client";
 
 export default function NewFriendModal({friendName, setFriendName,closeModal,jwt,user}){
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [client, setClient] = useState(null);
 
 

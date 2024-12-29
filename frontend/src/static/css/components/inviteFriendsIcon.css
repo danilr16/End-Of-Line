@@ -1,0 +1,13 @@
+.invite-friends-icon-container svg{
+    height: 20px;
+    color: white;
+}
+
+.invite-friends-icon-container{
+    border-radius: 15%;
+    border-top: 2px solid white;
+    border-right: 2px solid white;
+    position: absolute;
+    bottom: 10px;
+    left:10px;
+}
