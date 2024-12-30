@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.statistics.StatisticsClasses.BasicStatistics;
@@ -29,6 +30,9 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 	
 	@Query("SELECT p FROM Player p WHERE p.user = :user")
 	Iterable<Player> findAllPlayerByUser(User user);
+
+	@Query("SELECT g FROM Game g WHERE g.host = :user")
+	Iterable<Game> findAllGamesHostingByUser(User user);
 
 	@Query("SELECT count(g) AS total, avg(p.score) AS average, min(p.score) AS min, max(p.score) AS max " + 
 	"FROM Game g INNER JOIN g.players p WHERE (g.gameState = IN_PROCESS OR g.gameState = END) "+ 

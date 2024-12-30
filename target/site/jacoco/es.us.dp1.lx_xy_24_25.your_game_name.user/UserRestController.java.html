@@ -18,15 +18,10 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
-import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
-import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,12 +34,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.FriendDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.GameDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
+import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(&quot;/api/v1/users&quot;)
@@ -145,45 +145,92 @@ class UserRestController {
 <span class="fc" id="L145">		User user = userService.findCurrentUser();</span>
 <span class="fc" id="L146">		return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</span>
 	}
+	@GetMapping(&quot;/currentUserDTO&quot;)
+	public ResponseEntity&lt;UserDTO&gt; findCurrentUserDTO() {
+<span class="nc" id="L150">		User user = userService.findCurrentUser();</span>
+<span class="nc" id="L151">		UserDTO userDTO = UserDTO.convertUserToDTO(user);</span>
+<span class="nc" id="L152">		return new ResponseEntity&lt;&gt;(userDTO, HttpStatus.OK);</span>
+	}
 	
   @PatchMapping(&quot;/myProfile/update-password&quot;)
      public ResponseEntity&lt;User&gt; updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
-<span class="fc" id="L151">         User toUpdate = userService.findCurrentUser();</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		 if (toUpdate == null) {</span>
-<span class="nc" id="L153">			throw new AccessDeniedException(&quot;User not authenticated&quot;);</span>
+<span class="fc" id="L157">         User toUpdate = userService.findCurrentUser();</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		 if (toUpdate == null) {</span>
+<span class="nc" id="L159">			throw new AccessDeniedException(&quot;User not authenticated&quot;);</span>
 		}
-<span class="fc" id="L155">         int id = toUpdate.getId();</span>
-<span class="fc" id="L156">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
-<span class="fc" id="L157">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
+<span class="fc" id="L161">         int id = toUpdate.getId();</span>
+<span class="fc" id="L162">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
+<span class="fc" id="L163">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
 		 //Comprobamos que todos los campos sean válidos
-<span class="pc bpc" id="L159" title="4 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
-<span class="nc" id="L160">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
+<span class="pc bpc" id="L165" title="4 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
+<span class="nc" id="L166">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
          }
 		 //Comprobamos que la antigua contraseña sea correcta
-<span class="pc bpc" id="L163" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
-<span class="fc" id="L165">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
+<span class="pc bpc" id="L169" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
+<span class="fc" id="L171">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
              }
          }
 		 //Comprobamos que la nueva contraseña sea diferente a la antigua
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
 			//Comprobamos que la nueva contraseña sea válida
-<span class="pc bpc" id="L171" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
-<span class="fc" id="L172">				String encodePassword = encoder.encode(newPassword);</span>
-<span class="fc" id="L173">				toUpdate.setPassword(encodePassword);</span>
-<span class="fc" id="L174">			}else{</span>
-<span class="nc" id="L175">				throw new AccessDeniedException(&quot;The new password is not valid&quot;);</span>
+<span class="pc bpc" id="L177" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
+<span class="fc" id="L178">				String encodePassword = encoder.encode(newPassword);</span>
+<span class="fc" id="L179">				toUpdate.setPassword(encodePassword);</span>
+<span class="fc" id="L180">			}else{</span>
+<span class="nc" id="L181">				throw new AccessDeniedException(&quot;The new password is not valid&quot;);</span>
 			}
              
          } else {
-<span class="fc" id="L179">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
+<span class="fc" id="L185">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
          }
-<span class="fc" id="L181">         userService.updateUser(toUpdate, id);</span>
-<span class="fc" id="L182">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
+<span class="fc" id="L187">         userService.updateUser(toUpdate, id);</span>
+<span class="fc" id="L188">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
 
      }
 	}
 	 
+	@GetMapping(&quot;/friends&quot;)
+	public ResponseEntity&lt;List&lt;FriendDTO&gt;&gt; findFriends() {
+<span class="nc" id="L195">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L196">		List&lt;User&gt; friends = currentUser.getFriends();</span>
+<span class="nc" id="L197">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
+<span class="nc" id="L198">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
+	}
+
+	@PatchMapping(&quot;/addFriend/{username}&quot;)
+	public ResponseEntity&lt;List&lt;User&gt;&gt; addFriend(@PathVariable String username){
+		try{
+<span class="nc" id="L204">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L205">		User newFriend = userService.findUser(username);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">		if(currentUser.getFriends().contains(newFriend)){</span>
+<span class="nc" id="L207">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
+		}
+<span class="nc bnc" id="L209" title="All 2 branches missed.">		if(currentUser.equals(newFriend)){</span>
+<span class="nc" id="L210">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
+		}
+<span class="nc" id="L212">		currentUser.getFriends().add(newFriend);</span>
+<span class="nc" id="L213">		newFriend.getFriends().add(currentUser);</span>
+<span class="nc" id="L214">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="nc" id="L215">		userService.updateUser(newFriend, newFriend.getId());</span>
+<span class="nc" id="L216">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
+<span class="nc" id="L217">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
+	}
+<span class="nc" id="L219">		catch(Exception e){</span>
+<span class="nc" id="L220">			e.printStackTrace();</span>
+<span class="nc" id="L221">			return null;</span>
+		}
+	}
+
+	@PatchMapping(&quot;/removeFriend&quot;)
+	public ResponseEntity&lt;User&gt; removeFriend(@RequestBody String username){
+<span class="nc" id="L227">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L228">		User toRemoveFriend = userService.findUser(username);</span>
+<span class="nc" id="L229">		currentUser.getFriends().remove(toRemoveFriend);</span>
+<span class="nc" id="L230">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="nc" id="L231">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
+	}
+
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -17,8 +17,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,9 +104,7 @@ public class UserService {
 
 	@Transactional
 	public List<Game> findAllGamesByUserHost(User user) {
-		List<Player> players = (List<Player>) this.findAllPlayerByUser(user);
-		List<Game> games = players.stream().map(p -> (List<Game>) playerService.findAllGameByPlayer(p))
-				.flatMap(List::stream).collect(Collectors.toList());
+		List<Game> games = (List<Game>) userRepository.findAllGamesHostingByUser(user);
 		return games;
 	}
 
@@ -117,11 +115,17 @@ public class UserService {
 		for (Game game: games) {
 			this.gameService.deleteGame(game.getId());
 		}
-		List<Player> players = ((List<Player>)this.playerService.findAll()).stream().filter(p -> p.getUser().equals(toDelete))
-			.collect(Collectors.toList());
+		List<Player> players = (List<Player>) findAllPlayerByUser(toDelete);
 		for (Player player: players) {
 			this.playerService.deletePlayer(player);
 		}
+		List<User> friends = toDelete.getFriends();
+		for (User friend: friends) {
+			friend.getFriends().remove(toDelete);
+			this.updateUser(friend, friend.getId());
+		}
+		toDelete.setFriends(new ArrayList<>());
+		this.updateUser(toDelete, id);
 		this.userRepository.delete(toDelete);
 	}
 	
