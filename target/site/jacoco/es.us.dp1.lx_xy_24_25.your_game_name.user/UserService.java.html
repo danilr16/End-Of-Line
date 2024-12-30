@@ -17,8 +17,8 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,26 +104,30 @@ public class UserService {
 
 	@Transactional
 	public List&lt;Game&gt; findAllGamesByUserHost(User user) {
-<span class="fc" id="L107">		List&lt;Player&gt; players = (List&lt;Player&gt;) this.findAllPlayerByUser(user);</span>
-<span class="fc" id="L108">		List&lt;Game&gt; games = players.stream().map(p -&gt; (List&lt;Game&gt;) playerService.findAllGameByPlayer(p))</span>
-<span class="fc" id="L109">				.flatMap(List::stream).collect(Collectors.toList());</span>
-<span class="fc" id="L110">		return games;</span>
+<span class="fc" id="L107">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesHostingByUser(user);</span>
+<span class="fc" id="L108">		return games;</span>
 	}
 
 	@Transactional
 	public void deleteUser(Integer id) {
-<span class="fc" id="L115">		User toDelete = findUser(id);</span>
-<span class="fc" id="L116">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		for (Game game: games) {</span>
-<span class="nc" id="L118">			this.gameService.deleteGame(game.getId());</span>
-<span class="nc" id="L119">		}</span>
-<span class="fc" id="L120">		List&lt;Player&gt; players = ((List&lt;Player&gt;)this.playerService.findAll()).stream().filter(p -&gt; p.getUser().equals(toDelete))</span>
-<span class="fc" id="L121">			.collect(Collectors.toList());</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		for (Player player: players) {</span>
-<span class="nc" id="L123">			this.playerService.deletePlayer(player);</span>
-<span class="nc" id="L124">		}</span>
-<span class="fc" id="L125">		this.userRepository.delete(toDelete);</span>
-<span class="fc" id="L126">	}</span>
+<span class="fc" id="L113">		User toDelete = findUser(id);</span>
+<span class="fc" id="L114">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		for (Game game: games) {</span>
+<span class="nc" id="L116">			this.gameService.deleteGame(game.getId());</span>
+<span class="nc" id="L117">		}</span>
+<span class="fc" id="L118">		List&lt;Player&gt; players = (List&lt;Player&gt;) findAllPlayerByUser(toDelete);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		for (Player player: players) {</span>
+<span class="nc" id="L120">			this.playerService.deletePlayer(player);</span>
+<span class="nc" id="L121">		}</span>
+<span class="fc" id="L122">		List&lt;User&gt; friends = toDelete.getFriends();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (User friend: friends) {</span>
+<span class="fc" id="L124">			friend.getFriends().remove(toDelete);</span>
+<span class="fc" id="L125">			this.updateUser(friend, friend.getId());</span>
+<span class="fc" id="L126">		}</span>
+<span class="fc" id="L127">		toDelete.setFriends(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L128">		this.updateUser(toDelete, id);</span>
+<span class="fc" id="L129">		this.userRepository.delete(toDelete);</span>
+<span class="fc" id="L130">	}</span>
 	
 
 }

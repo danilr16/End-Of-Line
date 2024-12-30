@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
-import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.validation.Valid;
@@ -27,11 +26,6 @@ public class PlayerService {
 		playerRepository.save(player);
 		return player;
 	}
-
-    @Transactional(readOnly = true)
-    public Iterable<Game> findAllGameByPlayer(Player player) {
-        return playerRepository.findAllGameByPlayer(player);
-    }
 
     @Transactional(readOnly = true)
 	public Player findPlayer(Integer id) {
