@@ -335,7 +335,9 @@ public class GameService {
             game.setNTurn(game.getNTurn() + 1);
             List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
-            game = decideTurns(game, players);
+            if (!players.isEmpty()) {
+                game = decideTurns(game, players);
+            }
             for (Player player : players) {
                 Hand hand = player.getHand();
                 PackCard packCard = player.getPackCards().stream().findFirst().get();
@@ -404,7 +406,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessSingle(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {//Revisar se puede jugar
+    public void gameInProcessSingle(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -427,9 +429,6 @@ public class GameService {
             } else {
                 Player playing = playerService.findPlayer(game.getTurn());
                 manageTurnOfPlayer(game, playing);
-                if (playing.getState().equals(PlayerState.LOST)) {
-                    nextTurn(game, playing);
-                }
             }
         }
     }
