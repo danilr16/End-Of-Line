@@ -17,6 +17,9 @@ public class NotificationService {
     public Optional<List<Notification>> findByUser(User user) {
         return notificationRepository.findByUser(user);
     }
+    public Optional<List<Notification>> findByUserSender(User user, User sender) {
+        return notificationRepository.findByUserSender(user, sender);
+    }
 
     public Notification saveNotification(Notification notification) {
         return notificationRepository.save(notification);

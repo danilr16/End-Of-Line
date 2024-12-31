@@ -25,6 +25,7 @@ import Ranking from "./screens/Ranking";
 import GameScreen from "./screens/GameScreen";
 import { ColorProvider } from "./ColorContext";
 import Friends from "./components/Friends";
+import { AlertProvider } from "./AlertContext";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -101,6 +102,7 @@ function App() {
   }
 
   return (
+    <AlertProvider>
     <ColorProvider>
       <div>
         <ErrorBoundary FallbackComponent={ErrorFallback} >
@@ -119,6 +121,7 @@ function App() {
         </ErrorBoundary>
       </div>
     </ColorProvider>
+    </AlertProvider>
   );
 }
 

@@ -45,3 +45,33 @@
     color: white; 
 }
 
+.custom-alert{
+    color: white;
+    border: 2px solid var(--br-dark);
+    border-radius: 20%;
+    background-color: var(--br-dark);
+    position: absolute;
+    height: 30px;
+    top:15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    display: inline-block; 
+    white-space: nowrap; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    animation: fadeOut 5s forwards; /* Añade la animación */
+
+}
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    60% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

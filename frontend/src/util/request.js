@@ -11,7 +11,10 @@ export default async function request(url,method,body=null,jwt=null,customHeader
     }
     const  response =  await fetch(url,data)
 
+    if (response.status !== 204) {
+        const resContent = await response.json();
+        return { response, resContent };
+    }
+    return { response };
 
-    const resContent = await response.json();
-    return {response,resContent};
 }

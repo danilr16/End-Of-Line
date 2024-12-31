@@ -1,9 +1,11 @@
 import "../static/css/components/inGamePlayerList.css"
 import request from "../util/request";
 import InviteFriendsIcon from "./InviteFriendsIcon";
+import { useAlert } from "../AlertContext";
 
 export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors, playerTurnIndex}){
 
+    const {updateAlert} = useAlert();
     const userIsPlayer = players.some((p)=>p.user.username === username);
     const userIsSpectator = spectators.some((p)=>p.username === username);
     const userSwitchRole = userIsPlayer ? "spectator" : "player"
@@ -18,7 +20,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
             request(`/api/v1/games/${gameCode}/leaveAsSpectator`, "PATCH", {}, jwt);
             setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);},10)       
         }
-        else if(userIsSpectator) alert("You can't become a player right now")
+        else if(userIsSpectator) updateAlert("You can't become a player right now");
     }
 
     return(

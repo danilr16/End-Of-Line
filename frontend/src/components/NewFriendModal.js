@@ -2,10 +2,12 @@ import React, { useState,useEffect } from 'react';
 import "../static/css/components/modal.css";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import {useAlert} from "../AlertContext";
 
 export default function NewFriendModal({friendName, setFriendName,closeModal,jwt,user}){
     const [loading, setLoading] = useState(false);
     const [client, setClient] = useState(null);
+    const {updateAlert} = useAlert();
 
 
     useEffect(() => {
@@ -41,7 +43,6 @@ export default function NewFriendModal({friendName, setFriendName,closeModal,jwt
             type: "FRIEND_REQUEST",
             senderUsername: user.username,
             gamecode:null,
-            achievementName:null,
             jwt: jwt
         }
         try{
@@ -49,7 +50,7 @@ export default function NewFriendModal({friendName, setFriendName,closeModal,jwt
                 destination: "/app/notifications",
                 body: JSON.stringify(notification),
                 });
-                console.log("Friend request sent");
+                updateAlert("Friend request sent");
         }
         catch(error){
             console.log("Error sending friend request",error);
