@@ -22,8 +22,11 @@ public class Team extends BaseEntity {
     Player player2;
 
     public Boolean lostTeam() {
-        return this.getPlayer1().getState().equals(PlayerState.LOST) 
-            && this.getPlayer2().getState().equals(PlayerState.LOST);
+        Boolean res = false;
+        if (this.getPlayer1() != null && this.getPlayer2() != null) {
+            res = res || (this.getPlayer1().getState().equals(PlayerState.LOST) && this.getPlayer2().getState().equals(PlayerState.LOST));
+        }
+        return res;
     }
     
 }

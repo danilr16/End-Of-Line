@@ -23,23 +23,23 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
     @GetMapping
     public List&lt;Developer&gt; getDevelopers(){
-<span class="nc bnc" id="L26" title="All 2 branches missed.">        if(developers==null)</span>
-<span class="nc" id="L27">            loadDevelopers();</span>
-<span class="nc" id="L28">        return developers;        </span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">        if(developers==null)</span>
+<span class="fc" id="L27">            loadDevelopers();</span>
+<span class="fc" id="L28">        return developers;        </span>
     }
 
     private void loadDevelopers(){        
-<span class="nc" id="L32">        MavenXpp3Reader reader = new MavenXpp3Reader();</span>
+<span class="fc" id="L32">        MavenXpp3Reader reader = new MavenXpp3Reader();</span>
         try {
-<span class="nc" id="L34">            Model model = reader.read(new FileReader(&quot;pom.xml&quot;));</span>
-<span class="nc" id="L35">            Person p=null;</span>
-<span class="nc" id="L36">            developers=model.getDevelopers();                                            </span>
+<span class="fc" id="L34">            Model model = reader.read(new FileReader(&quot;pom.xml&quot;));</span>
+<span class="fc" id="L35">            Person p=null;</span>
+<span class="fc" id="L36">            developers=model.getDevelopers();                                            </span>
 <span class="nc" id="L37">        } catch (IOException | XmlPullParserException e) {</span>
             // TODO Auto-generated catch block
 <span class="nc" id="L39">            e.printStackTrace();</span>
-<span class="nc" id="L40">        }</span>
+<span class="fc" id="L40">        }</span>
         
-<span class="nc" id="L42">    }</span>
+<span class="fc" id="L42">    }</span>
 
 
 }
