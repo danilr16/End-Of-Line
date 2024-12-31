@@ -7,7 +7,8 @@ import tokenService from './services/token.service';
 import jwt_decode from "jwt-decode";
 import NavBarDropdown from './components/NavBarDropdown';
 import { FaBell } from "react-icons/fa";
-import { useColors } from './ColorContext'
+import { useColors } from './ColorContext';
+import { useAlert } from './AlertContext';
 import "./static/css/home/home.css";
 import request from './util/request';
 import NotificationPanel from './components/NotificationPanel';
@@ -19,6 +20,8 @@ function AppNavbar() {
     const jwt = tokenService.getLocalAccessToken();
     const [collapsed, setCollapsed] = useState(true);
     const { colors, updateColors } = useColors();
+    const {alertMessage,updateAlert} = useAlert();
+    const [activeAlert,setActiveAlert] = useState(false);
     const [showNotifications,setShowNotification] = useState(false);
     const [notifications,setNotifications] = useState([]);
     const [client, setClient] = useState(null);
@@ -61,6 +64,7 @@ function AppNavbar() {
                 stompClient.subscribe(`/topic/notifications/${username}`, (msg) => {
                     const receivedNotification = JSON.parse(msg.body);
                     setNotifications((prevNotifications) => [...prevNotifications, receivedNotification]);
+                    updateAlert("Notification received")
                 });
             },
             onStompError: (frame) => {
@@ -75,6 +79,15 @@ function AppNavbar() {
         return () => stompClient.deactivate();
     }, [jwt,username]);
 
+    useEffect(() => {
+        console.log("reahced")
+        if (alertMessage !== "") {
+            setActiveAlert(true);
+            const timer = setTimeout(() => {setActiveAlert(false);updateAlert("");}, 5000);
+            
+            return () => clearTimeout(timer); // Limpiar el temporizador cuando el componente se desmonte o el efecto se vuelva a ejecutar
+        }
+    }, [alertMessage]);
 
     useEffect(() => {
         if (jwt) {
@@ -158,7 +171,8 @@ function AppNavbar() {
                     </Nav>
                 </Collapse>
             </Navbar>
-            {showNotifications && <NotificationPanel ref={notPanelRef} notifications={notifications} jwt={jwt}/>}
+            {showNotifications && <NotificationPanel ref={notPanelRef} notifications={notifications} setNotifications = {setNotifications} jwt={jwt}/>}
+            {activeAlert && <div className='custom-alert'>{alertMessage}</div>}
         </div>
     );
 }

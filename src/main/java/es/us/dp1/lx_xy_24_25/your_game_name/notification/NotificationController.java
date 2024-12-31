@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.NotificationDTO;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import jakarta.validation.Valid;
@@ -47,9 +48,21 @@ public class NotificationController {
         return new ResponseEntity<>(savedNotification, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNotification(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteNotification(Integer id) {
+        System.out.println("Deleted");
         notificationService.deleteNotification(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteNotificationBySecondaryKey(@RequestBody @Valid NotificationDTO notificationDTO) {
+        System.out.println("deleteNotificationBySecondaryKey called");
+        User user= userService.findUser(notificationDTO.getUsername());
+        User sender = userService.findUser(notificationDTO.getSenderUsername());
+        List<Notification> nots = notificationService.findByUserSender(user,sender).orElse(List.of());
+        System.out.println(nots);
+        if(!nots.isEmpty()) nots.stream().forEach( n-> {System.out.println("Deleting " + n.getId()); deleteNotification(n.getId());});
+        else throw new ResourceNotFoundException("Notifications not found");
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

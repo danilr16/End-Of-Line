@@ -1,6 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.notification;
 
-import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.NotificationDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
@@ -27,20 +26,17 @@ public class Notification extends BaseEntity {
     @ManyToOne
     User sender;
     String gamecode;
-    @ManyToOne
-    Achievement achievement;
 
     String jwt;
 
     public Notification() {
     }
 
-    public Notification(User user,NotificationType type, User sender, String gamecode, Achievement achievement) {
+    public Notification(User user,NotificationType type, User sender, String gamecode) {
         this.user = user;
         this.type = type;
         this.sender = sender;
         this.gamecode = gamecode;
-        this.achievement = achievement;
     }
 
     
@@ -50,18 +46,16 @@ public class Notification extends BaseEntity {
             this.type.toString(),
             this.sender != null ? this.sender.getUsername() : null,
             this.gamecode,
-            this.achievement != null ? this.achievement.getName() : null,
             this.jwt
         );
     }
 
-    public static Notification fromDTO(NotificationDTO dto, NotificationType type, User user, User sender, Achievement achievement) {
+    public static Notification fromDTO(NotificationDTO dto, NotificationType type, User user, User sender) {
         return new Notification(
             user,
             type,
             sender,
-            dto.getGamecode(),
-            achievement
+            dto.getGamecode()
         );
     }
     

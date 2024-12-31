@@ -2,21 +2,25 @@ import React, { forwardRef } from 'react';
 import "../static/css/components/notificationPanel.css";
 import request from '../util/request';
 import { useNavigate } from 'react-router-dom';
+import { useAlert } from '../AlertContext';
 
 
 const NotificationPanel = forwardRef((props, ref) => {
 
         const navigate = useNavigate();
+        const {updateAlert} = useAlert();
     
 
 
-    const handleAcceptFriend = async (username) => {
+    const handleAcceptFriend = async (n) => {
+        console.log(n);
         try {
-            const response = await request(`/api/v1/users/addFriend/${username}`, 'PATCH', null, props.jwt);
+            const response = await request(`/api/v1/users/addFriend/${n.senderUsername}`, 'PATCH', null, props.jwt);
             if (response.response.ok) {
-                // Actualiza las notificaciones después de aceptar la solicitud de amistad
-                //props.setNotifications((prevNotifications) => prevNotifications.filter(n => n.senderUsername !== username));
-                console.log("Friend request accepted");
+                props.setNotifications((prevNotifications) => prevNotifications
+                        .filter(not => not.senderUsername !== n.senderUsername));
+                updateAlert("Friend request accepted");
+                await request(`/api/v1/notifications`, 'DELETE', n, props.jwt);
             } else {
                 console.error("Error accepting friend request:", response.statusText);
             }
@@ -25,8 +29,19 @@ const NotificationPanel = forwardRef((props, ref) => {
         }
     };
 
-    const handleAcceptGame = (n) => {
+    const handleAcceptGame = async (n) => {
+        props.setNotifications((prevNotifications) => prevNotifications
+            .filter(not => not.senderUsername !== n.senderUsername));
         navigate(`/game/${n.gamecode}`);
+        await request(`/api/v1/notifications`, 'DELETE', n, props.jwt);
+
+    }
+
+    const handleReject = async(n) =>{
+        props.setNotifications((prevNotifications) => prevNotifications
+            .filter(not => not.senderUsername !== n.senderUsername));
+        await request(`/api/v1/notifications`, 'DELETE', n, props.jwt);
+
     }
 
     const parseNotification = (n,index) => {
@@ -42,8 +57,8 @@ const NotificationPanel = forwardRef((props, ref) => {
             <li className="notification" key={index}>
                 <p className = "notification-message"><strong>{n.senderUsername}</strong> sent you a friend request</p>
                 <div className="notification-button-container">
-                    <button className="reject-button">Reject</button>
-                    <button className="accept-button" onClick={() => handleAcceptFriend(n.senderUsername)}>Accept</button>
+                    <button className="reject-button" onClick={() => handleReject(n)}>Reject</button>
+                    <button className="accept-button" onClick={() => handleAcceptFriend(n)}>Accept</button>
                 </div>
             </li>
         );
@@ -55,7 +70,7 @@ const NotificationPanel = forwardRef((props, ref) => {
             <li className="notification" key={index}>
                 <p className = "notification-message"><strong>{n.senderUsername}</strong> wants you to join their game</p>
                 <div className="notification-button-container">
-                    <button className="reject-button">Reject</button>
+                    <button className="reject-button" onClick ={() => handleReject(n)}>Reject</button>
                     <button className="accept-button" onClick={() => handleAcceptGame(n)}>Accept</button>
                 </div>
             </li>

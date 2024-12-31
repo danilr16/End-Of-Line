@@ -12,4 +12,7 @@ public interface NotificationRepository extends CrudRepository<Notification, Int
     
     @Query("SELECT n FROM Notification n WHERE n.user = :user")
     Optional<List<Notification>> findByUser(User user);
+
+    @Query("SELECT n FROM Notification n WHERE n.user = :user AND n.sender = :sender")
+    Optional<List<Notification>> findByUserSender(User user, User sender);
 }

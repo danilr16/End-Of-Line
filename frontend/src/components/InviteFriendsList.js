@@ -4,6 +4,7 @@ import tokenService from "../services/token.service";
 import "../static/css/components/inviteFriendsList.css";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { useAlert } from "../AlertContext";
 
 
 export default function InviteFriendsList({setShowModal,username,gamecode}) {
@@ -11,6 +12,7 @@ export default function InviteFriendsList({setShowModal,username,gamecode}) {
     const jwt = tokenService.getLocalAccessToken();
     const [friends, setFriends] = useState([]);
     const [client, setClient] = useState(null);
+    const {alertMessage,updateAlert} = useAlert();
 
     useEffect( () => {
         async function fetchFriends() {
@@ -54,7 +56,6 @@ export default function InviteFriendsList({setShowModal,username,gamecode}) {
             type: "GAME_INVITATION",
             senderUsername: username,
             gamecode:gamecode,
-            achievementName:null,
             jwt: jwt
         }
         console.log(gamecode);
@@ -63,7 +64,8 @@ export default function InviteFriendsList({setShowModal,username,gamecode}) {
                 destination: "/app/notifications",
                 body: JSON.stringify(notification),
                 });
-                console.log("Game Invitation sent");
+            updateAlert(`${friend.username} was invited to this game`);
+            console.log(alertMessage);
         }
         catch(error){
             console.log("Error sending game invitation",error);
