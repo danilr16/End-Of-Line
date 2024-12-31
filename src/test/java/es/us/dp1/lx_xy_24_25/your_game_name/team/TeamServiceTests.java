@@ -1,6 +1,8 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.team;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -18,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
 
 @ExtendWith(MockitoExtension.class)
 public class TeamServiceTests {
@@ -36,10 +39,13 @@ public class TeamServiceTests {
     void setUp() {
         player1 = new Player();
         player1.setId(1);
+        player1.setState(PlayerState.LOST);
         player2 = new Player();
         player2.setId(2);
+        player2.setState(PlayerState.PLAYING);
         player3 = new Player();
         player3.setId(3);
+        player3.setState(PlayerState.PLAYING);
         //Creamos dos equipos, uno con dos jugadores y otro con uno
         team = new Team();
         team.setId(1);
@@ -105,5 +111,18 @@ public class TeamServiceTests {
         assertEquals(player2, res.getTeams().get(0).getPlayer2());
         assertEquals(player3, res.getTeams().get(1).getPlayer1());
         assertNull(res.getTeams().get(1).getPlayer2());
+    }
+
+    @Test
+    void shouldReturnLostTeam() {
+        assertFalse(team.lostTeam());
+        Team newTeam = new Team();
+        newTeam.setId(2);
+        newTeam.setPlayer1(player2);
+        newTeam.setPlayer2(player3);
+        assertFalse(newTeam.lostTeam());
+        player2.setState(PlayerState.LOST);
+        player3.setState(PlayerState.LOST);
+        assertTrue(newTeam.lostTeam());
     }
 }

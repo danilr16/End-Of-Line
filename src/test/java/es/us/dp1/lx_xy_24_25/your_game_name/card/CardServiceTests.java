@@ -22,7 +22,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class CardServiceTest {
+public class CardServiceTests {
 
     private CardService cardService;
     private PlayerService playerService;
@@ -31,7 +31,7 @@ public class CardServiceTest {
     private Player examplePlayer;
 
     @Autowired
-    private CardServiceTest(CardService cardService, PlayerService playerService){
+    private CardServiceTests(CardService cardService, PlayerService playerService){
         this.cardService = cardService;
         this.playerService = playerService;
     }
@@ -93,5 +93,22 @@ public class CardServiceTest {
         Integer id = 99999;
         assertThrows(ResourceNotFoundException.class, () -> this.cardService.findCard(id));
     }
-    
+
+    @Test
+    void shouldCreate25Cards() {
+        Integer cont = ((List<Card>) this.cardService.findAll()).size();
+        List<Card> cards = this.cardService.create25Cards(examplePlayer);
+        Integer newCont = ((List<Card>) this.cardService.findAll()).size();
+        assertEquals(25, cards.size());
+        assertTrue(cards.stream().allMatch(c -> c.getPlayer().equals(examplePlayer)));
+        assertEquals(cont + 25, newCont);
+        assertEquals(4, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_1)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_2_IZQ)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_2_DER)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_3_IZQ)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_3_DER)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_4)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_5)).count());
+        assertEquals(3, cards.stream().filter(c -> c.getType().equals(TypeCard.TYPE_0)).count());
+    }
 }

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
@@ -59,7 +61,8 @@ public class PackCardService {
 	}
 
     @Transactional
-    public void creaPackCards(List<Player> players) {
+    public List<PackCard> creaPackCards(List<Player> players) {
+        List<PackCard> packCards = new ArrayList<>();
         for(Player player:players) {
             PackCard packCard = new PackCard();
             List<Card> cards = cardService.create25Cards(player);
@@ -67,7 +70,9 @@ public class PackCardService {
             savePackCard(packCard);
             player.getPackCards().add(packCard);
             playerService.updatePlayer(player);
+            packCards.add(packCard);
         }
+        return packCards;
     }
     
 }
