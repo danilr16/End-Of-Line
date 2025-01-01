@@ -116,12 +116,4 @@ public class Player extends BaseEntity{
             usedPowers = new ArrayList<>();
         }
     }
-
-    public Boolean canUseEnergy() {
-        if (this.energy > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

@@ -177,7 +177,6 @@ classDiagram
         +setEnergyUsedThisRound(Boolean energyUsedThisRound)
         +settHand(Hand hand)
         +setPackCards(List~PackCard~ packCards)
-        +canUseEnergy() Boolean
         -prePersist()
     }
     class Cell {

@@ -240,8 +240,8 @@ public class GameService {
         PackCard packCard = player.getPackCards().stream().findFirst().get();
         packCard.getCards().addAll(cards);
         packCard.setNumCards(packCard.getNumCards() + cards.size());
-        hand.getCards().removeAll(cards);
         hand.setNumCards(hand.getNumCards() - cards.size());
+        hand.getCards().removeAll(cards);
         packCardService.updatePackCard(packCard, packCard.getId());
         handService.updateHand(hand, hand.getId());
     }

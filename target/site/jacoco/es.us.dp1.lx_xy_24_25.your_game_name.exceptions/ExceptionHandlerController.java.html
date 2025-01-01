@@ -93,32 +93,23 @@ import org.springframework.web.context.request.WebRequest;
 <span class="nc" id="L93">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
 	}
 
-	@ExceptionHandler(InvalidRotation.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public ResponseEntity&lt;ErrorMessage&gt; invalidRotationException(InvalidRotation ex, WebRequest request) {
-<span class="nc" id="L99">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), &quot;The rotation must be a number bigger than 0&quot;,</span>
-<span class="nc" id="L100">				request.getDescription(false));</span>
-
-<span class="nc" id="L102">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
-	}
-
 	@ExceptionHandler(ConflictException.class)
 	@ResponseStatus(value = HttpStatus.CONFLICT)
 	public ResponseEntity&lt;ErrorMessage&gt; conflictException(ConflictException ex, WebRequest request) {
-<span class="nc" id="L108">		ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), new Date(), ex.getMessage(),</span>
-<span class="nc" id="L109">				request.getDescription(false));</span>
+<span class="nc" id="L99">		ErrorMessage message = new ErrorMessage(HttpStatus.CONFLICT.value(), new Date(), ex.getMessage(),</span>
+<span class="nc" id="L100">				request.getDescription(false));</span>
 
-<span class="nc" id="L111">		return new ResponseEntity&lt;&gt;(message, HttpStatus.CONFLICT);</span>
+<span class="nc" id="L102">		return new ResponseEntity&lt;&gt;(message, HttpStatus.CONFLICT);</span>
 	}
 
 	@ExceptionHandler(UnfeasibleToJumpTeam.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public ResponseEntity&lt;ErrorMessage&gt; unfeasibleToJumpTeam(UnfeasibleToJumpTeam ex, WebRequest request) {
-<span class="nc" id="L117">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), </span>
+<span class="nc" id="L108">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), </span>
 			&quot;You can not jump your team, because there isn't a card of your team near your last card&quot;,
-<span class="nc" id="L119">			request.getDescription(false));</span>
+<span class="nc" id="L110">			request.getDescription(false));</span>
 
-<span class="nc" id="L121">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
+<span class="nc" id="L112">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
