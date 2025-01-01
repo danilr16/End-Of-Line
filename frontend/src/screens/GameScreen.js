@@ -672,7 +672,7 @@ export default function GameScreen() {
                     Leave game
             </button>}
 
-            {player?.handChanged === false && game?.duration === 0 && game.tableCard && game.turn == player.id && <button className="reroll-button" onClick={handleReroll}
+            {player?.handChanged === false && game?.duration === 0 && game.tableCard && game.turn === player.id && game.nturn === 1 && <button className="reroll-button" onClick={handleReroll}
             style = {{
                 bottom: `${9+gridItemSize*0.13}vh`, 
             }}>

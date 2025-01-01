@@ -93,15 +93,6 @@ public class ExceptionHandlerController {
 		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}
 
-	@ExceptionHandler(InvalidRotation.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public ResponseEntity<ErrorMessage> invalidRotationException(InvalidRotation ex, WebRequest request) {
-		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), "The rotation must be a number bigger than 0",
-				request.getDescription(false));
-
-		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-	}
-
 	@ExceptionHandler(ConflictException.class)
 	@ResponseStatus(value = HttpStatus.CONFLICT)
 	public ResponseEntity<ErrorMessage> conflictException(ConflictException ex, WebRequest request) {
