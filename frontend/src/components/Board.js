@@ -8,6 +8,7 @@ export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isD
         return null; // Render nothing or a fallback UI if boardItems is not valid
     }
 
+    
     return (
         <>
             <div className="board-frame" style={{ width: `${(gridSize / 5) * 4 + 24}%` }}>
