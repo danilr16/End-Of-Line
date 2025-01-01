@@ -14,7 +14,7 @@ import "../static/css/components/gameCardIcon.css"
 
 
 //Elemento icono, imagen renderizada sobre overlay y dropzone
-export const GameCardIcon = ({ iconName, rotation, color}) => {
+export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false}) => {
     const iconData = {
         block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
         cross_0_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross0Card },
@@ -34,6 +34,7 @@ export const GameCardIcon = ({ iconName, rotation, color}) => {
 
     if (!IconComponent) return null;
     
+    const transitionStyle = smoothRotation ? "transform 0.5s ease" : "none";
 
     return (
         <div
@@ -41,9 +42,10 @@ export const GameCardIcon = ({ iconName, rotation, color}) => {
             style={{
                 width: '100%',
                 height: '100%',
-                transform: `rotate(${rotation * 90}deg)`, // Apply rotation
-                transformOrigin: 'center', // Set the rotation origin to the center
+                transform: `rotate(${rotation * 90}deg)`,
+                transformOrigin: 'center', 
                 backgroundColor: `var(--player${color}-normal)`,
+                transition: transitionStyle, 
             }}
         >
             <IconComponent

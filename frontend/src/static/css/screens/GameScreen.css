@@ -27,8 +27,8 @@
 
 .card-deck {
     position: absolute; 
-    top: 97%; /* Align to the top of the container */
-    left: 25%; /* Keep the horizontal positioning */
+    top: 97%; 
+    left: 25%; 
     color: var(--br-c-dark);
     text-align: center;
     font-size: 150%;
@@ -56,8 +56,8 @@
     border-radius: 10px;
     border: none;
     position: absolute; 
-    top: 50%;
-    left: 50%;
+    bottom: 7.5%; 
+    right: 10%; 
     transform: translate(-50%, -50%);
     display: flex;
     justify-content: center;
@@ -72,6 +72,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1;
 }
 
 .overlay-button {
@@ -88,8 +89,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0;
+    opacity: 0; 
     transition: opacity 0.3s;
+    font-size: 140%;
+}
+
+.overlay-button .button-text {
+    position: relative;
+    font-weight: bold;
+    text-shadow: 
+        0px 0px 6px rgba(0, 0, 0, 1)
+}
+
+.overlay-button.visible {
+    opacity: 1;  
 }
 
 .overlay-button:hover {
@@ -106,39 +119,37 @@
     padding: 10px 30px;
     transition: background-color 0.2s;
     position: fixed;
-    bottom: 30px;  /* Positions the button 30px from the bottom */
-    left: 30px;    /* Positions the button 30px from the left */
+    bottom: 30px;  
+    left: 30px;   
 }
 
 .leave-button:hover {
     background-color: var(--br-trans-grey-light);
 }
 
-/* Overlay with transition for blur effect and opacity */
 .confirmation-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0); /* Start with fully transparent */
+    background: rgba(0, 0, 0, 0); 
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 400; /* Ensure it covers everything */
-    pointer-events: none; /* Ensure it doesn't capture clicks when hidden */
-    transition: background 0.3s ease, backdrop-filter 0.3s ease; /* Smooth transition for background & blur */
-    backdrop-filter: blur(0px); /* Start with no blur */
+    z-index: 400; 
+    pointer-events: none; 
+    transition: background 0.3s ease, backdrop-filter 0.3s ease; 
+    backdrop-filter: blur(0px);
 }
 
-/* Apply blur effect and opacity change when modal is active */
 .confirmation-modal-overlay.blurredOverlay {
-    background: rgba(0, 0, 0, 0.2); /* Make background semi-transparent when active */
-    backdrop-filter: blur(7px); /* Apply blur only to the background */
-    pointer-events: auto; /* Enable pointer events when visible */
+    background: rgba(0, 0, 0, 0.2); 
+    backdrop-filter: blur(7px);
+    pointer-events: auto; 
 }
 
-/* Modal content */
+
 .confirmation-modal {
     position: fixed;
     background-color: white;
@@ -148,11 +159,11 @@
     text-align: center;
     top: 50%;
     left: 50%;
-    z-index: 500; /* Ensure modal is above the overlay */
+    z-index: 500;
     transform: translate(-50%, -50%);
 }
 
-/* Pop-up animation */
+
 @keyframes popUp {
     0% {
         opacity: 0;
@@ -164,7 +175,7 @@
     }
 }
 
-/* Exit animation */
+
 .popUp-exit {
     animation: slideUpExit 0.5s ease forwards;
 }
@@ -282,51 +293,110 @@
 
 .circle {
     position: absolute; 
-    bottom: 10%; 
-    right: 10%; 
-    width: 8vw; 
-    height: 8vw; 
-    max-width: 190px; 
-    max-height: 190px; 
+    width: 7vw;  
+    height: 7vw; 
     border-radius: 50%; 
     overflow: hidden;
-    background: white;
+    background: transparent;
+    rotate: 45deg;
+    opacity: 0;  
+    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease; 
+}
+
+.circle.visible {
+    width: 11vw;  
+    height: 11vw;
+    opacity: 1;  
 }
 
 .segment {
     position: absolute;
     width: 50%; 
     height: 50%;
-    background: black; 
-    border: 2px solid black; 
+    background: var(--br-trans-grey); 
+    border: 0px solid var(--br-trans-grey-light); 
+    outline: 3px solid var(--br-grey-light);
+    outline-offset: -2px; 
+    z-index: -3;
+    transition: background 0.2s ease, box-shadow 0.3s ease; 
+}
+
+.segment:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.segment:hover {
+    background: var(--br-grey-light); 
 }
 
 .top-left {
-    background: var(--br-green); 
     top: 0;
     left: 0;
     border-top-left-radius: 100%; 
+    clip-path: circle(95% at 100% 100%);
 }
 
 .top-right {
-    background:  var(--br-red); 
     top: 0;
     right: 0;
     border-top-right-radius: 100%; 
+    clip-path: circle(95% at 0% 100%);
 }
 
 .bottom-left {
-    background:  var(--br-yellow);  
     bottom: 0;
     left: 0;
     border-bottom-left-radius: 100%; 
+    clip-path: circle(95% at 100% 0%);
 }
 
 .bottom-right {
-    background:  var(--br-blue);  
     bottom: 0;
     right: 0;
     border-bottom-right-radius: 100%;
+    clip-path: circle(95% at 0% 0%);
+}
+
+.inner-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 4vw);
+    height: calc(100% - 4vw);
+    background: var(--br-dark); 
+    border-radius: 50%;
+    z-index: -2; 
+    pointer-events: none;
+}
+
+.extra-power {
+    position: fixed;
+    top: 2vh;
+    left: 2vh;
+    width: 0vh;
+    height: 0vh;
+    background: var(--br-trans-grey); 
+    border: 0px solid var(--br-trans-grey-light); 
+    border-radius: 50%;
+    z-index: -3; 
+    opacity: 0.5;  
+    transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease, opacity 0.3s ease; 
+    pointer-events: none;
+}
+
+.extra-power.visible {
+    top: -9vh;
+    left: 11vh;
+    width: 4vh;
+    height: 4vh;
+    opacity: 1;  
+    pointer-events: all;
+}
+
+.extra-power:hover {
+    background: var(--br-grey-light); 
 }
 
 .message {
@@ -349,4 +419,32 @@
     font-size: 16px; 
     text-align: center; 
     font-size: 25px;
+}
+
+
+.small-profile-image {
+    height: 3vh;
+    width: auto;
+    
+    margin-right: 15px;
+    border-radius: 50%;
+    position:'relative';
+}
+
+.reroll-button {
+    margin-bottom: 5x;
+    background-color: var(--br-trans-grey);
+    color: var(--br-trans-grey-very-light);
+    border-radius: 25%;
+    border: none;
+    width: 5vh;
+    height: 5vh;
+    transition: background-color 0.2s;
+    position: fixed;
+    bottom: calc(15vh);  
+    left: calc(50% - 2.5vh);  
+}
+
+.reroll-button:hover {
+    background-color: var(--br-trans-grey-light);
 }
