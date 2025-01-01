@@ -20,12 +20,15 @@ public class UserDTO {
 
     private List<FriendDTO> friends;
 
+    private String image;
+
     public UserDTO(){}
 
-    public UserDTO(String username,Authorities authorities, List<FriendDTO> friends){
+    public UserDTO(String username,Authorities authorities, List<FriendDTO> friends, String image){
         this.username = username;
         this.authorities = authorities;
         this.friends = friends;
+        this.image = image;
     }
 
     public static UserDTO convertUserToDTO(User u){
@@ -35,7 +38,7 @@ public class UserDTO {
             friends.add(FriendDTO.userToFriendDTO(f));
             }
         }
-        UserDTO  userDTO = new UserDTO(u.getUsername(), u.getAuthority(), friends);
+        UserDTO  userDTO = new UserDTO(u.getUsername(), u.getAuthority(), friends, u.getImage());
         return userDTO;
     }
 }

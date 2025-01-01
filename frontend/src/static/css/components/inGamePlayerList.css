@@ -9,18 +9,38 @@
     height: 100%
 }
 
-.player-list{
+.player-list {
     position: relative;
     background-color: var(--br-trans-grey);
     padding: 5%;
     border-radius: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: top;
-    align-items:center;
+    justify-content: flex-start;
+    align-items: center;
     width: 100%;
-    height: 100%;
-    gap:10px
+    height: auto; 
+    max-height: 120%; 
+    min-height: 100%;
+    gap: 10px;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    scrollbar-width: thin; 
+    scrollbar-color: var(--br-trans-grey-light) var(--br-dark); 
+}
+
+.player-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.player-list::-webkit-scrollbar-track {
+    background: var(--br-dark); 
+    border-radius: 4px; 
+}
+
+.player-list::-webkit-scrollbar-thumb {
+    background-color: var(--br-trans-grey-light);
+    border-radius: 4px;
 }
 
 .player-container {
@@ -30,17 +50,16 @@
     padding: 15px;
     border-radius: 10px; 
     width: 100%;
-    position: relative; /* Add this to scope child absolute positioning */
+    position: relative; 
 }
 
 .player-container-text {
-    display: flex;
+    display: inline-flex; 
     flex-direction: column;
     justify-content: center;
-    width: 100%;
     color: var(--br-c-normal);
     text-align: center;
-    margin: auto;              
+    margin: auto;
 }
 
 .player-list-button{

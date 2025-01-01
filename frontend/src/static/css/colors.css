@@ -20,6 +20,7 @@
     --br-hovered-over-bg:#96a1aa;
     --br-trans-grey: #ffffff0a;
     --br-trans-grey-light: #ffffff27;
+    --br-grey-light: #4c4c52;
     --br-trans-grey-very-light: #ffffff9b;
     --br-trans-dark: #23232a2a;
 
@@ -38,6 +39,28 @@
 
     --player5-normal: #9a88d3;
     --player5-dark: #3b226e;
+
+    --player6-normal: #f47e2d;
+    --player6-dark: #4f2811;
+
+    --player7-normal: #f779da;
+    --player7-dark: #691f64;
+
+    --player8-normal: #79f7cd;
+    --player8-dark: #1f6945;
+
+    --player11-normal: var(--br-blue-dark);
+    --player11-dark: var(--br-blue);
+
+    --player12-normal: var(--br-green-dark);
+    --player12-dark: var(--br-green);
+
+    --player13-normal: var(--br-red-dark);
+    --player13-dark: var(--br-red);
+
+    --player14-normal: var(--br-yellow-dark);
+    --player14-dark: var(--br-yellow);
+
 }
 
 html body {

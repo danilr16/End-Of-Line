@@ -5,10 +5,12 @@ import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
 
-export default function ChatBox({gameCode,user,jwt}){
+export default function ChatBox({gameCode,user,jwt,colors}){
     const [input, setInput] = useState('');
     const [chat, setChat] = useState([]);
     const [client, setClient] = useState(null);
+
+
 
     useEffect(() => {
         async function fetchChat() {
@@ -89,14 +91,20 @@ export default function ChatBox({gameCode,user,jwt}){
                         <div className="message-container" ref={chatEndRef}>
                             <span style={{ color: "grey"}}>Welcome to the chat! </span>
                             {chat && chat.map((chatMessage, index) => (
-                                <div key={index} className="chat-message">
+                                <div 
+                                    key={index} 
+                                    className="chat-message" 
+                                    style={{
+                                        color: `var(--player${colors[chatMessage.userName]}-normal)`
+                                    }}
+                                >
                                     [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>
                                 </div>
                             ))}
                         </div>
                         <input className="message-input"
                             type="text"
-                            placeholder="Send your message..."
+                            placeholder="Send a message..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handlePressKey}

@@ -5,6 +5,7 @@ import { useParams, useNavigate} from "react-router-dom";
 import { useColors } from "../ColorContext";
 import Board from "../components/Board";
 import GameCard from "../components/GameCard";
+import EnergyCard from "../components/EnergyCard";
 import { GameCardIcon } from '../components/GameCardIcon';
 import "../static/css/screens/GameScreen.css"
 import request from "../util/request";
@@ -12,6 +13,7 @@ import ChatBox from "../components/ChatBox";
 import InGamePlayerList from "../components/InGamePlayerList";
 import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 import randomShuffle from "../util/randomShuffle";
+import { ReactComponent as Reroll } from '../static/images/reroll.svg';
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
@@ -37,7 +39,6 @@ export default function GameScreen() {
 
     useEffect(() => {
         const fetchGameUpdates = () => {
-            // Record the local time when the request is made
             setRequestSentAt(Date.now());
 
             fetch(`/api/v1/games/${gameCode}`, {
@@ -48,7 +49,7 @@ export default function GameScreen() {
                 .then(response => response.json())
                 .then(data => {
                     if (!data.message) {
-                        setGame(data); // Update game state
+                        setGame(data); 
                     } else {
                         if (data.statusCode !== 409) {
                             if (setMessage !== null) {
@@ -69,18 +70,16 @@ export default function GameScreen() {
 
         const interval = setInterval(fetchGameUpdates, 1000);
 
-        return () => clearInterval(interval); // Cleanup on unmount
+        return () => clearInterval(interval);
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
 
     useEffect(() => {
         if (game?.turn) {
             const curPlayer = game.players[findPlayerIndexById(game.turn)]
             if (game?.timestamp && curPlayer?.turnStarted && requestSentAt) {
-                // Parse backend and player timestamps
                 const backendTimestamp = new Date(game.timestamp).getTime();
                 const playerTurnStarted = new Date(curPlayer.turnStarted).getTime();
     
-                // Calculate the local-adjusted timer start timestamp
                 const networkDelay = Date.now() - requestSentAt;
                 const adjustedTime = playerTurnStarted + networkDelay;
     
@@ -94,19 +93,17 @@ export default function GameScreen() {
 
     useEffect(() => {
         if (adjustedTimerStart) {
-            const targetTime = new Date(adjustedTimerStart).getTime() + 2 * 60 * 1000; // Adjusted time + 5 minutes
+            const targetTime = new Date(adjustedTimerStart).getTime() + 2 * 60 * 1000; 
 
             const updateSecondsLeft = () => {
                 const currentTime = Date.now();
-                const diff = Math.max(0, Math.floor((targetTime - currentTime) / 1000)); // Calculate seconds left
+                const diff = Math.max(0, Math.floor((targetTime - currentTime) / 1000)); 
                 setSecondsLeft(diff);
             };
 
-            // Update the countdown every second
             const interval = setInterval(updateSecondsLeft, 1000);
-            updateSecondsLeft(); // Initial call to set the state immediately
-
-            return () => clearInterval(interval); // Cleanup on unmount
+            updateSecondsLeft(); 
+            return () => clearInterval(interval); 
         }
     }, [adjustedTimerStart]);
 
@@ -191,21 +188,17 @@ export default function GameScreen() {
 
     useEffect(() => {
         if (user && game && game.players && game.players.length > 0) {
-        // Find the player that matches the username from game data
         const currentPlayer = game.players.find(p => p.user.username === user.username);
 
         if (currentPlayer) {
-            // Set the player state if found
             setPlayer(currentPlayer);
         } else {
-            // Optionally, handle the case when the player is not found
             setPlayer(null);
         }
         } else {
-        // If the game or players are null or empty, reset player state
         setPlayer(null);
         }
-    }, [game]); // Run this effect whenever the 'game' state changes
+    }, [game]); 
     
 
     const [gridSize, setGridSize] = useState(1); // TAMAÑO DEL TABLERO
@@ -213,7 +206,7 @@ export default function GameScreen() {
         if (game && game.tableCard) {
             setGridSize(game.tableCard.numRow);
         }
-    }, [game]); // Dependency on 'game' to watch for updates
+    }, [game]); 
 
     
 
@@ -239,6 +232,25 @@ export default function GameScreen() {
         return playerColorsRef.current[findPlayerIndexById(id)];
     }
 
+
+    const [userToColor, setUserToColor] = useState({});
+    useEffect(() => {
+        if (!game || !game.players) return;
+
+        const updatePlayerColors = () => {
+            const updatedColors = game.players.reduce((acc, player, index) => {
+                const username = player.user.username;
+                const color = playerColorsRef.current[index];
+                acc[username] = color;
+                return acc;
+            }, {});
+            setUserToColor(updatedColors);
+        };
+
+        updatePlayerColors();
+    }, [game]); 
+        
+
     const colorMapping = {
         'PUZZLE_COOP':[2,1,3,4,5,6,7,8,9,10],
         'PUZZLE_SINGLE':[2,1,3,4,5,6,7,8,9,10],
@@ -248,7 +260,13 @@ export default function GameScreen() {
 
     useEffect(() => {
         if (game && game.gameMode) {
-            setPlayerColors(randomShuffle(gameCode,players.length,colorMapping[game.gameMode]));
+            if (game.gameMode == 'TEAM_BATTLE') {
+                setPlayerColors([3,13,1,11,2,12,4,14])
+            }else {
+                setPlayerColors(randomShuffle(gameCode,players.length,colorMapping[game.gameMode]));
+            }
+
+            
         }
     }, [players,game?.gameMode])
 
@@ -260,14 +278,12 @@ export default function GameScreen() {
     useEffect(() => {
         if (game !== null && game.tableCard !== null) {
             const { rows } = game.tableCard;
-            let prevBoardItems = [...boardItems];  // Copy the current boardItems
+            let prevBoardItems = [...boardItems];  
             
-            // Check if the boardItems is the correct size, if not, initialize a new one
             if (boardItems.length !== gridSize || boardItems[0].length !== gridSize) {
                 prevBoardItems = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
             }
 
-            // Iterate through rows and cells of game.tableCard
             rows.forEach((row, rowIndex) => {
                 row.cells.forEach((cell, colIndex) => {
                     if (cell.isFull && cell.card) {
@@ -281,28 +297,23 @@ export default function GameScreen() {
                             />
                         );
 
-                        // Ensure the row exists, initialize it if necessary
                         if (!prevBoardItems[rowIndex]) {
                             prevBoardItems[rowIndex] = [];
                         }
                         
-                        // Ensure the cell exists, initialize it if necessary
                         if (prevBoardItems[rowIndex][colIndex] === undefined) {
                             prevBoardItems[rowIndex][colIndex] = null;
                         }
 
-                        // Now, update the cell at the given index
                         prevBoardItems[rowIndex][colIndex] = updatedCell;
                     }
                 });
             });
 
-            // Set the boardItems to the updated prevBoardItems
             setBoardItems(prevBoardItems);
         }
     }, [game]);
 
-    // New state to track used cards
     const [usedCards, setUsedCards] = useState(new Set());
 
     const handCards = [
@@ -331,7 +342,7 @@ export default function GameScreen() {
 
     const onDrop = (index, rot) => {
         if (beingDraggedCardRef.current !== null) {
-            const droppedCardIndex = beingDraggedCardRef.current; // This should refer to the index of the handCards
+            const droppedCardIndex = beingDraggedCardRef.current; 
             const card = currentCardsRef.current[droppedCardIndex];
             const cardId = card.id;
             const iconName = card.type;
@@ -344,10 +355,9 @@ export default function GameScreen() {
                 return newBoardItems;
             });
     
-            // Add the card to usedCards set
             setUsedCards(prev => new Set(prev).add(cardId));
     
-            setBeingDraggedCard(null); // Reset the dragged card
+            setBeingDraggedCard(null); 
 
             console.log(cardId)
             console.log(index-1)
@@ -356,17 +366,15 @@ export default function GameScreen() {
             url.searchParams.append("cardId", cardId);
             url.searchParams.append("index", index+1);
 
-            // Use fetch to send the PATCH request with query parameters
             fetch(url, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${jwt}`, // Pass JWT token as Authorization header
+                    "Authorization": `Bearer ${jwt}`, 
                 },
             })
-            .then((response) => response.json()) // Parse the response as JSON
+            .then((response) => response.json())
             .then((data) => {
-                // Handle the response if needed
                 console.log("Card placed successfully:", data);
                 if (data.statusCode == 403) {
                     setBoardItems(prevBoardItems => {
@@ -537,13 +545,24 @@ export default function GameScreen() {
         }
     };
 
+    const handleReroll = () => {
+        if (game && players && game.numPlayers && user && user.username) {
+            request(`/api/v1/games/${gameCode}/changeInitialHand`, "PATCH", {}, jwt)
+            .then((response) => {
+                    setFetchedCards([])
+                    setCurrentCards([])
+                    showMessage(response.resContent.message);
+                    console.log("Rerolled successfully:", response);
+                })
+            
+            .catch((error) => {
+                    console.error("Error rerolling:", error);
+            });
+        }
+    };
+
     const handleButtonClick = (energyType) => {
         handleEnergy(energyType);
-        setIsRotating(true);
-        
-        setTimeout(() => {
-            setIsRotating(false);
-        }, 1000); 
     };
 
     const showMessage = (msg) => {
@@ -589,10 +608,9 @@ export default function GameScreen() {
                     Waiting for host...
                 </div>)}
 
-                <ChatBox gameCode={gameCode} user={user} jwt={jwt} colors = {playerColors}/>
+                <ChatBox gameCode={gameCode} user={user} jwt={jwt} colors = {userToColor}/>
             </div>
             <div className="bottom-container">
-                 {message && <div className="message">{message}</div>} 
                 <div className="card-container">
                     {currentCards.map((card, index) => (
                         <GameCard
@@ -617,8 +635,8 @@ export default function GameScreen() {
                     style={{
                         minWidth: `${gridItemSize}px`,
                         minHeight: `${gridItemSize}px`,
-                        backgroundColor: `var(--player${findColorById(player.id)}-normal)`, // Dynamically set normal color
-                        color: `var(--player${findColorById(player.id)}-dark)`, // Dynamically set dark color
+                        backgroundColor: `var(--player${findColorById(player.id)}-normal)`, 
+                        color: `var(--player${findColorById(player.id)}-dark)`, 
                         boxShadow: `
                             0px -1px 0px var(--player${findColorById(player.id)}-normal),
                             0px -2px 0px var(--player${findColorById(player.id)}-dark),
@@ -638,30 +656,34 @@ export default function GameScreen() {
                 </div>}
             </div>
             
-            {game.gameState != "WAITING" && <div 
-            className={`circle ${isRotating ? 'rotate' : ''}`} 
-            ref={circleRef}
-        >               
-                <button className="segment top-left" onClick={() => handleButtonClick("ACCELERATE")}></button>
-                <button className="segment top-right" onClick={() => handleButtonClick("BRAKE")}></button>
-                <button className="segment bottom-left" onClick={() => handleButtonClick("BACK_AWAY")}></button>
-                <button className="segment bottom-right" onClick={() => handleButtonClick("EXTRA_GAS")}></button>
-
-            <div className="energy-card" style={{"width": gridItemSize, "height": gridItemSize}}>
-                    <div className="icon-container">
-                        <GameCardIcon
-                            iconName={'energy_card'}
-                            color={findColorById(playerRef.current.id)}
-                            rotation={3 - playerRef.current.energy}
-                        />
-                        
-                    </div>
-                </div>
-                
-            </div>}
+            {playerRef.current && game.gameState !== "WAITING" && (
+                <EnergyCard
+                    isRotating={isRotating}
+                    circleRef={circleRef}
+                    handleButtonClick={handleButtonClick}
+                    gridItemSize={gridItemSize}
+                    playerRef={playerRef}
+                    findColorById={findColorById}
+                    gameMode={game.gameMode}
+                />
+            )}
 
             {game.gameState !== 'END' && <button className="leave-button" onClick={modalVisibility}>
                     Leave game
+            </button>}
+
+            {player?.handChanged === false && game?.duration === 0 && game.tableCard && game.turn == player.id && <button className="reroll-button" onClick={handleReroll}
+            style = {{
+                bottom: `${9+gridItemSize*0.13}vh`, 
+            }}>
+                <Reroll
+                    style={{
+                        width: '16px', 
+                        height: '16px',
+                        position:'relative',
+                        opacity:'0.8'
+                    }}
+                />
             </button>}
             <LeaveConfirmationModal showConfirmationModal={showConfirmationModal} setShowConfirmationModal = {setShowConfirmationModal} handleLeave={handleLeave} game={game} user={user} />
         </div>

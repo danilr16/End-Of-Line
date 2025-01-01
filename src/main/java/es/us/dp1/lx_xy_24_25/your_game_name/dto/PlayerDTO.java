@@ -28,6 +28,7 @@ public class PlayerDTO {
     private LocalDateTime turnStarted;
     private Boolean handChanged;
     private Integer cardsPlayedThisTurn;
+    private Boolean energyUsedThisRound;
     private  HandDTO hand;
     private List<PackCardDTO> packCards;
 
@@ -37,7 +38,7 @@ public class PlayerDTO {
 
     public PlayerDTO(Integer id, Integer score,Integer energy,PlayerState playerState,UserDTO user,
         List<Integer> playedCards,LocalDateTime turnStarted,Boolean handChanged,
-        Integer cardsPlayedThisTurn,HandDTO hand,List<PackCardDTO> packCards, 
+        Integer cardsPlayedThisTurn, Boolean energyUsedThisRound,HandDTO hand,List<PackCardDTO> packCards, 
         List<Integer> possiblePositions, List<Integer> possibleRotations){
 
         this.id = id;
@@ -49,6 +50,7 @@ public class PlayerDTO {
         this.turnStarted = turnStarted;
         this.handChanged = handChanged;
         this.cardsPlayedThisTurn = cardsPlayedThisTurn;
+        this.energyUsedThisRound = energyUsedThisRound;
         this.hand = hand;
         this.packCards = packCards;
         this.possiblePositions = possiblePositions;
@@ -66,7 +68,7 @@ public class PlayerDTO {
             }
         }
         PlayerDTO playerDTO = new PlayerDTO(p.getId(), p.getScore(), p.getEnergy(), p.getState(), userDTO, 
-            p.getPlayedCards(), p.getTurnStarted(), p.getHandChanged(), p.getCardsPlayedThisTurn(),
+            p.getPlayedCards(), p.getTurnStarted(), p.getHandChanged(), p.getCardsPlayedThisTurn(), p.getEnergyUsedThisRound(),
             handDTO,pcsDTO,p.getPossiblePositions(),p.getPossibleRotations());
         return playerDTO;
     }
