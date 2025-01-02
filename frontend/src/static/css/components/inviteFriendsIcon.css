@@ -5,9 +5,10 @@
 
 .invite-friends-icon-container{
     border-radius: 15%;
+    bottom: 22vh;
     border-top: 2px solid white;
     border-right: 2px solid white;
+    background-color:transparent;
     position: absolute;
-    bottom: 10px;
-    left:10px;
+    left:22vw;
 }
