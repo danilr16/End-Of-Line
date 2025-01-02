@@ -1,5 +1,6 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,8 +11,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement.Metric;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.statistics.StatisticsClasses.BasicStatistics;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserRepository;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import jakarta.validation.Valid;
 
@@ -20,6 +24,7 @@ public class AchievementService {
 
     private AchievementRepository repository;
     private UserService userService;
+    private UserRepository  userRepository;
 
     @Autowired
     public AchievementService(AchievementRepository repository, UserService userService){
@@ -78,12 +83,48 @@ public class AchievementService {
 	}
 
     @Transactional(readOnly = true)
-    public List<Achievement> findAchievementByUserId(Integer userId) {
-    User user = this.userService.findUser(userId);
-    return user.getAchievements();
-}
+        public List<Achievement> findAchievementByUserId(Integer userId) {
+        User user = this.userService.findUser(userId);
+        return user.getAchievements();
+    }
+    
+    @Transactional
+    public void checkAchievement(User user) {
+        BasicStatistics gamesPlayedStats = userRepository.findStatisticsOfUserNumGames(user);
+        BasicStatistics victoriesStats = userRepository.findUserVictories(user);
+        BasicStatistics defeatsStats = userRepository.findUserDefeats(user);
+    
+        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements("GAMES_PLAYED", gamesPlayedStats.getTotal());
+        List<Achievement> unachievedVictories = repository.findUnachievedAchievements("VICTORIES", victoriesStats.getTotal());
+        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements("DEFEATS", defeatsStats.getTotal());
+    
+        for (Achievement achievement : unachievedGamesPlayed) {
+            if (gamesPlayedStats.getTotal() >= achievement.getThreshold()) {
+                markAchievement(user, achievement);
+            }
+        }
+        for (Achievement achievement : unachievedVictories) {
+            if (victoriesStats.getTotal() >= achievement.getThreshold()) {
+                markAchievement(user, achievement);
+            }
+        }
+        for (Achievement achievement : unachievedDefeats) {
+            if (defeatsStats.getTotal() >= achievement.getThreshold()) {
+                markAchievement(user, achievement);
+            }
+        }
+    }
+    
+    private void markAchievement(User user, Achievement achievement) {
+        if (!user.getAchievements().contains(achievement)) {
+            user.getAchievements().add(achievement);
+            this.userService.updateUser(user, user.getId());
+        }
+    }
 
+    
 
+ 
 
     
 }

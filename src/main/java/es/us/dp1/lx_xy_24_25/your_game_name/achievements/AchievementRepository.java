@@ -9,6 +9,10 @@ import org.springframework.data.repository.CrudRepository;
 public interface AchievementRepository extends CrudRepository<Achievement,Integer>{
     @Query("SELECT a FROM Achievement a WHERE a.name = ?1 OR a.description = ?2")
     List<Achievement> findByNameOrDescription(String name, String description);
+
+    @Query("SELECT a FROM Achievement a WHERE a.metric = ?1 AND a.threshold > ?2")
+    List<Achievement> findUnachievedAchievements(String metric, Integer userProgress);
+
     
     
 

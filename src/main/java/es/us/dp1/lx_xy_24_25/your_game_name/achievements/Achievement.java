@@ -18,7 +18,7 @@ import lombok.Setter;
 public class Achievement extends BaseEntity{
 
     public enum Metric {
-        GAMES_PLAYED,VICTORIES
+        GAMES_PLAYED,VICTORIES,DEFEATS
     }
 
     @NotNull
