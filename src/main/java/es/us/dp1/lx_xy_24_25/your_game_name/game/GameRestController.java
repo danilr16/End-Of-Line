@@ -169,6 +169,7 @@ class GameRestController {
 
     @PatchMapping("/{gameCode}/joinAsSpectator")// No comprueba ahora mismo que seas amigo de todos los players
     public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode") @Valid String gameCode) {
+        try{
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if ((game.getGameState().equals(GameState.WAITING) || game.getGameState().equals(GameState.IN_PROCESS))
@@ -182,6 +183,11 @@ class GameRestController {
                 return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't join this room");
+        }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
         }
     }
 

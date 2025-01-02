@@ -489,7 +489,7 @@ export default function GameScreen() {
             const isSpectatorInGame = game.spectators.some(sp => sp.username === user.username);
 
             if (!isPlayerInGame && !isSpectatorInGame && players.length < game.numPlayers) { //join as player if possible
-                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
+                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt)
             }
             else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
                 request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);

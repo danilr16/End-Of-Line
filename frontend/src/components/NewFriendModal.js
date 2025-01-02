@@ -3,6 +3,7 @@ import "../static/css/components/modal.css";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import {useAlert} from "../AlertContext";
+import request from '../util/request';
 
 export default function NewFriendModal({friendName, setFriendName,closeModal,jwt,user}){
     const [loading, setLoading] = useState(false);
@@ -36,8 +37,18 @@ export default function NewFriendModal({friendName, setFriendName,closeModal,jwt
         setFriendName(e.target.value);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const response = await request("/api/v1/users/friends","GET",null,jwt);
+        const friends = Array.isArray(response.resContent)?response.resContent:[];
+        if(friends.find(friend => friend.username === friendName)){
+            updateAlert("You are already friends with this user");
+            return;
+        }
+        if( friendName === user.username){
+            updateAlert("You can't befriend yourself,socialize more");
+            return;
+        }
         const notification = {
             username: friendName,
             type: "FRIEND_REQUEST",

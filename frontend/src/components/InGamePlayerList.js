@@ -17,12 +17,12 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
     const handleSwitch = () =>{
         if (userIsPlayer && players.length > 1){
             request(`/api/v1/games/${gameCode}/leaveAsPlayer`, "PATCH", {}, jwt);
-            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);},10)
+            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);},100)
         }
-        else if(userIsPlayer) alert("You can't become a spectator right now ")
+        else if(userIsPlayer) updateAlert("You can't become a spectator right now ");
         if(userIsSpectator && players.length < numPlayers){
             request(`/api/v1/games/${gameCode}/leaveAsSpectator`, "PATCH", {}, jwt);
-            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);},10)       
+            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);},100)       
         }
         else if(userIsSpectator) updateAlert("You can't become a player right now");
     }
