@@ -95,7 +95,7 @@ export default function ChatBox({gameCode,user,jwt,colors}){
                                     key={index} 
                                     className="chat-message" 
                                     style={{
-                                        color: `var(--player${colors[chatMessage.userName]}-normal)`
+                                        color: colors[chatMessage.userName] != null ? `var(--player${colors[chatMessage.userName]}-normal)` : `var(--br-trans-grey-very-light)`
                                     }}
                                 >
                                     [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>

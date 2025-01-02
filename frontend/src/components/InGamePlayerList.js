@@ -4,6 +4,7 @@ import InviteFriendsIcon from "./InviteFriendsIcon";
 import { useAlert } from "../AlertContext";
 
 import { ReactComponent as Skull } from '../static/images/skull.svg';
+import { ReactComponent as Eye } from '../static/images/eye.svg';
 import { ReactComponent as Trophy } from '../static/images/trophy.svg';
 import { ReactComponent as Lightning } from '../static/images/energy-icons/lightning.svg';
 
@@ -28,6 +29,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
     }
 
     return(
+        <>
         <div className="player-list-container">
             <ul className="player-list">
                 <h5 style={{ color: "white" }}>
@@ -116,12 +118,54 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                         )}
                     </div>
                 ))}
-                {gamestate === "WAITING" && 
+
+                {spectators.map((spectator, index) => (
+                    <div 
+                        className="player-container" 
+                        key={index+players.length}
+                    >
+                        <div 
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center', 
+                                justifyContent: 'flex-start', 
+                            }}
+                        >
+                            <img src={spectator.image} className="small-profile-image" />
+                            <p 
+                                style={{
+                                    color: `var(--br-trans-grey-very-light)`,
+                                }} 
+                                className="player-container-text"
+                            >
+                                {spectator.username}
+                            </p>
+                            {true && (
+                                <Eye
+                                    style={{
+                                        width: '16px', 
+                                        height: '16px',
+                                        marginLeft: '10px', 
+                                        position:'relative',
+                                        opacity:'0.5'
+                                    }}
+                                />
+                            )}
+                        </div>
+                            <div className="greyed-out-container">
+                                
+                            </div>
+                    </div>
+                ))}
+                
+            </ul>
+            
+        </div>
+        {gamestate === "WAITING" && 
                 <button className="player-list-button" onClick={handleSwitch}>{`Switch to ${userSwitchRole}`}</button>}
                 {gamestate === "WAITING" && 
                 <InviteFriendsIcon username = {username} gameCode = {gameCode}/>}
-            </ul>
-        </div>
+        </>
     );
 
 }
