@@ -167,19 +167,25 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/joinAsSpectator")// No comprueba ahora mismo que seas amigo de todos los players
+    @PatchMapping("/{gameCode}/joinAsSpectator")
     public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode") @Valid String gameCode) {
         Game game = gameService.findGameByGameCode(gameCode);
         User user = userService.findCurrentUser();
         if ((game.getGameState().equals(GameState.WAITING) || game.getGameState().equals(GameState.IN_PROCESS))
             && game.getPlayers().stream().allMatch(p -> !p.getUser().equals(user))
             && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
-                Hand initialUserHand = handService.saveVoidHand();
-                Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
-                userPlayer.setState(PlayerState.SPECTATING);
-                game.getSpectators().add(userPlayer);
-                gameService.updateGame(game);
-                return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
+                List<User> players = game.getPlayers().stream().map(p -> p.getUser()).toList();
+                if (user.getFriends().containsAll(players)) {
+                    Hand initialUserHand = handService.saveVoidHand();
+                    Player userPlayer = playerService.saveUserPlayerbyUser(user, initialUserHand);
+                    userPlayer.setState(PlayerState.SPECTATING);
+                    game.getSpectators().add(userPlayer);
+                    gameService.updateGame(game);
+                    return new ResponseEntity<>(new MessageResponse("You have joined successfully"),
+                            HttpStatus.ACCEPTED);
+                } else {
+                    throw new AccessDeniedException("You can't join this room, because you aren't friend of all players");
+                }
         } else {
             throw new AccessDeniedException("You can't join this room");
         }
