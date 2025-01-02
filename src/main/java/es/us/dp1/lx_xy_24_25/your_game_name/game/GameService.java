@@ -522,7 +522,7 @@ public class GameService {
     }
 
     @Transactional
-    public void useBackAway(Player player, List<Map<String, Integer>> newPossiblePositions) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard {
+    public void useBackAway(Player player, List<Map<String, Integer>> newPossiblePositions) {
         player.setEnergy(player.getEnergy()-1);
         player.setEnergyUsedThisRound(true);
         player.getUsedPowers().add(PowerType.BACK_AWAY);

@@ -18,10 +18,12 @@ import es.us.dp1.lx_xy_24_25.your_game_name.dto.NotificationDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
+@Tag(name = "Notification", description = "The Notification API based on JWT")
 public class NotificationController {
 
     @Autowired
