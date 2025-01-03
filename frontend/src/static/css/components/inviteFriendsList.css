@@ -37,7 +37,7 @@
 .invite-friends-list h3 {
     color: white;
     position: absolute;
-    top: 10px;
+    top: 20px;
 }
 
 .invite-friend {
@@ -69,6 +69,23 @@
 .invite-friend svg{
     margin-left: auto;
     height: 20px;
+}
+.invite-friends-list-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+}
+
+.close-icon{
+    margin-top: -20px;
+    margin-left: auto;
+    height: 20px;
+    width: 20px;
+}
+.close-icon:hover{
+    color: white;
 }
 
 .invite-friend svg:hover{

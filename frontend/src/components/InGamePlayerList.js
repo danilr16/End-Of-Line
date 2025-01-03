@@ -15,15 +15,14 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
     const userIsSpectator = spectators.some((p)=>p.username === username);
     const userSwitchRole = userIsPlayer ? "spectator" : "player"
 
-    const handleSwitch = () =>{
+    const handleSwitch = async () =>{
         if (userIsPlayer && players.length > 1){
-            request(`/api/v1/games/${gameCode}/leaveAsPlayer`, "PATCH", {}, jwt);
-            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);},10)
+            const res = await request(`/api/v1/games/${gameCode}/switchToSpectator`, "PATCH", {}, jwt);
+            if(res.error) updateAlert("Error. You are probably not friends with every player")
         }
-        else if(userIsPlayer) alert("You can't become a spectator right now ")
+        else if(userIsPlayer) updateAlert("You can't become a spectator right now ");
         if(userIsSpectator && players.length < numPlayers){
-            request(`/api/v1/games/${gameCode}/leaveAsSpectator`, "PATCH", {}, jwt);
-            setTimeout(()=>{request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);},10)       
+            request(`/api/v1/games/${gameCode}/switchToPlayer`, "PATCH", {}, jwt);     
         }
         else if(userIsSpectator) updateAlert("You can't become a player right now");
     }

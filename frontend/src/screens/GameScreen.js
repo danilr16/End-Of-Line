@@ -14,9 +14,12 @@ import InGamePlayerList from "../components/InGamePlayerList";
 import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 import randomShuffle from "../util/randomShuffle";
 import { ReactComponent as Reroll } from '../static/images/reroll.svg';
+import { useAlert } from "../AlertContext";
+
 
 export default function GameScreen() {
     const jwt = tokenService.getLocalAccessToken();
+    const {updateAlert} = useAlert();
     const navigate = useNavigate();
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
@@ -483,18 +486,24 @@ export default function GameScreen() {
 
     
 
-    useEffect(() => { //Join on entering screen
+    useEffect(() => { //Join on entering screen       
+    const join  = async () => {
         if (game && players && game.numPlayers && user && user.username) {
             const isPlayerInGame = players.some(player => player.user.username === user.username);
             const isSpectatorInGame = game.spectators.some(sp => sp.username === user.username);
 
             if (!isPlayerInGame && !isSpectatorInGame && players.length < game.numPlayers) { //join as player if possible
-                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt);
+                request(`/api/v1/games/${gameCode}/joinAsPlayer`, "PATCH", {}, jwt)
             }
             else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
-                request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", {}, jwt);
+                console.log("Tried to join as spectator")
+                const res = await request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", null, jwt);
+                if(res.error) updateAlert("Error. You are probably not friends with every player");
+                navigate("/games/current")
             }
         }
+    }
+        join()
     }, [players]);
 
     if ((!game || !user) && jwt) {
