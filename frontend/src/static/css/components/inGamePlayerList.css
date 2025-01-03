@@ -64,8 +64,9 @@
 
 .player-list-button{
     position: absolute;
-    bottom: 10px;
-    width: 135px;
+    bottom: 20vh;
+    left: 17.5vh;
+    width: 20vh;
     height: 53px;
     overflow: hidden;
     background-color: var(--br-c-normal);

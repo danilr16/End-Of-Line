@@ -167,7 +167,7 @@ class GameRestController {
         }
     }
 
-    @PatchMapping("/{gameCode}/joinAsSpectator")// No comprueba ahora mismo que seas amigo de todos los players
+    @PatchMapping("/{gameCode}/joinAsSpectator")
     public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode") @Valid String gameCode) {
         try{
         Game game = gameService.findGameByGameCode(gameCode);
@@ -175,6 +175,7 @@ class GameRestController {
         if ((game.getGameState().equals(GameState.WAITING) || game.getGameState().equals(GameState.IN_PROCESS))
             && game.getPlayers().stream().allMatch(p -> !p.getUser().equals(user))
             && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
+          
                 if(game.getPlayers().stream().map(p->p.getUser()).filter(u->!u.equals(user)).anyMatch(u->!user.getFriends().contains(u)))
                     throw new AccessDeniedException("You are not friends with every player in this room");
                 Hand initialUserHand = handService.saveVoidHand();
@@ -183,6 +184,7 @@ class GameRestController {
                 game.getSpectators().add(userPlayer);
                 gameService.updateGame(game);
                 return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.NO_CONTENT);
+
         } else {
             throw new AccessDeniedException("You can't join this room");
         }
