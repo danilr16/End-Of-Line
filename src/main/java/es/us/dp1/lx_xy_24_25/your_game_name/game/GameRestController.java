@@ -175,18 +175,19 @@ class GameRestController {
         if ((game.getGameState().equals(GameState.WAITING) || game.getGameState().equals(GameState.IN_PROCESS))
             && game.getPlayers().stream().allMatch(p -> !p.getUser().equals(user))
             && game.getSpectators().stream().allMatch(p -> !p.getUser().equals(user))) {
+                if(game.getPlayers().stream().map(p->p.getUser()).filter(u->!u.equals(user)).anyMatch(u->!user.getFriends().contains(u)))
+                    throw new AccessDeniedException("You are not friends with every player in this room");
                 Hand initialUserHand = handService.saveVoidHand();
                 Player userPlayer = playerService.saveUserPlayerbyUser(user,initialUserHand);
                 userPlayer.setState(PlayerState.SPECTATING);
                 game.getSpectators().add(userPlayer);
                 gameService.updateGame(game);
-                return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(new MessageResponse("You have joined successfully"), HttpStatus.NO_CONTENT);
         } else {
             throw new AccessDeniedException("You can't join this room");
         }
         }
         catch(Exception e){
-            e.printStackTrace();
             return null;
         }
     }
@@ -245,6 +246,45 @@ class GameRestController {
             return new ResponseEntity<>(new MessageResponse("You have left this game"), HttpStatus.ACCEPTED);
         } else {
             throw new AccessDeniedException("You can't leave this game");
+        }
+    }
+
+    @PatchMapping("/{gameCode}/switchToSpectator")
+    public ResponseEntity<MessageResponse> switchToSpectator(@PathVariable("gameCode") @Valid String gameCode){
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        if(game.getPlayers().stream().anyMatch(p -> p.getUser().equals(user)) &&
+            (game.getGameState().equals(GameState.WAITING) || game.getGameState().equals(GameState.IN_PROCESS))
+            && game.getPlayers().size() > 1){
+                Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+                if(game.getPlayers().stream().filter(p->!p.equals(player)).map(p->p.getUser()).anyMatch(p->!player.getUser().getFriends().contains(p)))
+                    throw new AccessDeniedException("You are not friends with every player in this room");
+                player.setState(PlayerState.SPECTATING);
+                game.players.remove(player);
+                game.spectators.add(player);
+                gameService.updateGame(game);
+                return new ResponseEntity<>(new MessageResponse("You have succesfully switched to spectator"),HttpStatus.ACCEPTED);
+        }
+        else{
+            throw new AccessDeniedException("You can't spectate this room right now");
+        }
+    }
+
+    @PatchMapping("/{gameCode}/switchToPlayer")
+    public ResponseEntity<MessageResponse> switchToPlayer(@PathVariable("gameCode") @Valid String gameCode){
+        Game game = gameService.findGameByGameCode(gameCode);
+        User user = userService.findCurrentUser();
+        if(game.getSpectators().stream().anyMatch(p -> p.getUser().equals(user)) && game.getPlayers().size() < game.getNumPlayers()
+            && game.getGameState().equals(GameState.WAITING)){
+                Player player = game.getSpectators().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
+                player.setState(PlayerState.PLAYING);
+                game.getSpectators().remove(player);
+                game.getPlayers().add(player);
+                gameService.updateGame(game);
+                return new ResponseEntity<>(new MessageResponse("You have succesfully switched to player"),HttpStatus.ACCEPTED);
+        }
+        else{
+            throw new AccessDeniedException("You can't join this room right now");
         }
     }
 

@@ -15,7 +15,8 @@ export default async function request(url,method,body=null,jwt=null,customHeader
         // Verifica si la respuesta no es exitosa
         if (!response.ok) {
             const errorContent = await response.json();
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorContent.message || response.statusText}`);
+            console.error(`HTTP error! status: ${response.status}, message: ${errorContent.message || response.statusText}`);
+            return { error: new Error(`HTTP error! status: ${response.status}, message: ${errorContent.message || response.statusText}`) };
         }
 
         // Maneja la respuesta cuando no hay contenido (204 No Content)
@@ -28,8 +29,9 @@ export default async function request(url,method,body=null,jwt=null,customHeader
         return { response, resContent };
     } catch (error) {
         console.error("Error fetching data:", error);
-        throw error; 
+        return { error };
     }
+
 }
 
 
