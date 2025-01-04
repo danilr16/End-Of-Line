@@ -8,6 +8,7 @@ import useFetchState from "../util/useFetchState";
 import CreateModal from '../components/CreateModal';
 import JoinGameModal from '../components/JoinGameModal';
 import { ColorProvider,useColors } from "../ColorContext";
+import request from '../util/request';
 
 
 export default function CurrentGames(){
@@ -16,16 +17,9 @@ export default function CurrentGames(){
 
     const [isCreationModalOpen,setIsCreationModalOpen] = useState(false);
     const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
-    const [message, setMessage] = useState(null)
-    const [visible, setVisible] = useState(false);
     const { colors, updateColors } = useColors();
-    const [games,setGames] = useFetchState(
-        [],
-        `/api/v1/games/current`,
-        jwt,
-        setMessage,
-        setVisible
-    );
+    const [games,setGames] = useState([]);
+    
 
     const openCreationModal =  () =>setIsCreationModalOpen(true);
     const openJoinModal =  () =>setIsJoinModalOpen(true);
@@ -35,6 +29,16 @@ export default function CurrentGames(){
     const [maxPlayers, setMaxPlayers] = useState(1); 
     const [isPrivateRoom, setIsPrivateRoom] = useState(false); 
     const [gameCode, setGameCode] = useState("");
+
+    useEffect(() => {
+        const fetchGames = async () => {
+            const response = await request(`/api/v1/games/current`, 'GET', null, jwt);
+            Array.isArray(response.resContent) ? setGames(response.resContent) : setGames([]);
+        }
+        fetchGames();
+        const interval = setInterval(fetchGames,5000);
+        return () => clearInterval(interval);
+    }, [jwt]);
 
 
     const parseGamemode = (gameMode) =>{
@@ -87,7 +91,7 @@ export default function CurrentGames(){
     const gamesToShow = games.map((game)=>parseGame(game))
 
     const randomJoin = () =>{
-        const availableGames = games.filter( (g) => g.numPlayers > g.players.length);
+        const availableGames = games.filter( (g) => g.numPlayers > g.players.length && g.isPublic);
         if(!availableGames || availableGames.length === 0) {
             alert("There is no available games to join");
             return;

@@ -47,6 +47,10 @@
     opacity: 1; 
 }
 
+.game-li-container.locked .game-code{
+    filter: blur(6px);
+}
+
 .locked {
     cursor: default; 
   }

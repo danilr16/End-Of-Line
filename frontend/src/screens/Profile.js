@@ -2,6 +2,7 @@ import React, { useEffect, useState  } from 'react';
 import tokenService from '../services/token.service';
 import useFetchState from "../util/useFetchState";
 import "../static/css/screens/Profile.css";
+import Friends from "../components/Friends";
 import ReactDOM from 'react-dom';
 import jwt_decode from "jwt-decode";
 
@@ -459,6 +460,7 @@ export default function Profile() {
                     
                 </div>
             </div>
+            <Friends/>
             <div className="achievements-container">
         <div className="profile-text">
             <h3>Logros</h3>
