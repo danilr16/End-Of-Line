@@ -40,6 +40,7 @@
     border-radius: 4px;
 }
 .friend-list-container{
+    margin-top: 10px;
     position: relative;
     top:50px;
     height: 150px;
