@@ -65,9 +65,9 @@ export default function CurrentGames(){
         }
     }
 
-    const parseGame = (game) =>{
+    const parseGame = (game,index) =>{
 
-        return(<GameContainer key = {game.gameCode} 
+        return(<GameContainer key = {index} 
             gameCode = {game.gameCode} 
             gameMode = {parseGamemode(game.gameMode)}
             state = {parseGamestate(game.gameState)}
@@ -88,7 +88,7 @@ export default function CurrentGames(){
     }, []);
 
     
-    const gamesToShow = games.map((game)=>parseGame(game))
+    const gamesToShow = games.map((game,index)=>parseGame(game,index));
 
     const randomJoin = () =>{
         const availableGames = games.filter( (g) => g.numPlayers > g.players.length && g.isPublic);
