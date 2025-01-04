@@ -19,11 +19,22 @@ export default function Profile() {
     const [newPassword, setNewPassword] = useState(null);
     const [oldPassword, setOldPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState(''); 
-    const [editingAchievementID, setEditingAchievementID] = useState(null); // id del logro a edición
+
+    const [editingAchievementID, setEditingAchievementID] = useState(null); // id del logro a edicitar
     const [newNameAchievement, setNewNameAchievement] = useState(''); 
     const [newDescriptionAchievement, setNewDescriptionAchievement] = useState(''); 
+    const [newImageAchievement, setNewImageAchievement] = useState(''); 
+    //Añadir nuevos logros
+    const [newAchievementName, setNewAchievementName] = useState('');
+    const [newAchievementDescription, setNewAchievementDescription] = useState('');
+    const [newAchievementImage, setNewAchievementImage] = useState('');
+    const [newAchievementThreshold, setNewAchievementThreshold] = useState(1);  
+    const [newAchievementMetric, setNewAchievementMetric] = useState('GAMES_PLAYED');
+
+
     const [showPasswordModal, setShowPasswordModal] = useState(false); // Cambiar contraseña
     const [showImageModal, setShowImageModal] = useState(false); //Cambiar imagen de perfil
+    const [showAddAchievement, setShowAddAchievement] = useState(false); //Añadir nuevo logro
     const [showConfirmationModal, setShowConfirmationModal] = useState(false); //Se confima el cambio de datos/usuario y se cierra sesión
     //Comprobamos si es administrador
     const roles = jwt_decode(jwt).authorities;
@@ -182,7 +193,6 @@ export default function Profile() {
         }
     };
 
-    //Actualmente el sistema deja guardar dos nombres iguales al poner un espacio **cambiar**
     const handleEditAchievement = async (achievementID) => {
         try {
             if (!newNameAchievement?.trim()) {
@@ -248,6 +258,42 @@ export default function Profile() {
             console.error(error);
         }
     };
+
+    const handleAddAchievement = async () =>  {
+        try {
+            
+            const newAchievement = {
+                ...(newAchievementName ? { name: newAchievementName } : {}),
+                ...(newAchievementDescription ? { description: newAchievementDescription } : {}),
+                ...(newAchievementImage ? { image: newAchievementImage } : {}),
+                ...(newAchievementThreshold ? { threshold: newAchievementThreshold } : {}),
+                ...(newAchievementMetric ? { metric: newAchievementMetric } : {}),
+            };
+            console.log(newAchievement);
+
+            const response = await fetch(`/api/v1/achievements`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+                body: JSON.stringify(newAchievement),
+            });
+            console.log(response);
+            if (response.ok) {
+                const addedAchievement = await response.json(); 
+                setAllAchievements((prev) => [...prev, addedAchievement]); 
+                setShowAddAchievement(false); 
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.message || 'Error desconocido al actualizar el logro.');
+                setVisible(true);
+            }
+        } catch (error) {
+            setMessage('Error al conectar con el servidor');
+            console.error(error);
+        }
+    };
     
         
     const renderAchievement = (achievement) => {
@@ -268,6 +314,7 @@ export default function Profile() {
                             setEditingAchievementID(achievement.id);
                             setNewNameAchievement(achievement.name); 
                             setNewDescriptionAchievement(achievement.description);
+                            setNewImageAchievement(achievement.image);
                             setEditAchievementModal(true); 
                         }}>Edit</button> 
                         <button className="button-delete" 
@@ -279,44 +326,55 @@ export default function Profile() {
                     </div>
                     {showEditAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
                         <div className="modal-profile-overlay">
-                            <div className="modal-profile-container">
-                                <h2>Editar logro</h2>
+                            <div className="modal-input-container">
+                                <h2>Edit achievement</h2>
                                 <input
                                     type="text"
                                     value={newNameAchievement || ''}
-                                    placeholder="Nuevo nombre"
+                                    placeholder="New name"
                                     onChange={(e) => setNewNameAchievement(e.target.value)}
                                     className="editable-input"
                                 />
                                 <input
                                     type="text"
                                     value={newDescriptionAchievement || ''}
-                                    placeholder="Nueva descripción"
+                                    placeholder="New description"
                                     onChange={(e) => setNewDescriptionAchievement(e.target.value)}
                                     className="editable-input"
                                 />
+                                <input
+                                    type="text"
+                                    value={newImageAchievement || ''}
+                                    placeholder="Image URL"
+                                    onChange={(e) => setNewImageAchievement(e.target.value)}
+                                    className="editable-input"
+                                />
                                 <div className="modal-buttons">
-                                    <button className="button-save" onClick={() => handleEditAchievement(editingAchievementID)}>Guardar</button>
-                                    <button className="button-edit" onClick={() => setEditAchievementModal(false)}>Cancelar</button>
+                                    <button className="button-save" onClick={() => handleEditAchievement(editingAchievementID)}>Save</button>
+                                    <button className="button-edit" onClick={() => setEditAchievementModal(false)}>Cancel</button>
                                     
                                 </div>
                             </div>
                         </div>,
                         document.body
                     )}
+                 
                     {showDeleteAchievementModal && editingAchievementID === achievement.id && ReactDOM.createPortal(
                         <div className="modal-profile-overlay">
-                            <div className="modal-confirmation-container">
+                            <div className="modal-confirmation-achievement-container">
                               <p>Are you sure you want to eliminate this achievement?</p>
                                 <div className="modal-buttons">
-                                    <button className="button-save" onClick={() => handleDeleteAchievement(editingAchievementID)}>Guardar</button>
-                                    <button className="button-edit" onClick={() => setDeleteAchievementModal(false)}>Cancelar</button>
+                                    <button className="button-save" onClick={() => handleDeleteAchievement(editingAchievementID)}>Save</button>
+                                    <button className="button-edit" onClick={() => setDeleteAchievementModal(false)}>Cancel</button>
                                 </div>
                             </div>
                         </div>,
                         document.body
                     )}
                 </div>
+
+
+                
             );
 
         }else{
@@ -405,45 +463,45 @@ export default function Profile() {
                                     onChange={(e) => setNewUsername(e.target.value)} 
                                     className="editable-input" 
                                 />
-                                <p>Contraseña: {'*'.repeat(8)}</p>
+                                <p>Password: {'*'.repeat(8)}</p>
                                 
-                                <button className='button-save' onClick={handleSave}>Guardar</button>
+                                <button className='button-save' onClick={handleSave}>Save</button>
                             </>
                         ) : (
                             <>
-                                <p>Usuario: {user.username}</p>
-                                <p>Contraseña: {'*'.repeat(8)}</p>
+                                <p>User: {user.username}</p>
+                                <p>Password: {'*'.repeat(8)}</p>
                                 <button className="button-change-password" onClick={() => setShowPasswordModal(true)}>
-                                    Cambiar Contraseña
+                                    Change Password
                                 </button>
                                 {showPasswordModal && ReactDOM.createPortal(
                                     <div className="modal-profile-overlay">
-                                        <div className="modal-profile-container">
-                                            <h2>Cambiar Contraseña</h2>
+                                        <div className="modal-input-container">
+                                            <h2>Change Password</h2>
                                             <input 
                                                 type="password" 
-                                                placeholder="Contraseña Antigua"
+                                                placeholder="Old Password"
                                                 value={oldPassword}
                                                 onChange={(e) => setOldPassword(e.target.value)}
                                                 className="editable-input"
                                             />
                                             <input 
                                                 type="password" 
-                                                placeholder="Nueva Contraseña"
+                                                placeholder="New Password"
                                                 value={newPassword}
                                                 onChange={(e) => setNewPassword(e.target.value)}
                                                 className="editable-input"
                                             />
                                             <input 
                                                 type="password" 
-                                                placeholder="Confirmar Nueva Contraseña"
+                                                placeholder="Confirm new password"
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                                 className="editable-input"
                                             />
                                             <div className="modal-buttons">
-                                                <button className="button-save" onClick={handlePasswordChange}>Guardar</button>
-                                                <button className="button-edit" onClick={() => setShowPasswordModal(false)}>Cancelar</button>
+                                                <button className="button-save" onClick={handlePasswordChange}>Save</button>
+                                                <button className="button-edit" onClick={() => setShowPasswordModal(false)}>Cancel</button>
                                             </div>
                                         </div>
                                     </div>,
@@ -456,21 +514,81 @@ export default function Profile() {
 
                     </div>
 
-                    <button className='button-edit' onClick={handleEditClick}> {isEditing ? 'Cancelar' : 'Editar'} </button>
+                    <button className='button-edit' onClick={handleEditClick}> {isEditing ? 'Cancel' : 'Edit'} </button>
                     
                 </div>
             </div>
             <Friends/>
             <div className="achievements-container">
-        <div className="profile-text">
-            <h3>Logros</h3>
-        </div>
-            {allAchievements && allAchievements.length > 0 ? (
-                allAchievements.map(renderAchievement) 
-            ) : (
-                <p>No hay logros disponibles.</p>
-            )}
-        </div>
+                <div className="profile-text">
+                    <h3>Achievements</h3>
+                </div>
+                {allAchievements && allAchievements.length > 0 ? (
+                    allAchievements.map(renderAchievement)
+                ) : (
+                    <p>No achievements available.</p>
+                )}
+
+                {isAdmin && ( 
+                    <button className="button-change-password" onClick={() => setShowAddAchievement(true)}>
+                        Add new achievement
+                    </button>
+                )}
+                {showAddAchievement && ReactDOM.createPortal(
+                    <div className="modal-profile-overlay">
+                        <div className="modal-input-container">
+                            <h2>Add achievement</h2>
+                            <input
+                                type="text"
+                                value={newAchievementName}
+                                placeholder="Name"
+                                onChange={(e) => setNewAchievementName(e.target.value)}
+                                className="editable-input"
+                            />
+                            <input
+                                type="text"
+                                value={newAchievementDescription}
+                                placeholder="Description"
+                                onChange={(e) => setNewAchievementDescription(e.target.value)}
+                                className="editable-input"
+                            />
+                            <input
+                                type="text"
+                                value={newAchievementImage}
+                                placeholder="Image URL"
+                                onChange={(e) => setNewAchievementImage(e.target.value)}
+                                className="editable-input"
+                            />
+                            <input
+                                type="number"
+                                value={newAchievementThreshold}
+                                placeholder="Umbral (Threshold)"
+                                onChange={(e) => setNewAchievementThreshold(Number(e.target.value))}
+                                min="1"
+                                className="editable-input"
+                            />
+                            <select
+                                value={newAchievementMetric}
+                                onChange={(e) => setNewAchievementMetric(e.target.value)}
+                                className="editable-input"
+                            >
+                                <option value="GAMES_PLAYED">Games played</option>
+                                <option value="VICTORIES">Victories</option>
+                                <option value="FRIEND_ADDED">Friend Added</option>
+                                <option value="TOTAL_POINTS">Total points</option>
+                            </select>
+
+                            <div className="modal-buttons">
+                                <button className="button-save" onClick={handleAddAchievement}>Save</button>
+                                <button className="button-edit" onClick={() => setShowAddAchievement(false)}>Cancel</button>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )}
+             </div>  
             </div>
-    );
+
+
+            );
 }    

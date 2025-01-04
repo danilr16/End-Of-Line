@@ -211,6 +211,45 @@ export default function GameScreen() {
         }
     }, [game]); 
 
+    const checkAchievementsForUser = async () => {
+        try {
+            const response = await fetch(`/api/v1/achievements/check`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            });
+    
+            if (response.ok) {
+                if (response.status === 204) {
+                    console.log('No new achievements.');
+                    setVisible(false);
+                } else {
+                    const achievements = await response.json();
+    
+                    console.log(
+                        `Congratulations! You've unlocked new achievements: ${achievements.join(', ')}`
+                    );
+
+                }
+            } else {
+                const errorData = await response.json();
+                console.error('Error checking achievements:', errorData);
+            }
+        } catch (error) {
+            console.error('Error connecting to server:', error);
+        }
+    };
+    
+    
+    useEffect(() => {
+            if (game?.gameState === 'END') {
+            console.log('COMPROBAMOS LOGROS');
+            checkAchievementsForUser();
+        } 
+    }, [game]);
+    
     
 
     const [user, setUser] = useFetchState(
@@ -580,7 +619,7 @@ export default function GameScreen() {
             setMessage(null); 
         }, 5000); 
     };
-    
+
     
     
     return (

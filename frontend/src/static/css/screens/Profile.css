@@ -76,6 +76,7 @@
     height: 150px; 
     overflow: hidden; 
     padding: 10px; 
+    gap: 30px;
 }
 
 .button-save {
@@ -209,6 +210,49 @@
     margin: auto;
 
 }
+
+.modal-input-container{
+    text-align: center;
+    position: relative;
+    top: 25vh; 
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f4f4f4;
+    width: 80%; 
+    max-width: 800px; 
+    height: auto; 
+    min-height: 200px; 
+    max-height: 90vh; 
+    border-radius: 25px;
+    animation: slideFadeIn 2s ease forwards;
+    margin: auto;
+    overflow-y: auto; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+
+}
+
+.modal-confirmation-achievement-container{
+    text-align: center;
+    position: relative;
+    top: 30vh; 
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #f4f4f4;
+    max-width: 500px; 
+    min-width: 100px; 
+    min-height: 180px;
+    max-height: 90vh;
+    border-radius: 25px;
+    animation: slideFadeIn 2s ease forwards;
+    margin: auto;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+
+}
+
 .modal-confirmation-container{
     text-align: center;
     position: relative;  
