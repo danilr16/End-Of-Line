@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 import es.us.dp1.lx_xy_24_25.your_game_name.util.RestPreconditions;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -72,4 +73,16 @@ public class AchievementRestController {
 		List<Achievement> achievements = service.findAchievementByUserId(userId);
 		return new ResponseEntity<>(achievements, HttpStatus.OK);
 	}
+
+ 	@GetMapping("/check") 
+	 public ResponseEntity<List<String>> checkAchievements() {
+		User user = userService.findCurrentUser();
+        List<String> achievedNames = service.checkAchievement(user);
+        if (!achievedNames.isEmpty()) {
+            return ResponseEntity.ok(achievedNames); 
+        }
+        return ResponseEntity.noContent().build(); 
+    }
+
+	
 }

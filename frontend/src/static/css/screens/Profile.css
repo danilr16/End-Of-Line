@@ -212,21 +212,21 @@
 .modal-input-container{
     text-align: center;
     position: relative;
-    top: 25vh; /* Ajuste dinámico basado en el alto de la ventana */
+    top: 25vh; 
     display: flex;
     flex-direction: column;
     padding: 20px;
     background-color: #f4f4f4;
-    width: 80%; /* Ocupa el 90% del ancho de la ventana */
-    max-width: 800px; /* Limita el tamaño máximo */
-    height: auto; /* Ajusta la altura automáticamente */
-    min-height: 200px; /* Altura mínima para evitar que sea demasiado pequeña */
-    max-height: 90vh; /* Limita la altura al 90% de la ventana */
+    width: 80%; 
+    max-width: 800px; 
+    height: auto; 
+    min-height: 200px; 
+    max-height: 90vh; 
     border-radius: 25px;
     animation: slideFadeIn 2s ease forwards;
     margin: auto;
-    overflow-y: auto; /* Permite desplazamiento si el contenido es muy alto */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Opcional: sombra para resaltar */
+    overflow-y: auto; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 
 }
 

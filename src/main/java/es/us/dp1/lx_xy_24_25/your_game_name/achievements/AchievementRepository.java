@@ -10,9 +10,10 @@ public interface AchievementRepository extends CrudRepository<Achievement,Intege
     @Query("SELECT a FROM Achievement a WHERE a.name = ?1 OR a.description = ?2")
     List<Achievement> findByNameOrDescription(String name, String description);
 
-    @Query("SELECT a FROM Achievement a WHERE a.metric = ?1 AND a.threshold > ?2")
-    List<Achievement> findUnachievedAchievements(String metric, Integer userProgress);
-
+    @Query("SELECT a FROM Achievement a WHERE a.metric = ?1 AND a.threshold >= ?2")
+    List<Achievement> findUnachievedAchievements(Achievement.Metric metric, Integer userProgress);
+    
+    
     
     
 

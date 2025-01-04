@@ -1,6 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.achievements;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,9 +28,10 @@ public class AchievementService {
     private UserRepository  userRepository;
 
     @Autowired
-    public AchievementService(AchievementRepository repository, UserService userService){
+    public AchievementService(AchievementRepository repository, UserService userService, UserRepository userRepository){
         this.repository = repository;
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Transactional(readOnly = true)
@@ -87,33 +89,44 @@ public class AchievementService {
         User user = this.userService.findUser(userId);
         return user.getAchievements();
     }
-    
+        
     @Transactional
-    public void checkAchievement(User user) {
-        BasicStatistics gamesPlayedStats = userRepository.findStatisticsOfUserNumGames(user);
-        BasicStatistics victoriesStats = userRepository.findUserVictories(user);
-        BasicStatistics defeatsStats = userRepository.findUserDefeats(user);
-    
-        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements("GAMES_PLAYED", gamesPlayedStats.getTotal());
-        List<Achievement> unachievedVictories = repository.findUnachievedAchievements("VICTORIES", victoriesStats.getTotal());
-        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements("DEFEATS", defeatsStats.getTotal());
-    
+    public List<String> checkAchievement(User user) {
+        Integer gamesPlayedStats = userRepository.findStatisticsOfUserNumGames(user).getTotal();
+        Integer victoriesStats = userRepository.findUserVictories(user).getTotal();
+        Integer defeatsStats = userRepository.findUserDefeats(user).getTotal();
+
+        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements(Achievement.Metric.GAMES_PLAYED, gamesPlayedStats);
+        List<Achievement> unachievedVictories = repository.findUnachievedAchievements(Achievement.Metric.VICTORIES, victoriesStats);
+        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS, defeatsStats);
+
+        List<String> achievedNames = new ArrayList<>();
+/*         achievedNames.add(gamesPlayedStats.toString());
+        achievedNames.add(victoriesStats.toString());
+        achievedNames.add(defeatsStats.toString()); */
+        
         for (Achievement achievement : unachievedGamesPlayed) {
-            if (gamesPlayedStats.getTotal() >= achievement.getThreshold()) {
+            if (gamesPlayedStats >= achievement.getThreshold()) {
                 markAchievement(user, achievement);
+                achievedNames.add(achievement.getName());
             }
         }
         for (Achievement achievement : unachievedVictories) {
-            if (victoriesStats.getTotal() >= achievement.getThreshold()) {
+            if (victoriesStats >= achievement.getThreshold()) {
                 markAchievement(user, achievement);
+                achievedNames.add(achievement.getName());
             }
         }
         for (Achievement achievement : unachievedDefeats) {
-            if (defeatsStats.getTotal() >= achievement.getThreshold()) {
+            if (defeatsStats >= achievement.getThreshold()) {
                 markAchievement(user, achievement);
+                achievedNames.add(achievement.getName());
             }
         }
-    }
+
+    return achievedNames;
+}
+
     
     private void markAchievement(User user, Achievement achievement) {
         if (!user.getAchievements().contains(achievement)) {
@@ -121,6 +134,44 @@ public class AchievementService {
             this.userService.updateUser(user, user.getId());
         }
     }
+    //Simulador para tests ELIMINAR
+    @Transactional
+    public List<String> checkAchievementSimulador(User user) {
+        Integer gamesPlayedStats = 1;
+        Integer victoriesStats = 0;
+        Integer defeatsStats = 0;
+
+        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements(Achievement.Metric.GAMES_PLAYED, 1);
+        List<Achievement> unachievedVictories = repository.findUnachievedAchievements(Achievement.Metric.VICTORIES,0 );
+        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS,0 );
+        
+
+        List<String> achievedNames = new ArrayList<>();
+
+        
+    for (Achievement achievement : unachievedGamesPlayed) {
+        if (gamesPlayedStats >= achievement.getThreshold()) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
+        }
+    }
+    for (Achievement achievement : unachievedVictories) {
+        if (victoriesStats >= achievement.getThreshold()) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
+        }
+    }
+    for (Achievement achievement : unachievedDefeats) {
+        if (defeatsStats >= achievement.getThreshold()) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
+        }
+    }
+
+        return achievedNames;
+    }
+
+
 
     
 

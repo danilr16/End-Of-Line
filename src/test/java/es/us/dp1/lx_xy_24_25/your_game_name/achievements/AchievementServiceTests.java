@@ -4,7 +4,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
+import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
+import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.Player.PlayerState;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserRepository;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,6 +34,9 @@ public class AchievementServiceTests {
 
     @Autowired
     private AchievementService achievementService;
+
+    @Autowired
+    private UserService userService;
 
     @Test
     void shouldFindAll() {
@@ -102,4 +117,57 @@ public class AchievementServiceTests {
 		assertEquals(count - 1, finalCount);
 		assertThrows(ResourceNotFoundException.class, () -> this.achievementService.findAchievement(idToDelete));
 	}
+    List<Card> simCreate25Cards(Player player) { 
+        List<Card> cards = new ArrayList<>();
+        for(int i=1;i<=3;i++) {
+            Card c1 = Card.createByType(TypeCard.TYPE_1, player);
+            cards.add(c1);
+            Card c2 = Card.createByType(TypeCard.TYPE_2_IZQ, player);
+            cards.add(c2);
+            Card c3 = Card.createByType(TypeCard.TYPE_2_DER, player);
+            cards.add(c3);
+            Card c4 = Card.createByType(TypeCard.TYPE_3_IZQ, player);
+            cards.add(c4);
+            Card c5 = Card.createByType(TypeCard.TYPE_3_DER, player);
+            cards.add(c5);
+            Card c6 = Card.createByType(TypeCard.TYPE_4, player);
+            cards.add(c6);
+            Card c7 = Card.createByType(TypeCard.TYPE_5, player);
+            cards.add(c7);
+            Card c8 = Card.createByType(TypeCard.TYPE_0, player);
+            cards.add(c8);
+        }
+        Card c9 = Card.createByType(TypeCard.TYPE_1, player);
+        cards.add(c9);
+        return cards;
+    }
+
+
+    @Test
+    @Transactional
+    void shouldCheckAchievement(){
+        User user = userService.findUser(5);
+        List<String> achievements = new ArrayList<>();
+        Player p = new Player();
+        p.setUser(user);
+        p.setState(PlayerState.WON);
+        PackCard pc = new PackCard();
+        List<Card> cards = simCreate25Cards(p);
+        pc.setCards(cards);
+        pc.setId(1);
+        pc.setNumCards(cards.size());
+        List<PackCard> packCards = new ArrayList<>();
+        packCards.add(pc);
+        p.setPackCards(packCards);
+        Hand playerHand = new Hand();
+        playerHand.setId(1);
+        List<Card> handCards = new ArrayList<>(cards.subList(0, 5));
+        playerHand.setCards(handCards);
+        playerHand.setNumCards(handCards.size());
+        p.setHand(playerHand);
+        achievements.add("achievement1");
+        assertEquals(this.achievementService.checkAchievementSimulador(user), achievements);
+        assertEquals(this.achievementService.findAchievementByUserId(5).size(),achievements.size());
+
+    }
 }
