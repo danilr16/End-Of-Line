@@ -83,7 +83,7 @@ public class GameServiceTests {
 
     private Game simGame;
 
-    private Player p;
+    private Player p, p2;
 
     List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
         List<Card> cards = new ArrayList<>();
@@ -131,7 +131,7 @@ public class GameServiceTests {
         p.setTurnStarted(LocalDateTime.now());
         User user2 = new User();
         user2.setId(2);
-        Player p2 = new Player();
+        p2 = new Player();
         p2.setId(2);
         p2.setState(PlayerState.PLAYING);
         p.setCardsPlayedThisTurn(0);
@@ -153,7 +153,7 @@ public class GameServiceTests {
         List<Card> cards = simCreate25Cards(p);
         pc.setCards(new ArrayList<>(cards.subList(5, cards.size())));
         pc.setId(1);
-        pc.setNumCards(cards.size());
+        pc.setNumCards(20);
         List<PackCard> packCards = new ArrayList<>();
         packCards.add(pc);
         p.setPackCards(packCards);
@@ -164,6 +164,24 @@ public class GameServiceTests {
         playerHand.setCards(handCards);
         playerHand.setNumCards(handCards.size());
         p.setHand(playerHand);
+        PackCard pc2 = new PackCard();
+        pc2.setNumCards(20);
+        Hand h2 = new Hand();
+        h2.setNumCards(5);
+        p2.setHand(h2);
+        p2.setPackCards(new ArrayList<>(List.of(pc2)));
+        PackCard pc3 = new PackCard();
+        pc3.setNumCards(20);
+        Hand h3 = new Hand();
+        h3.setNumCards(5);
+        p3.setHand(h3);
+        p3.setPackCards(new ArrayList<>(List.of(pc3)));
+        PackCard pc4 = new PackCard();
+        pc4.setNumCards(20);
+        Hand h4 = new Hand();
+        h4.setNumCards(5);
+        p4.setHand(h4);
+        p4.setPackCards(new ArrayList<>(List.of(pc4)));
 
         List<Player> players = List.of(p,p2,p3,p4);
         ChatMessage c = new ChatMessage();
@@ -216,6 +234,9 @@ public class GameServiceTests {
         Cell cell2 = rows.get(4).getCells().get(5);
         cell2.setCard(nodo2);
         cell2.setIsFull(true);
+        p2.setPlayedCards(new ArrayList<>(List.of(nodo2.getId())));
+        p2.setPossiblePositions(new ArrayList<>(List.of(43)));
+        p2.setPossibleRotations(new ArrayList<>(List.of(1)));
 
         Card nodo3 = new Card();
         nodo3.setId(3);
@@ -226,6 +247,9 @@ public class GameServiceTests {
         Cell cell3 = rows.get(5).getCells().get(4);
         cell3.setCard(nodo3);
         cell3.setIsFull(true);
+        p3.setPlayedCards(new ArrayList<>(List.of(nodo3.getId())));
+        p3.setPossiblePositions(new ArrayList<>(List.of(59)));
+        p3.setPossibleRotations(new ArrayList<>(List.of(2)));
 
         Card nodo4 = new Card();
         nodo4.setId(4);
@@ -236,6 +260,9 @@ public class GameServiceTests {
         Cell cell4 = rows.get(4).getCells().get(3);
         cell4.setCard(nodo4);
         cell4.setIsFull(true);
+        p4.setPlayedCards(new ArrayList<>(List.of(nodo4.getId())));
+        p4.setPossiblePositions(new ArrayList<>(List.of(39)));
+        p4.setPossibleRotations(new ArrayList<>(List.of(3)));
 
         //Crear tablero
         TableCard table = new TableCard();
@@ -764,14 +791,12 @@ public class GameServiceTests {
         assertThrows(AccessDeniedException.class, 
             () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
             "You can't place this card");
-        simGame.setGameState(GameState.IN_PROCESS);
 
         //Jugador a perdido
         p.setState(PlayerState.LOST);
         assertThrows(AccessDeniedException.class, 
             () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
             "You can't place this card");
-        p.setState(PlayerState.PLAYING);
         verify(gameRepository, times(4)).findGameByGameCode(anyString());
     }
 
@@ -791,8 +816,7 @@ public class GameServiceTests {
     @Test
     void shouldNotPlaceCardItsNotYourTurn() {
         Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-        Integer actualTurn = simGame.getTurn();
-        Integer i = simGame.getOrderTurn().indexOf(actualTurn);
+        Integer i = simGame.getOrderTurn().indexOf(simGame.getTurn());
         i++;
         Integer newTurn = simGame.getOrderTurn().get(i);
         Player player = simGame.getPlayers().stream().filter(p -> p.getId() == newTurn).findFirst().get();
@@ -802,7 +826,155 @@ public class GameServiceTests {
         assertThrows(AccessDeniedException.class, 
             () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
             "You can't place this card, because it's not your turn");
-        simGame.setTurn(actualTurn);
         verify(gameRepository).findGameByGameCode(anyString());
+    }
+
+    private Game createANotStartedGame() {
+        Hand h1 = new Hand();
+        h1.setId(1);
+        h1.setCards(new ArrayList<>());
+        h1.setNumCards(0);
+        Player p1 = new Player();
+        p1.setId(1);
+        p1.setHand(h1);
+        PackCard pc1 = new PackCard();
+        pc1.setId(1);
+        List<Card> cards1 = simCreate25Cards(p1);
+        pc1.setNumCards(25);
+        pc1.setCards(cards1);
+        p1.setPackCards(new ArrayList<>(List.of(pc1)));
+        p1.setState(PlayerState.PLAYING);
+
+        Hand h2 = new Hand();
+        h2.setId(2);
+        h2.setCards(new ArrayList<>());
+        h2.setNumCards(0);
+        Player p2 = new Player();
+        p2.setId(2);
+        p2.setHand(h2);
+        PackCard pc2 = new PackCard();
+        pc2.setId(2);
+        List<Card> cards2 = simCreate25Cards(p2);
+        pc2.setNumCards(25);
+        pc2.setCards(cards2);
+        p2.setPackCards(new ArrayList<>(List.of(pc2)));
+        p2.setState(PlayerState.PLAYING);
+
+        Game game = new Game();
+        game.setPlayers(new ArrayList<>(List.of(p1, p2)));
+        game.setGameState(GameState.IN_PROCESS);
+        game.setInitialTurn(new ArrayList<>());
+        game.setOrderTurn(new ArrayList<>());
+        return game;
+    }
+
+    @Test
+    void shouldDoTurn0() {
+        Game game = createANotStartedGame();
+        Player player = game.getPlayers().get(0);
+
+        when(playerService.findPlayer(anyInt())).thenReturn(player);
+        gameService.turn0(game, game.getPlayers());
+
+        assertEquals(5, game.getPlayers().get(0).getHand().getNumCards());
+        assertEquals(5, game.getPlayers().get(1).getHand().getNumCards());
+        assertEquals(20, game.getPlayers().get(0).getPackCards().get(0).getNumCards());
+        assertEquals(20, game.getPlayers().get(1).getPackCards().get(0).getNumCards());
+        assertFalse(game.getInitialTurn().isEmpty());
+        assertNotNull(game.getTurn());
+        assertTrue(game.getOrderTurn().contains(1) && game.getOrderTurn().contains(2));
+        assertEquals(1, game.getNTurn());
+        assertNotNull(player.getTurnStarted());
+
+        verify(playerService).findPlayer(anyInt());
+        verify(packCardService, times(10)).updatePackCard(any(PackCard.class), anyInt());
+        verify(handService, times(10)).updateHand(any(Hand.class), anyInt());
+        verify(playerService).updatePlayer(any(Player.class));
+        verify(gameRepository).save(any(Game.class));
+    }
+
+    private void placeCardInTable() {
+        Card card = p.getHand().getCards().stream().findFirst().get();
+        p.getHand().getCards().remove(card);
+        p.getHand().setNumCards(p.getHand().getNumCards() - 1);
+
+        Cell cell = simGame.getTable().getRows().get(2).getCells().get(4);
+        cell.setIsFull(true);
+        cell.setCard(card);
+
+        p.getPlayedCards().add(card.getId());
+        p.setCardsPlayedThisTurn(1);
+        p.setPossiblePositions(new ArrayList<>(List.of(14)));
+        p.setPossibleRotations(new ArrayList<>(List.of(0)));
+    }
+
+    @Test
+    void shouldDoNextTurnWithoutNextRound() throws UnfeasibleToJumpTeam {
+        placeCardInTable();
+        List<Map<String,Integer>> newPossiblePositions = new ArrayList<>();
+        Map<String,Integer> mp = new HashMap<>();
+        mp.put("position", 1);
+        mp.put("rotation", 0);
+        newPossiblePositions.add(mp);
+
+        when(playerService.findPlayer(anyInt())).thenReturn(p2);
+        when(tableCardService.fromListsToPossiblePositions(any(), any())).thenCallRealMethod();
+        when(tableCardService.getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
+            any(), any(), anyBoolean())).thenReturn(newPossiblePositions);
+        
+        gameService.nextTurn(simGame, p);
+
+        assertEquals(0, p.getCardsPlayedThisTurn());
+        assertEquals(4, p.getHand().getNumCards());
+        assertNull(p.getTurnStarted());
+        assertNotNull(p2.getTurnStarted());
+        assertEquals(1, simGame.getNTurn());
+        assertEquals(2, simGame.getTurn());
+        assertFalse(p2.getPossiblePositions().isEmpty());
+
+        verify(playerService, times(5)).updatePlayer(any(Player.class));
+        verify(playerService).findPlayer(anyInt());
+        verify(gameRepository).save(any(Game.class));
+        verify(tableCardService, times(3)).fromListsToPossiblePositions(any(), any());
+        verify(tableCardService, times(3)).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
+            any(), any(), anyBoolean());
+    }
+
+    @Test
+    void shouldDoNextTurnWithNextRound() throws UnfeasibleToJumpTeam {
+        placeCardInTable();
+        List<Map<String,Integer>> newPossiblePositions = new ArrayList<>();
+        Map<String,Integer> mp = new HashMap<>();
+        mp.put("position", 1);
+        mp.put("rotation", 0);
+        newPossiblePositions.add(mp);
+        simGame.setOrderTurn(List.of(4, 2, 3, 1));
+        simGame.setTurn(1);
+        Card card = simGame.getTable().getRows().get(3).getCells().get(4).getCard();
+
+        when(tableCardService.fromListsToPossiblePositions(any(), any())).thenCallRealMethod();
+        when(tableCardService.getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
+            any(), any(), anyBoolean())).thenReturn(newPossiblePositions);
+        when(cardService.findCard(anyInt())).thenReturn(card);
+        when(playerService.findPlayer(anyInt())).thenAnswer( invocation -> {
+            int id = invocation.getArgument(0);
+            return simGame.getPlayers().stream().filter(p -> p.getId() == id).findFirst().get();
+        });
+
+        gameService.nextTurn(simGame, p);
+        assertEquals(0, p.getCardsPlayedThisTurn());
+        assertEquals(5, p.getHand().getNumCards());
+        assertNotNull(p.getTurnStarted());
+        assertEquals(2, simGame.getNTurn());
+        assertEquals(1, simGame.getTurn());
+        assertTrue(simGame.getOrderTurn().equals(List.of(1, 2, 3, 4)));
+
+        verify(playerService, times(5)).updatePlayer(any(Player.class));
+        verify(cardService).findCard(anyInt());
+        verify(playerService, times(5)).findPlayer(anyInt());
+        verify(gameRepository).save(any(Game.class));
+        verify(tableCardService, times(3)).fromListsToPossiblePositions(any(), any());
+        verify(tableCardService, times(3)).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
+            any(), any(), anyBoolean());
     }
 }

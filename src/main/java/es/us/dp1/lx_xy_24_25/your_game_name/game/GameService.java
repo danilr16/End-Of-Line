@@ -349,18 +349,18 @@ public class GameService {
     @Transactional
     private Game nextRound(Game game) {//Lógica para empezar la siguiente ronda
         game.setNTurn(game.getNTurn() + 1);
-            List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
+        List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
-            if (!players.isEmpty()) {
-                game = decideTurns(game, players);
+        if (!players.isEmpty()) {
+            game = decideTurns(game, players);
+        }
+        for (Player player : players) {
+            Hand hand = player.getHand();
+            PackCard packCard = player.getPackCards().stream().findFirst().get();
+            while (hand.getNumCards() < 5 && packCard.getNumCards() > 0) {
+                this.takeACard(player);
             }
-            for (Player player : players) {
-                Hand hand = player.getHand();
-                PackCard packCard = player.getPackCards().stream().findFirst().get();
-                while (hand.getNumCards() < 5 && packCard.getNumCards() > 0) {
-                    this.takeACard(player);
-                }
-            }
+        }
         return game;
     }
 
@@ -389,7 +389,7 @@ public class GameService {
     }
 
     @Transactional
-    private void turn0(Game game, List<Player> players, User currentUser) {
+    public void turn0(Game game, List<Player> players) {
         for (Player player : players) {
             Hand hand = player.getHand();
             while (hand.getNumCards() < 5) {
@@ -410,7 +410,7 @@ public class GameService {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            this.turn0(game, players, currentUser);
+            this.turn0(game, players);
         } else {
             if (players.size() == 1) {
                 Player winner = players.stream().findFirst().get();
@@ -435,7 +435,7 @@ public class GameService {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            this.turn0(game, players, currentUser);
+            this.turn0(game, players);
         } else {
             if (players.isEmpty()) {
                 game.setGameState(GameState.END);
@@ -463,7 +463,7 @@ public class GameService {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            this.turn0(game, players, currentUser);
+            this.turn0(game, players);
         } else {
             if (players.size() < 2) {
                 for (Player loser:players) {
@@ -500,7 +500,7 @@ public class GameService {
                 .collect(Collectors.toList());
         List<Team> teams = game.getTeams().stream().filter(t -> !t.lostTeam()).collect(Collectors.toList());
         if (game.getNTurn() == 0) {
-            this.turn0(game, players, currentUser);
+            this.turn0(game, players);
         } else {
             if (teams.size() == 1) {
                 Team winners = teams.stream().findFirst().get();
