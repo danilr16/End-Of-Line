@@ -325,7 +325,7 @@ public class GameService {
         }
         return !(canGoBack || canJump);
     }
-//Testear
+
     @Transactional
     public void nextTurn(Game game, Player playing) throws UnfeasibleToJumpTeam {//Lógica para turno del siguiente jugador o empiza siguiente ronda
         Integer i = game.getOrderTurn().indexOf(game.getTurn());
@@ -404,7 +404,7 @@ public class GameService {
         this.updateGame(game);
         
     }
-//Testear
+
     @Transactional
     public void gameInProcess(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {// Lógica de gestión de una partida VERSUS en progreso
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
