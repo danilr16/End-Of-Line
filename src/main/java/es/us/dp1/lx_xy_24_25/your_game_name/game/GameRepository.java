@@ -22,8 +22,10 @@ public interface GameRepository extends CrudRepository<Game,Integer>{
     @Query("SELECT g.chat FROM Game g WHERE g.gameCode = ?1")
     Optional<List<ChatMessage>> findGameChat( String gameCode);
 
-    @Query("SELECT count(g) AS total, avg(p.score) AS average, min(p.score) AS min, max(p.score) AS max " + 
-    "FROM Game g INNER JOIN g.players p WHERE (g.gameState = IN_PROCESS OR g.gameState = END) AND (g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP)")
+    @Query("SELECT count(DISTINCT g) AS total, avg(CASE WHEN g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP THEN p.score END) AS average, " + 
+    "min(CASE WHEN g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP THEN p.score END) AS min, " + 
+    "max(CASE WHEN g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP THEN p.score END) AS max " + 
+    "FROM Game g INNER JOIN g.players p WHERE (g.gameState = IN_PROCESS OR g.gameState = END)")
     BasicStatistics findStatisticsOfGlobalNumGames();
 
     @Query("SELECT sum(g.duration) AS total, avg(g.duration) AS average, min(g.duration) AS min, max(g.duration) AS max " + 
