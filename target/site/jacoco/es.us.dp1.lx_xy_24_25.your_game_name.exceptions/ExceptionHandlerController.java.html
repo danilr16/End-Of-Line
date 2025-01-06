@@ -78,19 +78,19 @@ import org.springframework.web.context.request.WebRequest;
 	@ExceptionHandler(UnfeasibleToPlaceCard.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public ResponseEntity&lt;ErrorMessage&gt; unfeasibleProductUpdateException(UnfeasibleToPlaceCard ex, WebRequest request) {
-<span class="nc" id="L81">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), &quot;You can't place this card in that cell&quot;,</span>
-<span class="nc" id="L82">				request.getDescription(false));</span>
+<span class="fc" id="L81">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), &quot;You can't place this card in that cell&quot;,</span>
+<span class="fc" id="L82">				request.getDescription(false));</span>
 
-<span class="nc" id="L84">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L84">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
 	}
 
 	@ExceptionHandler(InvalidIndexOfTableCard.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public ResponseEntity&lt;ErrorMessage&gt; invalidIndexOfTableCardException(InvalidIndexOfTableCard ex, WebRequest request) {
-<span class="nc" id="L90">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), ex.getMessage(),</span>
-<span class="nc" id="L91">				request.getDescription(false));</span>
+<span class="fc" id="L90">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), ex.getMessage(),</span>
+<span class="fc" id="L91">				request.getDescription(false));</span>
 
-<span class="nc" id="L93">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L93">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
 	}
 
 	@ExceptionHandler(ConflictException.class)
@@ -105,11 +105,11 @@ import org.springframework.web.context.request.WebRequest;
 	@ExceptionHandler(UnfeasibleToJumpTeam.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public ResponseEntity&lt;ErrorMessage&gt; unfeasibleToJumpTeam(UnfeasibleToJumpTeam ex, WebRequest request) {
-<span class="nc" id="L108">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), </span>
+<span class="fc" id="L108">		ErrorMessage message = new ErrorMessage(HttpStatus.BAD_REQUEST.value(), new Date(), </span>
 			&quot;You can not jump your team, because there isn't a card of your team near your last card&quot;,
-<span class="nc" id="L110">			request.getDescription(false));</span>
+<span class="fc" id="L110">			request.getDescription(false));</span>
 
-<span class="nc" id="L112">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L112">		return new ResponseEntity&lt;&gt;(message, HttpStatus.BAD_REQUEST);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
