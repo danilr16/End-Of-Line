@@ -34,9 +34,11 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 	@Query("SELECT g FROM Game g WHERE g.host = :user")
 	Iterable<Game> findAllGamesHostingByUser(User user);
 
-	@Query("SELECT count(g) AS total, avg(p.score) AS average, min(p.score) AS min, max(p.score) AS max " + 
+	@Query("SELECT count(DISTINCT g) AS total, avg(CASE WHEN g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP THEN p.score END) AS average, " + 
+	"min(CASE WHEN g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP THEN p.score END) AS min, max(CASE WHEN g.gameMode = PUZZLE_SINGLE OR " + 
+	"g.gameMode = PUZZLE_COOP THEN p.score END) AS max " + 
 	"FROM Game g INNER JOIN g.players p WHERE (g.gameState = IN_PROCESS OR g.gameState = END) "+ 
-	"AND (g.gameMode = PUZZLE_SINGLE OR g.gameMode = PUZZLE_COOP) AND (p.user = :user)")
+	"AND (p.user = :user)")
     BasicStatistics findStatisticsOfUserNumGames(User user);
 
 	@Query("SELECT sum(g.duration) AS total, avg(g.duration) AS average, min(g.duration) AS min, max(g.duration) AS max " + 
