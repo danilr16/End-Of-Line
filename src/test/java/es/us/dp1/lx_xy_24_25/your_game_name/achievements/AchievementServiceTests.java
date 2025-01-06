@@ -48,7 +48,7 @@ public class AchievementServiceTests {
     @Test
     void shouldFindById() {
         Achievement achievement = achievementService.findAchievement(1);
-        assertEquals("achievement1", achievement.getName());;
+        assertEquals("1 partida", achievement.getName());;
     }
 
     @Test
@@ -165,7 +165,7 @@ public class AchievementServiceTests {
         playerHand.setCards(handCards);
         playerHand.setNumCards(handCards.size());
         p.setHand(playerHand);
-        achievements.add("achievement1");
+        achievements.add("1 partida");
         assertEquals(this.achievementService.checkAchievementSimulador(user), achievements);
         assertEquals(this.achievementService.findAchievementByUserId(5).size(),achievements.size());
 
