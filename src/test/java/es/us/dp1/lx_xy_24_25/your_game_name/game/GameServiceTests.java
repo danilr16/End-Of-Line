@@ -85,7 +85,7 @@ public class GameServiceTests {
 
     private Player p, p2;
 
-    List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
+    public static List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
         List<Card> cards = new ArrayList<>();
         for(int i=1;i<=3;i++) {
             Card c1 = Card.createByType(TypeCard.TYPE_1, player);
