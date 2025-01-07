@@ -294,7 +294,7 @@ public class GameService {
         }
     }
 
-    private Boolean cantUsePowers(Player playing, Game game, TableCard tableCard, Card lastPlaced) throws UnfeasibleToJumpTeam {
+    public Boolean cantUsePowers(Player playing, Game game, TableCard tableCard, Card lastPlaced) throws UnfeasibleToJumpTeam {
         Boolean canGoBack = false;
         Boolean canJump = false;
         if (playing.getEnergy() == 0) {
