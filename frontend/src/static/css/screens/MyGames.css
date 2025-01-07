@@ -57,12 +57,12 @@
   }
 
 .modal-container-MyGames {
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
-    width: 600px;
-    height: 800px;
-    max-width: 70%;
-    max-height: 70%;
+    width: 500px;
+    height: 400px;
+    max-width: 60%;
+    max-height: 60%;
     min-height: 200px; 
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 2000;
@@ -72,6 +72,14 @@
     margin: 0 auto; 
 }
 
+.modal-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
 .modal-win {
   background-color: #d4edda; 
 }
@@ -79,6 +87,16 @@
 .modal-lost {
   background-color: #f8d7da; 
   color: #721c24;
+}
+
+.modal-bl {
+  background-color: #721c24; 
+  color: #fff;
+}
+
+.modal-bw {
+  background-color: rgb(8, 51, 8);
+  color: #fff;
 }
 
 .modal-neutral {
@@ -115,13 +133,15 @@
 }
 
 .rounded-button {
-  color: white; /* Color del texto */
-  border: none; /* Sin borde externo */
-  border-radius: 20px; /* Bordes redondeados */
-  padding: 10px 20px; /* Espaciado interno */
-  font-size: 16px; /* Tamaño de fuente */
-  cursor: pointer; /* Cambia el cursor al pasar por encima */
-  transition: background-color 0.3s ease; /* Suaviza el cambio de color al hacer hover */
+  color: white; 
+  border: none; 
+  border-radius: 20px; 
+  padding: 10px 20px; 
+  font-size: 16px; 
+  max-width: 50%;
+  max-height: 50%;
+  transition: background-color 0.3s ease; 
+  align-items: center;
 }
 
   .hero-div{
@@ -147,4 +167,5 @@
 .hero-div h3{
     text-align: center;
 }
+
 
