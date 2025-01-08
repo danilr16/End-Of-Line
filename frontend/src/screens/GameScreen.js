@@ -211,6 +211,8 @@ export default function GameScreen() {
         }
     }, [game]); 
 
+    const [hasCheckedAchievements, setHasCheckedAchievements] = useState(false);
+
     const checkAchievementsForUser = async () => {
         try {
             const response = await fetch(`/api/v1/achievements/check`, {
@@ -227,10 +229,7 @@ export default function GameScreen() {
                     setVisible(false);
                 } else {
                     const achievements = await response.json();
-    
-                    console.log(
-                        `Congratulations! You've unlocked new achievements: ${achievements.join(', ')}`
-                    );
+                    updateAlert(`Congratulations! You've unlocked new achievements: ${achievements.join(', ')}`)
 
                 }
             } else {
@@ -242,13 +241,13 @@ export default function GameScreen() {
         }
     };
     
-    
     useEffect(() => {
-            if (game?.gameState === 'END') {
+            if (game?.gameState === 'END' && !hasCheckedAchievements) {
             console.log('COMPROBAMOS LOGROS');
             checkAchievementsForUser();
+            setHasCheckedAchievements(true);
         } 
-    }, [game]);
+    }, [game, hasCheckedAchievements]);
     
     
 

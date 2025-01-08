@@ -35,20 +35,36 @@ export default function Friends(){
     }
     
     const friends = user?.friends && user.friends.length>0 ? user.friends.map((f)=>parseToFriend(f)) : null;
-    
-    return(
-    <>
-        {isModalOpen &&<NewFriendModal friendName={friendName} setFriendName={setFriendName} jwt={jwt} user={user} closeModal={() => setIsModalOpen(false)}/>}
-        <div className='friend-list-container'>
-            <button onClick= {handleAddFriend} className='add-friend-button'>Add friend</button>
-            {friends?
-            <ul className='friend-list'>
-                {friends}
-            </ul>
-            :<p style= {{color:'white'}}>You don't have any friends yet</p>}    
-        </div>
-    </>
+    return (
+        <>
+            {isModalOpen && (
+                <NewFriendModal
+                    friendName={friendName}
+                    setFriendName={setFriendName}
+                    jwt={jwt}
+                    user={user}
+                    closeModal={() => setIsModalOpen(false)}
+                />
+            )}
+            <div
+                className={`friend-list-container ${
+                    friends && friends.length > 0 ? 'with-friends' : 'no-friends'
+                }`}
+            >
+                <button onClick={handleAddFriend} className='add-friend-button'>
+                    Add friend
+                </button>
+                {friends && friends.length > 0 ? (
+                    <ul className='friend-list'>{friends}</ul>
+                ) : (
+                    <p className='no-friends-message'>You don't have any friends yet</p>
+                )}
+            </div>
+
+        </>
     );
+    
+    
 
 
 }
