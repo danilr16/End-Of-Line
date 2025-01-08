@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
-export default function MyGameModal({selectedGame, closeGameDataModal, parseGamemode, winLost}) {
+export default function MyGameModal({selectedGame, closeGameDataModal, parseGamemode, winLost,playerName}) {
 
     const modalClass = winLost === "WON" 
     ? "modal-win" 
@@ -14,12 +14,10 @@ export default function MyGameModal({selectedGame, closeGameDataModal, parseGame
     ? "modal-bl" 
     : "modal-neutral";
 
-    const modalWL = winLost === "WON" 
-    ? "modal-color-won" 
-    : winLost === "LOST" 
-    ? "modal-color-lost" 
-    : "modal-neutral";
+    const is_Puzzle = selectedGame.gameMode === "PUZZLE_SINGLE" 
+    || selectedGame.gameMode === "PUZZLE-COOP";
 
+    const score_puzzlePlayer = selectedGame.players.find(player => player.user.username === playerName).score;
     const win_o_lost = winLost === "WON" 
     ? true
     : winLost === "LOST" ? false : null;
@@ -41,10 +39,11 @@ export default function MyGameModal({selectedGame, closeGameDataModal, parseGame
                 <h3 className={"modal-title"}>{win_o_lost ? "You Won!" : "You Lost!"}</h3>
                 {selectedGame ? (
                 <>
-                    <div style={{ textAlign: 'left' }}>
+                    <div style={{ textAlign: 'center' }}>
                     <p style={{ marginTop: '20px' }}>
                         <strong style={{color:'black' }}>Game Mode:</strong> {parseGamemode}
                     </p>
+                    {is_Puzzle && <p> <strong style={{color:'black' }}>Score: </strong>{score_puzzlePlayer}</p>}
                     <p>
                         <strong style={{color:'black' }}>Players:</strong>
                     </p>
