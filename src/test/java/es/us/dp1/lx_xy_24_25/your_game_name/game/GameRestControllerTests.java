@@ -132,7 +132,7 @@ public class GameRestControllerTests {
         player1.setCardsPlayedThisTurn(0);
         player1.setHandChanged(false);
         players.add(player1);
-        List<Card> cards = GameServiceTests.simCreate25Cards(player1);
+        List<Card> cards = GameService1Tests.simCreate25Cards(player1);
         Hand hand = new Hand();
         hand.setNumCards(5);
         hand.setCards(new ArrayList<>(cards.subList(0, 5)));
@@ -775,7 +775,7 @@ public class GameRestControllerTests {
         TableCard tableCard = new TableCard();
         tableCard.setId(1);
         when(gameService.findGameByGameCode(anyString())).thenReturn(game);
-        when(gameService.checkTeamBattle(any(Game.class), any(User.class))).thenAnswer(invocation -> {
+        when(gameService.checkTeamBattle(any(Game.class))).thenAnswer(invocation -> {
             return invocation.getArgument(0);
         });
         when(tableCardService.creaTableCard(anyList())).thenReturn(tableCard);
@@ -791,7 +791,7 @@ public class GameRestControllerTests {
         assertEquals(2, game.getNumPlayers());
         verify(userService).findCurrentUser();
         verify(gameService).findGameByGameCode(anyString());
-        verify(gameService).checkTeamBattle(any(Game.class), any(User.class));
+        verify(gameService).checkTeamBattle(any(Game.class));
         verify(packCardService).creaPackCards(anyList());
         verify(tableCardService).creaTableCard(anyList());
         verify(tableCardService).findTableCard(anyInt());
@@ -807,7 +807,7 @@ public class GameRestControllerTests {
         TableCard tableCard = new TableCard();
         tableCard.setId(1);
         when(gameService.findGameByGameCode(anyString())).thenReturn(game);
-        when(gameService.checkTeamBattle(any(Game.class), any(User.class))).thenAnswer(invocation -> {
+        when(gameService.checkTeamBattle(any(Game.class))).thenAnswer(invocation -> {
             return invocation.getArgument(0);
         });
         when(tableCardService.creaTableCard(anyList())).thenReturn(tableCard);
@@ -824,7 +824,7 @@ public class GameRestControllerTests {
         assertEquals(1, game.getNumPlayers());
         verify(userService).findCurrentUser();
         verify(gameService).findGameByGameCode(anyString());
-        verify(gameService).checkTeamBattle(any(Game.class), any(User.class));
+        verify(gameService).checkTeamBattle(any(Game.class));
         verify(packCardService).creaPackCards(anyList());
         verify(tableCardService).creaTableCard(anyList());
         verify(tableCardService).findTableCard(anyInt());
