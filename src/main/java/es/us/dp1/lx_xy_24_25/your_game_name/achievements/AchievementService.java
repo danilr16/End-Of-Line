@@ -134,7 +134,7 @@ public class AchievementService {
             this.userService.updateUser(user, user.getId());
         }
     }
-    //Simulador para tests ELIMINAR
+   /*  //Simulador para tests ELIMINAR
     @Transactional
     public List<String> checkAchievementSimulador(User user) {
         Integer gamesPlayedStats = 1;
@@ -169,7 +169,7 @@ public class AchievementService {
     }
 
         return achievedNames;
-    }
+    } */
 
 
 

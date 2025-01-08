@@ -413,7 +413,7 @@ export default function Profile() {
                     onClick={handleImageClick}
                 >
                 <img src={newImage || user.image} className="profile-image" />
-
+                
                 </div>
                 {isEditing && showImageModal && ReactDOM.createPortal(
                     <div className="modal-profile-overlay">
@@ -463,7 +463,7 @@ export default function Profile() {
                                     onChange={(e) => setNewUsername(e.target.value)} 
                                     className="editable-input" 
                                 />
-                                <p>Password: {'*'.repeat(8)}</p>
+
                                 
                                 <button className='button-save' onClick={handleSave}>Save</button>
                             </>

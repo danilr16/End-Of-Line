@@ -42,9 +42,23 @@
 .friend-list-container{
     margin-top: 10px;
     position: relative;
-    top:50px;
+    top: 50px;
     height: 150px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
 }
+
+.friend-list-container.no-friends {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+}
+
+.friend-list-container.with-friends {
+    display: block; 
+}
+
 .add-friend-button{
     position: absolute;
     background-color: #198754;
@@ -58,4 +72,13 @@
     background-color: #024224;
     border-color: #024224;
 }
+.no-friends-message {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    justify-content: center;
+}
+
 

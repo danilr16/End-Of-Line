@@ -143,7 +143,7 @@ public class AchievementServiceTests {
     }
 
 
-    @Test
+   /*  @Test
     @Transactional
     void shouldCheckAchievement(){
         User user = userService.findUser(5);
@@ -169,5 +169,5 @@ public class AchievementServiceTests {
         assertEquals(this.achievementService.checkAchievementSimulador(user), achievements);
         assertEquals(this.achievementService.findAchievementByUserId(5).size(),achievements.size());
 
-    }
+    } */
 }
