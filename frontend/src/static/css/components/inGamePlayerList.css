@@ -76,12 +76,12 @@
 }
 
 .greyed-out-container {
-    position: absolute; /* Position it relative to the parent container */
+    position: absolute; 
     top: 0;
     left: 0;
-    width: 100%; /* Cover the full width */
-    height: 100%; /* Cover the full height */
-    background-color: var(--br-trans-dark); /* Use semi-transparent grey */
-    z-index: 1; /* Ensure it overlays the content */
+    width: 100%;
+    height: 100%; 
+    background-color: var(--br-trans-dark); 
+    z-index: 1;
     border-radius: 10px; 
 }

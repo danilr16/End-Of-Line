@@ -1,6 +1,6 @@
 @import "../colors.css";
 
-/* Game Container */
+
 .game-li-container-test {
     display: flex;
     flex-direction: column;
@@ -37,9 +37,8 @@
     transition: opacity 0.3s ease; 
 }
 
-/* Mostrar el icono al hacer hover sobre la tarjeta */
 .game-li-container-test.locked:hover .lock-icon {
-    opacity: 1; /* Muestra el icono con transparencia */
+    opacity: 1;
 }
 
 .game-li-content-test {
@@ -83,7 +82,6 @@
 
 }
 
-/* CurrentGames */
 .current-games-container-test {
     display: grid;
     grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
@@ -93,7 +91,7 @@
 }
 
 
-/*Palet Color Test*/
+
 .test-button {
     background-color: var(--br-blue) !important;
     color: var(--br-blue-dark) !important;

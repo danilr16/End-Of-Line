@@ -6,6 +6,7 @@ import { ReactComponent as BackAway } from '../static/images/energy-icons/back_a
 import { ReactComponent as Brake } from '../static/images/energy-icons/brake.svg';
 import { ReactComponent as ExtraGas } from '../static/images/energy-icons/extra_gas.svg';
 import { ReactComponent as Lightning } from '../static/images/energy-icons/lightning.svg';
+import { ReactComponent as Lock } from '../static/images/lock.svg';
 import { ReactComponent as JumpTeam } from '../static/images/energy-icons/jump_team.svg';
 
 const EnergyCard = ({ 
@@ -15,22 +16,51 @@ const EnergyCard = ({
     gridItemSize, 
     playerRef,
     findColorById,
-    gameMode
+    gameMode,
+    turn
 }) => {
     const [isCircleVisible, setCircleVisible] = useState(false);
+    const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, title: '', content: '' });
     const buttonRef = useRef(null);
 
     const toggleCircleVisibility = () => {
-        if (playerRef.current.energy === 0) {
-            setCircleVisible(false);
-        } else{
-        setCircleVisible(prevState => !prevState);
+        if (turn >= 3) {
+            if (playerRef.current.energy === 0) {
+                setCircleVisible(false);
+            } else {
+                setCircleVisible(prevState => !prevState);
+            }
         }
     };
 
     const handleSegmentClick = (action) => {
         handleButtonClick(action);
         setCircleVisible(false); 
+    };
+
+    const handleMouseEnter = (event, title, content) => {
+        setTooltip({
+            visible: true,
+            bottom: window.innerHeight - event.pageY + 10, 
+            right: window.innerWidth - event.pageX + 10, 
+            title,
+            content,
+        });
+    };
+    
+    const handleMouseMove = (event, title, content) => {
+        if (tooltip.visible) {
+            setTooltip({
+                ...tooltip,
+                bottom: window.innerHeight - event.pageY + 10,  
+                right: window.innerWidth - event.pageX + 10,    
+                title,                                         
+                content,                                        
+            });
+        }
+    };
+    const handleMouseLeave = () => {
+        setTooltip({ visible: false});
     };
 
     useEffect(() => {
@@ -51,7 +81,7 @@ const EnergyCard = ({
     }, [circleRef]);
 
     return (
-        <div 
+        <><div 
             className="energy-card" 
             style={{ width: gridItemSize, height: gridItemSize }}
         >
@@ -62,9 +92,25 @@ const EnergyCard = ({
                     rotation={3 - playerRef.current.energy}
                     smoothRotation={true} 
                 />
-                <button
-                    className={`overlay-button ${isCircleVisible ? 'visible' : ''}`}
+                <div
+                    className={`overlay-button ${turn < 3 ? 'visible' : ''} lock`}
                     onClick={toggleCircleVisibility}
+                    
+                >
+                    <Lock
+                        style={{
+                            width: '30%',
+                            height: '30%',
+                            top: '-2%',
+                            position: 'relative',
+                            filter: `drop-shadow(0px 0px 6px rgba(0, 0, 0, 1))`
+                        }}
+                    />
+                </div>
+                {turn >= 3 && <button
+                    className={`overlay-button ${isCircleVisible ? 'visible' : ''} energy`}
+                    onClick={toggleCircleVisibility}
+                    
                     ref={buttonRef}
                 >
                     <span className="button-text">{playerRef.current.energy}</span>
@@ -77,9 +123,12 @@ const EnergyCard = ({
                             filter: `drop-shadow(0px 0px 6px rgba(0, 0, 0, 1))`
                         }}
                     />
-                </button>
+                </button>}
             </div>
-            {gameMode === "TEAM_BATTLE" && <button className={`extra-power ${isCircleVisible ? 'visible' : ''}`} onClick={() => handleSegmentClick("JUMP_TEAM")}>
+            {gameMode === "TEAM_BATTLE" && <button className={`extra-power ${isCircleVisible ? 'visible' : ''}`} onClick={() => handleSegmentClick("JUMP_TEAM")}
+                onMouseEnter={(e) => handleMouseEnter(e, 'JUMP LINE', 'Skip your teamatte\'s line.')}
+                onMouseMove={(e) => handleMouseMove(e, 'JUMP LINE', 'Skip your teamatte\'s line.')}
+                onMouseLeave={handleMouseLeave}>
                 <JumpTeam
                     style={{
                         width: '80%',
@@ -101,6 +150,9 @@ const EnergyCard = ({
                 <button 
                     className={`segment top-left ${!isCircleVisible ? 'disabled' : ''}`} 
                     onClick={() => handleSegmentClick("ACCELERATE")}
+                    onMouseEnter={(e) => handleMouseEnter(e, 'ACCELERATE', 'Place 3 cards your turn instead of 2.')}
+                    onMouseMove={(e) => handleMouseMove(e, 'ACCELERATE', 'Place 3 cards your turn instead of 2.')}
+                    onMouseLeave={handleMouseLeave}
                     disabled={!isCircleVisible}
                 >
                     <Accelerate
@@ -117,6 +169,9 @@ const EnergyCard = ({
                 <button 
                     className={`segment top-right ${!isCircleVisible ? 'disabled' : ''}`} 
                     onClick={() => handleSegmentClick("BRAKE")}
+                    onMouseEnter={(e) => handleMouseEnter(e, 'BRAKE', 'Place 1 card your turn instead of 2.')}
+                    onMouseMove={(e) => handleMouseMove(e, 'BRAKE', 'Place 1 card your turn instead of 2.')}
+                    onMouseLeave={handleMouseLeave}
                     disabled={!isCircleVisible}
                 >
                     <Brake
@@ -133,6 +188,9 @@ const EnergyCard = ({
                 <button 
                     className={`segment bottom-left ${!isCircleVisible ? 'disabled' : ''}`} 
                     onClick={() => handleSegmentClick("BACK_AWAY")}
+                    onMouseEnter={(e) => handleMouseEnter(e, 'BACK AWAY', 'Place your next card following the second-to-last card you played.')}
+                    onMouseMove={(e) => handleMouseMove(e, 'BACK AWAY', 'Place your next card following the second-to-last card you played.')}
+                    onMouseLeave={handleMouseLeave}
                     disabled={!isCircleVisible}
                 >
                     <BackAway
@@ -149,6 +207,9 @@ const EnergyCard = ({
                 <button 
                     className={`segment bottom-right ${!isCircleVisible ? 'disabled' : ''}`} 
                     onClick={() => handleSegmentClick("EXTRA_GAS")}
+                    onMouseEnter={(e) => handleMouseEnter(e, 'EXTRA GAS', 'Gain 1 additional card in your hand.')}
+                    onMouseMove={(e) => handleMouseMove(e, 'EXTRA GAS', 'Gain 1 additional card in your hand.')}
+                    onMouseLeave={handleMouseLeave}
                     disabled={!isCircleVisible}
                 >
                     <ExtraGas
@@ -163,7 +224,33 @@ const EnergyCard = ({
                     />
                 </button>
             </div>
+            
         </div>
+            <div 
+            className="energy-tooltip" 
+            style={{
+                position: 'fixed',
+                right: tooltip.right,
+                bottom: tooltip.bottom,
+                backgroundColor: 'var(--br-grey)',
+                color: '#fff',
+                padding: '10px',
+                borderRadius: '5px',
+                maxWidth: 200,
+                pointerEvents: 'none',
+                zIndex: 1000,
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                opacity: tooltip.visible ? 1 : 0, 
+                transition: 'opacity 0.3s ease', 
+            }}
+        >
+            <div className="tooltip-title" style={{ fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '5px', textAlign: 'center' }}>
+                {tooltip.title}
+            </div>
+            <div className="tooltip-content" style={{ fontSize: '0.6rem', textAlign: 'left', lineHeight: '1.2' }}>
+                {tooltip.content}
+            </div>
+        </div></>
     );
 };
 

@@ -16,7 +16,7 @@ export default function NewFriendModal({friendName, setFriendName,closeModal,jwt
         const stompClient = new Client({
             webSocketFactory: () => sock,
             connectHeaders: {
-                Authorization: `Bearer ${jwt}`, // Agrega el token JWT aquí
+                Authorization: `Bearer ${jwt}`, 
             },
             onConnect: () => {
                 console.log("Connected to WebSocket");

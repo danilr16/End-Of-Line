@@ -13,10 +13,8 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,in
 
     const speed = 0.3;
 
-    // Linear interpolation function
     const lerp = (start, end, factor) => start + (end - start) * factor;
 
-    // Function to update position and rotation based on the target position
     const updatePosition = () => {
         setCurrentPosition((prevPosition) => ({
             top: lerp(prevPosition.top, position.top, speed),
@@ -26,25 +24,21 @@ export const CardOverlay = ({ iconName, position, size, isDragging, dropIndex,in
         lastUpdateTimeRef.current = Date.now();
     };
 
-    // Animation loop function
     const animate = () => {
         updatePosition();
 
-        // Continue the animation loop
         animationFrameRef.current = requestAnimationFrame(animate);
     };
 
     useEffect(() => {
-        // Start the animation loop when component mounts or `position` changes
         animationFrameRef.current = requestAnimationFrame(animate);
 
         return () => {
-            // Clean up the animation frame on component unmount
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [position, isDragging, dropIndex]); // Re-run animation when position, isDragging, or dropIndex changes
+    }, [position, isDragging, dropIndex]); 
 
     return (
         <div

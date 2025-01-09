@@ -18,7 +18,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
     const handleSwitch = async () =>{
         if (userIsPlayer && players.length > 1){
             const res = await request(`/api/v1/games/${gameCode}/switchToSpectator`, "PATCH", {}, jwt);
-            if(res.error) updateAlert("Error. You are probably not friends with every player")
+            if(res.error) updateAlert("Error. You are not friends with every player")
         }
         else if(userIsPlayer) updateAlert("You can't become a spectator right now ");
         if(userIsSpectator && players.length < numPlayers){
@@ -58,6 +58,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                                 style={{
                                     color: `var(--player${colors[index]}-normal)`,
                                     textDecoration: player.playerState === "LOST" ? "line-through" : "none", 
+                                    WebkitTextStroke: colors[index] > 10 ? `0.4px var(--player${colors[index]}-dark)` : "none",
                                 }} 
                                 className="player-container-text"
                             >

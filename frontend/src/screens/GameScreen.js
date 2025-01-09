@@ -433,7 +433,6 @@ export default function GameScreen() {
                 } 
             })
             .catch((error) => {
-                // Handle any errors that occur during the request
                 console.error("Error placing card:", error);
             });
             }
@@ -499,7 +498,7 @@ export default function GameScreen() {
                 break;
         }
     }, [game, updateColors]);
-
+    //si no hubiera
     useEffect(() => {
         const updateGridItemSize = () => {
             if (gridRef.current) {
@@ -536,7 +535,7 @@ export default function GameScreen() {
             else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
                 console.log("Tried to join as spectator")
                 const res = await request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", null, jwt);
-                if(res.error) updateAlert("Error. You are probably not friends with every player");
+                if(res.error) updateAlert("Error. You are not friends with every player");
                 navigate("/games/current")
             }
         }
@@ -712,6 +711,7 @@ export default function GameScreen() {
                     playerRef={playerRef}
                     findColorById={findColorById}
                     gameMode={game.gameMode}
+                    turn = {game.nturn}
                 />
             )}
 
@@ -720,9 +720,7 @@ export default function GameScreen() {
             </button>}
 
             {player?.handChanged === false && game?.duration === 0 && game.tableCard && game.turn === player.id && game.nturn === 1 && <button className="reroll-button" onClick={handleReroll}
-            style = {{
-                bottom: `${9+gridItemSize*0.13}vh`, 
-            }}>
+            >
                 <Reroll
                     style={{
                         width: '16px', 

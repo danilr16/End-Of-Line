@@ -3,9 +3,9 @@ import DropZone from './DropZone';
 import "../static/css/components/board.css"
 
 export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, state, setHoveredRotation, canDrop, secondsLeft }) {
-    // Ensure boardItems is a valid array and nested structure is intact
+    
     if (!Array.isArray(boardItems) || boardItems.length === 0 || boardItems.some(row => !Array.isArray(row) || row.length === 0)) {
-        return null; // Render nothing or a fallback UI if boardItems is not valid
+        return null; 
     }
 
     
@@ -25,7 +25,6 @@ export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isD
                         const row = Math.floor(index / gridSize);
                         const col = index % gridSize;
 
-                        // Ensure the row and column exist before accessing them
                         const cardIcon = boardItems[row]?.[col] ?? null;
 
                         return (

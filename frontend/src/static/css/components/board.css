@@ -27,6 +27,6 @@
     text-align: center;
     margin-top: -0.5%;
     position: fixed;
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -100%); /* Adjust for content size */
+    left: 50%;
+    transform: translate(-50%, -100%); 
 }

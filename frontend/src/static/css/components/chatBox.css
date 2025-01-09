@@ -32,8 +32,8 @@
     overflow-x: hidden;
     margin-bottom: 15px;
     margin-right: 50px;
-    scrollbar-width: thin; /* Compatibilidad con Firefox */
-    scrollbar-color: var(--br-trans-grey-light) var(--br-dark); /* fallback para navegadores no compatibles */
+    scrollbar-width: thin;
+    scrollbar-color: var(--br-trans-grey-light) var(--br-dark); 
 }
 
 .message-container::-webkit-scrollbar {
@@ -42,11 +42,11 @@
 
 .message-container::-webkit-scrollbar-track {
     background: var(--br-dark); 
-    border-radius: 4px;/* Dark track */
+    border-radius: 4px;
 }
 
 .message-container::-webkit-scrollbar-thumb {
-    background-color: var(--br-trans-grey-light); /* Darker thumb */
+    background-color: var(--br-trans-grey-light); 
     border-radius: 4px;
 }
 
