@@ -42,8 +42,6 @@ Las pruebas se ejecutarán en el entorno de desarrollo y, eventualmente, en el e
 
 El informe de cobertura de pruebas se puede consultar [aquí](/target/site/jacoco/index.html)
 
-<iframe src="/target/site/jacoco/index.html" width="100%" height="500px"></iframe>
-
 ### 5.2 Matriz de Trazabilidad
 
 | Historia de Usuario | Prueba | Descripción | Estado |Tipo |
