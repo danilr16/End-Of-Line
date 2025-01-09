@@ -14,7 +14,6 @@
     margin-bottom: 20px;
 }
 
-/* Estilos para la tabla */
 .myGames-table {
     width: 100%;
     max-width: 600px;
@@ -22,26 +21,23 @@
     border-spacing: 0;
   }
   
-  /* Estilos para las celdas */
 .myGames-td {
-    background-color: #fde77c; /* Color de fondo  */
-    color: black; /* Color de las letras */
+    background-color: #fde77c; 
+    color: black; 
     padding: 15px;
     margin: 10px;
-    border-radius: 10px; /* Bordes redondeados */
+    border-radius: 10px; 
     text-align: left;
 }
   
-  /* Asegura que los componentes se muestren de manera vertical */
 .myGames-tr {
     display: flex;
     flex-direction: column;
     width: 100%;
   }
   
-  /* Para un mejor aspecto visual */
 .myGames-td:not(:last-child) {
-    margin-bottom: 10px; /* Espaciado entre celdas */
+    margin-bottom: 10px; 
   }
 
 
