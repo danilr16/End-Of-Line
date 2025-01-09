@@ -43,9 +43,6 @@ export default function IndividualStats() {
         }
     }
 
-    //Datos de prueba
-    const mostUsedPowers = { 'accelerate': 385, 'back away': 264 }
-
 
     if (!userScoreStats || !gameModeStats || !userScoreStats.user || !powersStats) {
         return <p> Loading... </p>;
@@ -83,7 +80,7 @@ export default function IndividualStats() {
                         <thead><th colSpan="2">Most used powers</th></thead>
                         <tbody>
                             <tr>
-                                {Object.entries(/*powersStats.powersMostUsed*/mostUsedPowers).map(([key, value], index) => (
+                                {Object.entries(powersStats.powersMostUsed).map(([key, value], index) => (
                                     <td key={index}>{index + 1 + OrdinalValue(index + 1) + "\n"} {key + "\n"} {value} uses</td>
                                 ))}
                             </tr>

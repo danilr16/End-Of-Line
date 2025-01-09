@@ -294,7 +294,7 @@ public class GameService {
         }
     }
 
-    private Boolean cantUsePowers(Player playing, Game game, TableCard tableCard, Card lastPlaced) throws UnfeasibleToJumpTeam {
+    public Boolean cantUsePowers(Player playing, Game game, TableCard tableCard, Card lastPlaced) throws UnfeasibleToJumpTeam {
         Boolean canGoBack = false;
         Boolean canJump = false;
         if (playing.getEnergy() == 0) {
@@ -678,7 +678,7 @@ public class GameService {
                 this.gameInProcessCoop(game, currentUser);
             } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
                 this.gameInProcessTeam(game, currentUser);
-            } else {
+            } else if (gameMode.equals(GameMode.VERSUS)) {
                 this.gameInProcess(game, currentUser);
             }
         }
@@ -715,7 +715,7 @@ public class GameService {
     }
 
     private ResponseEntity<MessageResponse> manageUseOfBackAway(Player player, Game game, PowerType powerType) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard, UnfeasibleToJumpTeam {
-        if (player.getPlayedCards().size() >= 2) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
+        if (player.getPlayedCards().size() >= 3) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
             Card cardToBackAway = cardService
                     .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
             List<Map<String, Integer>> newPossiblePositions = tableCardService
@@ -778,7 +778,7 @@ public class GameService {
     }
 
     @Transactional
-    public Game checkTeamBattle(Game game, User user) {
+    public Game checkTeamBattle(Game game) {
         if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
             if (game.getPlayers().size() < 4) {//Cambiar el modo de juego si no hay suficientes jugadores
                 game.setGameMode(GameMode.VERSUS);
