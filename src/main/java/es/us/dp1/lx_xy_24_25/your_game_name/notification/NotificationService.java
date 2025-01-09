@@ -14,6 +14,10 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    public Optional<List<Notification>> findAllByUser(User user) {
+        return notificationRepository.findAllByUser(user);
+    }
+
     public Optional<List<Notification>> findByUser(User user) {
         return notificationRepository.findByUser(user);
     }

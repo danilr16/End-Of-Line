@@ -3,12 +3,12 @@ package es.us.dp1.lx_xy_24_25.your_game_name.game;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,11 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.InvalidIndexOfTableCard;
+import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ConflictException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToJumpTeam;
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.UnfeasibleToPlaceCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService.Pair;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.Hand;
 import es.us.dp1.lx_xy_24_25.your_game_name.hand.HandService;
@@ -50,10 +48,11 @@ import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Row;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.team.Team;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 
 @ExtendWith(MockitoExtension.class)
-public class GameServiceTests {
+public class GameService1Tests {
     
     @Mock
     private GameRepository gameRepository;
@@ -85,7 +84,7 @@ public class GameServiceTests {
 
     private Player p, p2;
 
-    List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
+    public static List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
         List<Card> cards = new ArrayList<>();
         for(int i=1;i<=3;i++) {
             Card c1 = Card.createByType(TypeCard.TYPE_1, player);
@@ -578,19 +577,330 @@ public class GameServiceTests {
         System.out.println(gameTurnsOrder.getOrderTurn());
     }
 
+    @Test
+    @Transactional
+    void shouldDecideTurnsCase2() {//Se prueba en este caso que todas las cartas de la ultima ronda tienen la misma iniciativa
+        //Configuración necesaria para que el test ejecute sin errores
+        Game testGame = simGame;
+
+        //Configuro los juagdores
+        Player testPlayer1 = createValidPlayer();
+        Player testPlayer2 = createValidPlayer();
+        Player testPlayer3 = createValidPlayer();
+        testPlayer1.setId(1);
+        testPlayer2.setId(2);
+        testPlayer3.setId(3);
+
+        //Configuro las cartas (para mayor sencillez tendrán igual id e iniciativa)
+        Card c1 = Card.createByType(TypeCard.TYPE_1, testPlayer1);
+        Card c2 = Card.createByType(TypeCard.TYPE_2_DER, testPlayer2);
+        Card c3 = Card.createByType(TypeCard.TYPE_3_DER, testPlayer3);
+        c1.setId(1);
+        c1.setPlayer(testPlayer1);
+        c1.setIniciative(1);
+        c2.setId(2);
+        c2.setPlayer(testPlayer2);
+        c2.setIniciative(2);
+        c3.setId(3);
+        c3.setPlayer(testPlayer3);
+        c3.setIniciative(3);
+
+        //Configuro las cartas colocadas por cada jugador
+        testPlayer1.setPlayedCards(List.of(3,1,2));
+        testPlayer2.setPlayedCards(List.of(3,2,1));
+        testPlayer3.setPlayedCards(List.of(3,2,3));
+
+        //Se añaden los jugadores a la partida
+        List<Player> testPlayerList = new ArrayList<>();
+        testPlayerList.add(testPlayer1);
+        testPlayerList.add(testPlayer2);
+        testPlayerList.add(testPlayer3);
+
+        testGame.setPlayers(testPlayerList);
+
+        //Mockeo el comportanmiento de los servicios para que devuelvan los objetos creados para este test
+        when(cardService.findCard(1)).thenReturn(c1);
+        when(cardService.findCard(2)).thenReturn(c2);
+        when(cardService.findCard(3)).thenReturn(c3);
+        when(playerService.findPlayer(1)).thenReturn(testPlayer1);
+        
+
+
+        List<Integer> expectedOrderTurn = List.of(1,2,3); //Orden de turnos que debría devolver el método con la configuración establecida
+        System.out.println("El orden de turnos debería ser este: " + gameService.decideTurns(testGame, testPlayerList).getOrderTurn());
+        assertEquals(gameService.decideTurns(testGame, testPlayerList).getOrderTurn(), expectedOrderTurn);
+
+    }
+
+    @Test
+    @Transactional
+    void shouldDecideTurnsCase3() {//Se prueba en este caso que todas las cartas de todas las rondas jugadas 
+        //tienen la misma inciativa, en este caso
+        //se debería volver hasta el orden de turno de la primera ronda, que sería el resultado
+
+        //Configuración necesaria para que el test ejecute sin errores
+        Game testGame = simGame;
+
+        //Configuro los juagdores
+        Player testPlayer1 = createValidPlayer();
+        Player testPlayer2 = createValidPlayer();
+        Player testPlayer3 = createValidPlayer();
+        testPlayer1.setId(1);
+        testPlayer2.setId(2);
+        testPlayer3.setId(3);
+
+        //Configuro las cartas (para mayor sencillez tendrán igual id e iniciativa)
+        Card c1 = Card.createByType(TypeCard.TYPE_1, testPlayer1);
+        Card c2 = Card.createByType(TypeCard.TYPE_2_DER, testPlayer2);
+        Card c3 = Card.createByType(TypeCard.INICIO, testPlayer3); //Carta de inicio
+        c1.setId(1);
+        c1.setPlayer(testPlayer1);
+        c1.setIniciative(1);
+        c2.setId(2);
+        c2.setPlayer(testPlayer2);
+        c2.setIniciative(2);
+        c3.setId(3);
+        c3.setPlayer(testPlayer3);
+        c3.setIniciative(3);
+
+        //Configuro las cartas colocadas por cada jugador, vemos en este caso que la primera carta colocada por cada jugador es la de inicio,
+        //esto representa la situación en la que el método ha ido comparando las iniciativas de cada ronda (que en este test son iguales) hasta llegar a la ronda incial
+        testPlayer1.setPlayedCards(List.of(3,2,1));
+        testPlayer2.setPlayedCards(List.of(3,2,1));
+        testPlayer3.setPlayedCards(List.of(3,2,1));
+
+        //Se añaden los jugadores a la partida
+        List<Player> testPlayerList = new ArrayList<>();
+        testPlayerList.add(testPlayer1);
+        testPlayerList.add(testPlayer2);
+        testPlayerList.add(testPlayer3);
+
+        testGame.setPlayers(testPlayerList);
+
+        //Elijo un jugador al azar, que es lo que se hace en la primera ronda
+        testGame.setInitialTurn(List.of(2));
+
+        //Mockeo el comportanmiento de los servicios para que devuelvan los objetos creados para este test
+        when(cardService.findCard(1)).thenReturn(c1);
+        when(cardService.findCard(2)).thenReturn(c2);
+        when(cardService.findCard(3)).thenReturn(c3);
+        when(playerService.findPlayer(2)).thenReturn(testPlayer2);
+        
+        
+        System.out.println("El orden de turnos debería ser este: " + gameService.decideTurns(testGame, testPlayerList).getOrderTurn());
+        assertEquals(gameService.decideTurns(testGame, testPlayerList).getOrderTurn(), List.of(2));
+        //Cuando se llega a la ronda inicial el método devuelve una lista que solo contiene al jugador que comienza el juego
+
+    }
  
 
     @Test
     @Transactional
     void shouldReturnCards(){ //Actualizar repo antes 
 
+        Player testPlayer = createValidPlayer(); //Creamos un jugador válido (con mano, cartas y demás)
+        Hand playerHand = testPlayer.getHand();
+        List<Card> playerCards = playerHand.getCards();
+        PackCard playerPackCard = testPlayer.getPackCards().stream().findFirst().get();
+        
+        Integer expectedPackCardSize = playerPackCard.getNumCards() + playerCards.size();
+        Integer expectedHandSize = playerHand.getNumCards() - playerCards.size(); //Estos son los tamaños que deberían tener hand y packCard tras llamar al método
+
+        gameService.returnCards(testPlayer); // Se llama al método que se quiere probar
+
+
+        assertTrue(playerCards.isEmpty());
+        assertTrue(playerPackCard.getNumCards().equals(expectedPackCardSize));
+        assertTrue(playerHand.getNumCards().equals(expectedHandSize));
+        verify(handService).updateHand(any(Hand.class), any(Integer.class));
     }
 
     @Test 
     @Transactional
     void shouldChangeInitialHand(){
 
+        GameService spyGs = Mockito.spy(gameService); //Se crea un spy de gameService, solo para esta prueba, esto permite hacer verificaciones sobre métodos del propio gameServie
+
+        Player testPlayer = createValidPlayer();
+
+        spyGs.changeInitialHand(testPlayer);
+
+        verify(spyGs).returnCards(any(Player.class)); //Se comprueba que se devuelvan las cartas del jugador al mazo
+        assertTrue(testPlayer.getHandChanged().equals(true)); //Aquí que se marque que el jugador ya ha gastado su posibilidad de cambiar de mano
+        verify(playerService).updatePlayer(any(Player.class)); //Y aquí que se actualice al jugador llamando a playerService
     }
+
+    @Test
+    @Transactional
+    void shouldManageTurnCase1() throws Exception {
+        
+        Game testGame = simGame; //Juego de prueba configurado previamente
+        Player testPlayer = createValidPlayer(); //Jugador de prueba
+
+        GameService spyGs = Mockito.spy(gameService); //De nuevo utiliza un spy ya que se llama al método manageTurnOfPlayer en la prueba
+
+        testPlayer.setCardsPlayedThisTurn(2);
+        doNothing().when(spyGs).nextTurn(any(Game.class), any(Player.class)); //Hago un stub porque esta prueba no es la que comprueba si nextTurn funciona bien
+        
+        spyGs.manageTurnOfPlayer(testGame, testPlayer);
+
+        verify(spyGs).nextTurn(any(Game.class), any(Player.class));
+    }
+
+    @Test
+    @Transactional
+    void shouldManageTurnCase2() throws Exception {
+        
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+        testPlayer.setTurnStarted(null);
+
+        testGame.setNTurn(2); //Condición para que se lance la excepción
+
+        assertThrows(ConflictException.class, () -> gameService.manageTurnOfPlayer(testGame, testPlayer));
+    }
+
+    @Test
+    @Transactional
+    void shouldManageTurnCase3() throws Exception {
+        
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        testGame.setNTurn(2);
+        testPlayer.setTurnStarted(LocalDateTime.of(2024, 8, 23, 16, 28)); //Fecha aleatoria para que se cumpla la condicion que se quiere probar en este test
+
+        gameService.manageTurnOfPlayer(testGame, testPlayer);
+
+        assertTrue(testPlayer.getState() == PlayerState.LOST);
+        verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    @Test
+    void cantContinuePlayingCase1() throws Exception {
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        testPlayer.getPackCards().stream().findFirst().get().setNumCards(0);
+        testPlayer.getHand().setNumCards(0); //Hacemos que el jugador no tenga cartas, en esta situación perdería automáticamente
+
+        assertTrue(gameService.cantContinuePlaying(testGame, testPlayer));
+    }
+
+    @Test
+    void cantContinuePlayingCase2() throws Exception{
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        testGame.setNTurn(4); //Suponemos que el juego está en el cuarto turno (ya se pueden usar poderes)
+        testPlayer.setEnergyUsedThisRound(false); //Suponemos que el jugador no ha usado poderes esta ronda
+        //Provocamos que el jugador no tenga posiciones disponibles para colocar cartas
+        doReturn(new ArrayList<>()).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        testPlayer.setEnergy(0); //En estas condiciones, el jugador NO podría seguir jugando al no tener más puntos de energía
+    
+        assertTrue(gameService.cantContinuePlaying(testGame, testPlayer));
+    }
+
+    @Test
+    void cantContinuePlayingCase3() throws Exception {
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        testGame.setNTurn(4); //Suponemos que el juego está en el cuarto turno (ya se pueden usar poderes)
+        testPlayer.setEnergyUsedThisRound(true); //Suponemos que el jugador ha usado poderes esta ronda
+        //Provocamos que el jugador no tenga posiciones disponibles para colocar cartas
+        doReturn(new ArrayList<>()).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        
+        testPlayer.setUsedPowers(List.of(PowerType.ACCELERATE)); //Suponemos que ese es el ultimo poder que ha utilizado el jugador, en estas condiciones, habría perdido
+        assertTrue(gameService.cantContinuePlaying(testGame, testPlayer));
+
+        testPlayer.setUsedPowers(List.of(PowerType.BACK_AWAY)); //Suponemos ahora que el jugador ha usado el poder marcha atrás, por lo que aún podría seguir jugado
+        assertFalse(gameService.cantContinuePlaying(testGame, testPlayer));
+
+    }
+
+    @Test
+    void cantContinuePlayingCase4() throws Exception {
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        testGame.setNTurn(2); //Suponemos que estamos en la segunda ronda (aun no se pueden usar poderes)
+        //Provocamos que el jugador no tenga posiciones disponibles para colocar cartas
+        doReturn(new ArrayList<>()).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+    
+        assertTrue(gameService.cantContinuePlaying(testGame, testPlayer));
+    }
+
+    @Test
+    void cantContinuePlayingCase5() throws Exception {
+        
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+
+        List<Map<String, Integer>> fakePossiblePositions = new ArrayList<>();
+        fakePossiblePositions.add(Map.of("ab",1)); //Da igual que no sea una posición del juego, la cuestión es que possiblePositions no esté vacía
+        //Provocamos que el jugador tenga alguna posición en la que pueda colocar cartas
+        doReturn(fakePossiblePositions).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+
+        assertFalse(gameService.cantContinuePlaying(testGame, testPlayer));
+    }
+
+    @Test
+    void cantUsePowersCase1() throws Exception {
+        
+        //La primera casuística (el jugador no tiene energía), ya se prueba en el test cantContinuePlayingCase2
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+        TableCard tc = testGame.getTable();
+        Card lastPlaced = cardService.findCard(1); //Escojo una carta aleatoria
+
+        testGame.setGameMode(GameMode.PUZZLE_SINGLE); //Hacemos que el modo de juego sea disitnto a team battle
+        testPlayer.setPlayedCards(List.of(1,2,3)); //Suponemos que el jugador ha colocado suficientes cartas como para poder usar el poder marcha atrás
+
+        List<Map<String, Integer>> fakePossiblePositions = new ArrayList<>();
+
+        //Provocamos que el jugador NO tenga posiciones disponibles para colocar cartas (al usar marcha atras)
+        doReturn(fakePossiblePositions).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        assertTrue(gameService.cantUsePowers(testPlayer, testGame, tc, lastPlaced));
+
+        fakePossiblePositions.add(Map.of("ab",1)); //Añadimos un elemento para que no esté vacía
+
+        //Provocamos que el jugador tenga posiciones disponibles para colocar cartas (al usar marcha atras)
+        doReturn(fakePossiblePositions).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        assertFalse(gameService.cantUsePowers(testPlayer, testGame, tc, lastPlaced));
+    }
+
+    @Test
+    void cantUsePowersCase2() throws Exception {
+
+        Game testGame = simGame;
+        Player testPlayer = createValidPlayer();
+        TableCard tc = testGame.getTable();
+        Card lastPlaced = cardService.findCard(1); //Escojo una carta aleatoria
+        Team testTeam1 = new Team(); //Creamos dos equipos de prueba
+
+        testGame.setGameMode(GameMode.TEAM_BATTLE);
+        testPlayer.setPlayedCards(List.of(1)); //Forzamos que el jugador no pueda usar el poder marcha atrás, en este test comprobamos si funciona el salto
+        List<Map<String, Integer>> fakePossiblePositions = new ArrayList<>();
+        fakePossiblePositions.add(Map.of("ab",1)); //Añadimos un elemento para que no esté vacía
+        testTeam1.setPlayer1(testPlayer); //Hacemos que el jugador de prueba esté en el equipo 1
+        testGame.setTeams(List.of(testTeam1)); //Añadimos el equipo al juego
+
+        //Hacemos que el jugador tenga alguna posición en la que pueda colocar cartas (al usar marcha atrás)
+        doReturn(fakePossiblePositions).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        assertFalse(gameService.cantUsePowers(testPlayer, testGame, tc, lastPlaced));
+
+        //Forzamos ahora que se lance la excepcion UnfeasibleToJumpTeam para probar la otra casuística
+        doThrow(UnfeasibleToJumpTeam.class).when(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), nullable(Card.class), nullable(Player.class), any(Boolean.class));
+        assertTrue(gameService.cantUsePowers(testPlayer, testGame, tc, lastPlaced));
+
+    }
+
 
     private Player createValidPlayer() {
         Player player = new Player();
@@ -710,271 +1020,5 @@ public class GameServiceTests {
         assertTrue(player.getPossiblePositions().containsAll(List.of(4, 12)));
         assertTrue(player.getPossibleRotations().containsAll(List.of(0, 1)));
         verify(playerService).updatePlayer(any(Player.class));
-    }
-
-    @Test
-    void shouldPlaceCard() throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard, UnfeasibleToJumpTeam {
-        Integer cont = p.getHand().getNumCards();
-        Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-        List<Map<String,Integer>> newPossiblePositions = new ArrayList<>();
-        Map<String,Integer> mp = new HashMap<>();
-        mp.put("position", 14);
-        mp.put("rotation", 0);
-        newPossiblePositions.add(mp);
-        
-        when(gameRepository.findGameByGameCode(anyString())).thenReturn(Optional.of(simGame));
-        when(playerService.findPlayer(anyInt())).thenReturn(p);
-        when(tableCardService.fromListsToPossiblePositions(anyList(), anyList())).thenCallRealMethod();
-        when(tableCardService.getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(Card.class), any(), anyBoolean())).thenReturn(newPossiblePositions);
-        
-        gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace);
-
-        Integer newCont = p.getHand().getNumCards();
-        assertEquals(cont - 1, newCont);
-        assertEquals(1, p.getCardsPlayedThisTurn());
-        assertTrue(p.getPlayedCards().contains(cardToPlace.getId()));
-        assertTrue(simGame.getTable().getRows().get(2).getCells().get(4).getCard().equals(cardToPlace));
-        assertEquals(1, p.getPossiblePositions().size());
-        assertEquals(1, p.getPossibleRotations().size());
-        assertTrue(p.getPossiblePositions().contains(14));
-        assertTrue(p.getPossibleRotations().contains(0));
-
-        verify(gameRepository).findGameByGameCode(anyString());
-        verify(playerService).findPlayer(anyInt());
-        verify(cardService).updateCard(any(Card.class), anyInt());
-        verify(handService).updateHand(any(Hand.class), anyInt());
-        verify(cellService).updateCell(any(Cell.class), anyInt());
-        verify(playerService).updatePlayer(any(Player.class));
-        verify(tableCardService).fromListsToPossiblePositions(anyList(), anyList());
-        verify(tableCardService).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(Card.class), any(), anyBoolean());
-    }
-
-    @Test
-    void shouldNotPlaceCardYouAreNotInTheGame() throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard, UnfeasibleToJumpTeam {
-        Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-        User user = new User();
-        user.setId(19);
-        user.setUsername("bad user");
-
-        when(gameRepository.findGameByGameCode(anyString())).thenReturn(Optional.of(simGame));
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(user, simGame.getGameCode(), 23, cardToPlace), 
-            "You can't place this card, because you aren't in this game");
-        
-        verify(gameRepository).findGameByGameCode(anyString());
-    }
-
-    @Test
-    void shouldNotPlaceCardYouCantPlaceNow() {
-        Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-
-        //Carta que no es del jugador
-        Player badPlayer = new Player();
-        Card badCard = new Card();
-        badCard.setId(100);
-        badCard.setPlayer(badPlayer);
-        when(gameRepository.findGameByGameCode(anyString())).thenReturn(Optional.of(simGame));
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, badCard), 
-            "You can't place this card");
-
-        //Carta que no está en la mano
-        Card cardNotInHand = p.getPackCards().get(0).getCards().stream().findFirst().get();
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardNotInHand), 
-            "You can't place this card");
-
-        //Juego no está en proceso
-        simGame.setGameState(GameState.WAITING);
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
-            "You can't place this card");
-
-        //Jugador a perdido
-        p.setState(PlayerState.LOST);
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
-            "You can't place this card");
-        verify(gameRepository, times(4)).findGameByGameCode(anyString());
-    }
-
-    @Test
-    void shouldNotPlaceCardBadIndex() {
-        Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-
-        when(gameRepository.findGameByGameCode(anyString())).thenReturn(Optional.of(simGame));
-        assertThrows(InvalidIndexOfTableCard.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), -2, cardToPlace));
-        
-        assertThrows(InvalidIndexOfTableCard.class,
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 1000, cardToPlace));
-        verify(gameRepository, times(2)).findGameByGameCode(anyString());
-    }
-
-    @Test
-    void shouldNotPlaceCardItsNotYourTurn() {
-        Card cardToPlace = p.getHand().getCards().stream().findFirst().get();
-        Integer i = simGame.getOrderTurn().indexOf(simGame.getTurn());
-        i++;
-        Integer newTurn = simGame.getOrderTurn().get(i);
-        Player player = simGame.getPlayers().stream().filter(p -> p.getId() == newTurn).findFirst().get();
-
-        when(gameRepository.findGameByGameCode(anyString())).thenReturn(Optional.of(simGame));
-        when(playerService.findPlayer(anyInt())).thenReturn(player);
-        assertThrows(AccessDeniedException.class, 
-            () -> gameService.placeCard(simGame.getHost(), simGame.getGameCode(), 23, cardToPlace), 
-            "You can't place this card, because it's not your turn");
-        verify(gameRepository).findGameByGameCode(anyString());
-    }
-
-    private Game createANotStartedGame() {
-        Hand h1 = new Hand();
-        h1.setId(1);
-        h1.setCards(new ArrayList<>());
-        h1.setNumCards(0);
-        Player p1 = new Player();
-        p1.setId(1);
-        p1.setHand(h1);
-        PackCard pc1 = new PackCard();
-        pc1.setId(1);
-        List<Card> cards1 = simCreate25Cards(p1);
-        pc1.setNumCards(25);
-        pc1.setCards(cards1);
-        p1.setPackCards(new ArrayList<>(List.of(pc1)));
-        p1.setState(PlayerState.PLAYING);
-
-        Hand h2 = new Hand();
-        h2.setId(2);
-        h2.setCards(new ArrayList<>());
-        h2.setNumCards(0);
-        Player p2 = new Player();
-        p2.setId(2);
-        p2.setHand(h2);
-        PackCard pc2 = new PackCard();
-        pc2.setId(2);
-        List<Card> cards2 = simCreate25Cards(p2);
-        pc2.setNumCards(25);
-        pc2.setCards(cards2);
-        p2.setPackCards(new ArrayList<>(List.of(pc2)));
-        p2.setState(PlayerState.PLAYING);
-
-        Game game = new Game();
-        game.setPlayers(new ArrayList<>(List.of(p1, p2)));
-        game.setGameState(GameState.IN_PROCESS);
-        game.setInitialTurn(new ArrayList<>());
-        game.setOrderTurn(new ArrayList<>());
-        return game;
-    }
-
-    @Test
-    void shouldDoTurn0() {
-        Game game = createANotStartedGame();
-        Player player = game.getPlayers().get(0);
-
-        when(playerService.findPlayer(anyInt())).thenReturn(player);
-        gameService.turn0(game, game.getPlayers());
-
-        assertEquals(5, game.getPlayers().get(0).getHand().getNumCards());
-        assertEquals(5, game.getPlayers().get(1).getHand().getNumCards());
-        assertEquals(20, game.getPlayers().get(0).getPackCards().get(0).getNumCards());
-        assertEquals(20, game.getPlayers().get(1).getPackCards().get(0).getNumCards());
-        assertFalse(game.getInitialTurn().isEmpty());
-        assertNotNull(game.getTurn());
-        assertTrue(game.getOrderTurn().contains(1) && game.getOrderTurn().contains(2));
-        assertEquals(1, game.getNTurn());
-        assertNotNull(player.getTurnStarted());
-
-        verify(playerService).findPlayer(anyInt());
-        verify(packCardService, times(10)).updatePackCard(any(PackCard.class), anyInt());
-        verify(handService, times(10)).updateHand(any(Hand.class), anyInt());
-        verify(playerService).updatePlayer(any(Player.class));
-        verify(gameRepository).save(any(Game.class));
-    }
-
-    private void placeCardInTable() {
-        Card card = p.getHand().getCards().stream().findFirst().get();
-        p.getHand().getCards().remove(card);
-        p.getHand().setNumCards(p.getHand().getNumCards() - 1);
-
-        Cell cell = simGame.getTable().getRows().get(2).getCells().get(4);
-        cell.setIsFull(true);
-        cell.setCard(card);
-
-        p.getPlayedCards().add(card.getId());
-        p.setCardsPlayedThisTurn(1);
-        p.setPossiblePositions(new ArrayList<>(List.of(14)));
-        p.setPossibleRotations(new ArrayList<>(List.of(0)));
-    }
-
-    @Test
-    void shouldDoNextTurnWithoutNextRound() throws UnfeasibleToJumpTeam {
-        placeCardInTable();
-        List<Map<String,Integer>> newPossiblePositions = new ArrayList<>();
-        Map<String,Integer> mp = new HashMap<>();
-        mp.put("position", 1);
-        mp.put("rotation", 0);
-        newPossiblePositions.add(mp);
-
-        when(playerService.findPlayer(anyInt())).thenReturn(p2);
-        when(tableCardService.fromListsToPossiblePositions(any(), any())).thenCallRealMethod();
-        when(tableCardService.getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(), any(), anyBoolean())).thenReturn(newPossiblePositions);
-        
-        gameService.nextTurn(simGame, p);
-
-        assertEquals(0, p.getCardsPlayedThisTurn());
-        assertEquals(4, p.getHand().getNumCards());
-        assertNull(p.getTurnStarted());
-        assertNotNull(p2.getTurnStarted());
-        assertEquals(1, simGame.getNTurn());
-        assertEquals(2, simGame.getTurn());
-        assertFalse(p2.getPossiblePositions().isEmpty());
-
-        verify(playerService, times(5)).updatePlayer(any(Player.class));
-        verify(playerService).findPlayer(anyInt());
-        verify(gameRepository).save(any(Game.class));
-        verify(tableCardService, times(3)).fromListsToPossiblePositions(any(), any());
-        verify(tableCardService, times(3)).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(), any(), anyBoolean());
-    }
-
-    @Test
-    void shouldDoNextTurnWithNextRound() throws UnfeasibleToJumpTeam {
-        placeCardInTable();
-        List<Map<String,Integer>> newPossiblePositions = new ArrayList<>();
-        Map<String,Integer> mp = new HashMap<>();
-        mp.put("position", 1);
-        mp.put("rotation", 0);
-        newPossiblePositions.add(mp);
-        simGame.setOrderTurn(List.of(4, 2, 3, 1));
-        simGame.setTurn(1);
-        Card card = simGame.getTable().getRows().get(3).getCells().get(4).getCard();
-
-        when(tableCardService.fromListsToPossiblePositions(any(), any())).thenCallRealMethod();
-        when(tableCardService.getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(), any(), anyBoolean())).thenReturn(newPossiblePositions);
-        when(cardService.findCard(anyInt())).thenReturn(card);
-        when(playerService.findPlayer(anyInt())).thenAnswer( invocation -> {
-            int id = invocation.getArgument(0);
-            return simGame.getPlayers().stream().filter(p -> p.getId() == id).findFirst().get();
-        });
-
-        gameService.nextTurn(simGame, p);
-        assertEquals(0, p.getCardsPlayedThisTurn());
-        assertEquals(5, p.getHand().getNumCards());
-        assertNotNull(p.getTurnStarted());
-        assertEquals(2, simGame.getNTurn());
-        assertEquals(1, simGame.getTurn());
-        assertTrue(simGame.getOrderTurn().equals(List.of(1, 2, 3, 4)));
-
-        verify(playerService, times(5)).updatePlayer(any(Player.class));
-        verify(cardService).findCard(anyInt());
-        verify(playerService, times(5)).findPlayer(anyInt());
-        verify(gameRepository).save(any(Game.class));
-        verify(tableCardService, times(3)).fromListsToPossiblePositions(any(), any());
-        verify(tableCardService, times(3)).getPossiblePositionsForPlayer(any(TableCard.class), any(Player.class), 
-            any(), any(), anyBoolean());
     }
 }
