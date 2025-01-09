@@ -4,6 +4,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.dto.NotificationDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +23,7 @@ public class Notification extends BaseEntity {
     @NotNull
     User user;
     
+    @Enumerated(EnumType.STRING)
     NotificationType type;
 
     @ManyToOne
