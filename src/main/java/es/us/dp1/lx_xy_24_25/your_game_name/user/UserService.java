@@ -109,6 +109,12 @@ public class UserService {
 	}
 
 	@Transactional
+	public List<Game> findAllGamesWithUser(User user) {
+		List<Game> games = (List<Game>) userRepository.findAllGamesByUser(user);
+		return games;
+	}
+
+	@Transactional
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		List<Game> games = this.findAllGamesByUserHost(toDelete);

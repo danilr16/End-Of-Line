@@ -93,6 +93,14 @@ class UserRestController {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
+	@GetMapping("/gamesAsplayer")
+	public ResponseEntity<List<GameDTO>> findAllGamesAsPlayer() {
+		User user = userService.findCurrentUser();
+		List<Game> games = userService.findAllGamesWithUser(user);
+		List<GameDTO> res = games.stream().map(g -> GameDTO.convertGameToDTO(g)).collect(Collectors.toList());
+		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<User> create(@RequestBody @Valid User user) {

@@ -70,6 +70,7 @@ public class SecurityConfiguration {
 			.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUserDTO").authenticated()
 			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/addFriend/**").authenticated()
 			.requestMatchers(HttpMethod.GET, "/api/v1/users/friends").authenticated()
+			.requestMatchers(HttpMethod.GET,"/api/v1/users/gamesAsplayer").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
 			.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games/**")).authenticated()

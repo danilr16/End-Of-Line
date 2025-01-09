@@ -17,7 +17,7 @@ export default function MyGames(){
     const [visible, setVisible] = useState(false);
     const [games,setGames] = useFetchState(
         [],
-        `/api/v1/users/games`,
+        `/api/v1/users/gamesAsplayer`,
         jwt,
         setMessage,
         setVisible
