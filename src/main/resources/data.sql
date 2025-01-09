@@ -77,16 +77,4 @@ INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,17);
 INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,18);
 INSERT INTO appusers_friends(friends_id,user_id) VALUES (20,19);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+INSERT INTO appnotifications(id, sender_id, user_id, type, gamecode) VALUES (1, 1, 4, 'FRIEND_REQUEST', 'ABCDE');

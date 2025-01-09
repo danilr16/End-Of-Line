@@ -91,39 +91,6 @@ public class GameService2Tests {
 
     private Player p, p2;
 
-    public static List<Card> simCreate25Cards(Player player) { //Función igual a cardService create25Cards que evita la simulación por mock del comportamiento de create25cards
-        List<Card> cards = new ArrayList<>();
-        for(int i=1;i<=3;i++) {
-            Card c1 = Card.createByType(TypeCard.TYPE_1, player);
-            c1.setId(1);
-            cards.add(c1);
-            Card c2 = Card.createByType(TypeCard.TYPE_2_IZQ, player);
-            c2.setId(2);
-            cards.add(c2);
-            Card c3 = Card.createByType(TypeCard.TYPE_2_DER, player);
-            c3.setId(3);
-            cards.add(c3);
-            Card c4 = Card.createByType(TypeCard.TYPE_3_IZQ, player);
-            c4.setId(4);
-            cards.add(c4);
-            Card c5 = Card.createByType(TypeCard.TYPE_3_DER, player);
-            c5.setId(5);
-            cards.add(c5);
-            Card c6 = Card.createByType(TypeCard.TYPE_4, player);
-            c6.setId(6);
-            cards.add(c6);
-            Card c7 = Card.createByType(TypeCard.TYPE_5, player);
-            c7.setId(7);
-            cards.add(c7);
-            Card c8 = Card.createByType(TypeCard.TYPE_0, player);
-            c8.setId(8);
-            cards.add(c8);
-        }
-        Card c9 = Card.createByType(TypeCard.TYPE_1, player);
-        c9.setId(9);
-        cards.add(c9);
-        return cards;
-    }
     //Game simulado para comprobar el funcionamiento
     @BeforeEach
     void setUp(){
@@ -156,7 +123,7 @@ public class GameService2Tests {
         p4.setUser(user4);
             //Crear packcard
         PackCard pc = new PackCard();
-        List<Card> cards = simCreate25Cards(p);
+        List<Card> cards = GameService1Tests.simCreate25Cards(p);
         pc.setCards(new ArrayList<>(cards.subList(5, cards.size())));
         pc.setId(1);
         pc.setNumCards(20);
@@ -424,7 +391,7 @@ public class GameService2Tests {
         p1.setHand(h1);
         PackCard pc1 = new PackCard();
         pc1.setId(1);
-        List<Card> cards1 = simCreate25Cards(p1);
+        List<Card> cards1 = GameService1Tests.simCreate25Cards(p1);
         pc1.setNumCards(25);
         pc1.setCards(cards1);
         p1.setPackCards(new ArrayList<>(List.of(pc1)));
@@ -439,7 +406,7 @@ public class GameService2Tests {
         p2.setHand(h2);
         PackCard pc2 = new PackCard();
         pc2.setId(2);
-        List<Card> cards2 = simCreate25Cards(p2);
+        List<Card> cards2 = GameService1Tests.simCreate25Cards(p2);
         pc2.setNumCards(25);
         pc2.setCards(cards2);
         p2.setPackCards(new ArrayList<>(List.of(pc2)));
