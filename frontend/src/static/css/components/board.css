@@ -30,3 +30,22 @@
     left: 50%;
     transform: translate(-50%, -100%); 
 }
+
+.turn-sign {
+    font-size: 3vh;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    position: fixed; 
+    top: 77%;
+    animation: pulsate 1s infinite ease-in-out; /* Apply animation */
+}
+
+@keyframes pulsate {
+    0%, 100% {
+        font-size: 3vh; /* Start and end at 3vh */
+    }
+    50% {
+        font-size: 3.4vh; /* Increase to 3.5vh at the midpoint */
+    }
+}

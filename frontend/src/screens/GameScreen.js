@@ -15,6 +15,7 @@ import LeaveConfirmationModal from "../components/LeaveConfirmationModal";
 import randomShuffle from "../util/randomShuffle";
 import { ReactComponent as Reroll } from '../static/images/reroll.svg';
 import { useAlert } from "../AlertContext";
+import GameResultModal from "../components/GameResultModal";
 
 
 export default function GameScreen() {
@@ -125,6 +126,7 @@ export default function GameScreen() {
     };
 
     const [showConfirmationModal, setShowConfirmationModal] = useState(false) //Modal de confirmación para salir de la partida
+    const [showResultModal, setShowResultModal] = useState(false) //Modal de resultado de partida
     const [isDragging, setDragging] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(-1);
     const [hoveredRotation, setHoveredRotation] = useState(0);
@@ -171,6 +173,12 @@ export default function GameScreen() {
                 );
 
                 if (nextCard) {
+                    //const slideSound = new Audio('/sounds/card-slide.wav');
+                    //slideSound.play().catch((error) => {
+                    //    console.log('Error playing sound:', error);
+                    //}); 
+
+                    // SONIDO PRUEBA
                     return [...prevCurrentCards, nextCard];
                 }
                 return prevCurrentCards;
@@ -383,6 +391,7 @@ export default function GameScreen() {
 
     const onDrop = (index, rot) => {
         if (beingDraggedCardRef.current !== null) {
+
             const droppedCardIndex = beingDraggedCardRef.current; 
             const card = currentCardsRef.current[droppedCardIndex];
             const cardId = card.id;
@@ -448,6 +457,15 @@ export default function GameScreen() {
 
         document.body.style.overflow = "hidden";
     });
+
+    useEffect(() => {
+        if (
+            player?.playerState === 'WON' || 
+            (player?.playerState === 'LOST' && game?.gameMode !== 'TEAM_BATTLE')
+        ) {
+            setShowResultModal(true);
+        }
+    }, [player?.playerState, game?.gameMode, setShowResultModal]);
 
     useEffect(() => {
         if(!jwt){
@@ -626,7 +644,7 @@ export default function GameScreen() {
                 <InGamePlayerList players = {players} spectators = {game.spectators} colors = {playerColors}
                     gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers} playerTurnIndex = {game.gameState == "IN_PROCESS" ? findPlayerIndexById(game.turn): null}/>
 
-                    {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0) && (
+                    {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0 && player?.id) && (
                         <Board 
                             gridSize={gridSize} 
                             gridItemSize={gridItemSize} 
@@ -645,6 +663,7 @@ export default function GameScreen() {
                             canDrop = {player && game.turn === player.id && game.gameState == "IN_PROCESS"}
                             secondsLeft = {secondsLeft}
                             state = {game.gameState}
+                            turn = {game.turn === player.id}
                         />
                     )}
 
@@ -731,6 +750,7 @@ export default function GameScreen() {
                 />
             </button>}
             <LeaveConfirmationModal showConfirmationModal={showConfirmationModal} setShowConfirmationModal = {setShowConfirmationModal} handleLeave={handleLeave} game={game} user={user} />
+            <GameResultModal showResultModal={showResultModal} setShowResultModal = {setShowResultModal} won={player?.playerState == 'WON'} />
         </div>
     );
 }
