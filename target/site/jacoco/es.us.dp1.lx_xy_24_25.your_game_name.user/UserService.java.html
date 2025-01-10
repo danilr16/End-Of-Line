@@ -114,28 +114,34 @@ public class UserService {
 	}
 
 	@Transactional
+	public List&lt;Game&gt; findAllGamesWithUser(User user) {
+<span class="nc" id="L118">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesByUser(user);</span>
+<span class="nc" id="L119">		return games;</span>
+	}
+
+	@Transactional
 	public void deleteUser(Integer id) {
-<span class="fc" id="L118">		User toDelete = findUser(id);</span>
-<span class="fc" id="L119">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		for (Game game: games) {</span>
-<span class="nc" id="L121">			this.gameService.deleteGame(game.getId());</span>
-<span class="nc" id="L122">		}</span>
-<span class="fc" id="L123">		List&lt;Player&gt; players = (List&lt;Player&gt;) findAllPlayerByUser(toDelete);</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		for (Player player: players) {</span>
-<span class="nc" id="L125">			this.playerService.deletePlayer(player);</span>
-<span class="nc" id="L126">		}</span>
-<span class="fc" id="L127">		List&lt;User&gt; friends = toDelete.getFriends();</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (User friend: friends) {</span>
-<span class="fc" id="L129">			friend.getFriends().remove(toDelete);</span>
-<span class="fc" id="L130">			this.updateUser(friend, friend.getId());</span>
-<span class="fc" id="L131">		}</span>
-<span class="fc" id="L132">		List&lt;Notification&gt; notifications = notificationService.findAllByUser(toDelete).get();</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (Notification notification: notifications) {</span>
-<span class="fc" id="L134">			this.notificationService.deleteNotification(notification.getId());</span>
-<span class="fc" id="L135">		}</span>
-<span class="fc" id="L136">		toDelete.setFriends(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L137">		this.updateUser(toDelete, id);</span>
-<span class="fc" id="L138">		this.userRepository.delete(toDelete);</span>
-<span class="fc" id="L139">	}</span>
+<span class="fc" id="L124">		User toDelete = findUser(id);</span>
+<span class="fc" id="L125">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		for (Game game: games) {</span>
+<span class="nc" id="L127">			this.gameService.deleteGame(game.getId());</span>
+<span class="nc" id="L128">		}</span>
+<span class="fc" id="L129">		List&lt;Player&gt; players = (List&lt;Player&gt;) findAllPlayerByUser(toDelete);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		for (Player player: players) {</span>
+<span class="nc" id="L131">			this.playerService.deletePlayer(player);</span>
+<span class="nc" id="L132">		}</span>
+<span class="fc" id="L133">		List&lt;User&gt; friends = toDelete.getFriends();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (User friend: friends) {</span>
+<span class="fc" id="L135">			friend.getFriends().remove(toDelete);</span>
+<span class="fc" id="L136">			this.updateUser(friend, friend.getId());</span>
+<span class="fc" id="L137">		}</span>
+<span class="fc" id="L138">		List&lt;Notification&gt; notifications = notificationService.findAllByUser(toDelete).get();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (Notification notification: notifications) {</span>
+<span class="fc" id="L140">			this.notificationService.deleteNotification(notification.getId());</span>
+<span class="fc" id="L141">		}</span>
+<span class="fc" id="L142">		toDelete.setFriends(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L143">		this.updateUser(toDelete, id);</span>
+<span class="fc" id="L144">		this.userRepository.delete(toDelete);</span>
+<span class="fc" id="L145">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
