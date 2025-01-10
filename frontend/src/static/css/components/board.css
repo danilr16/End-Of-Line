@@ -37,11 +37,11 @@
     font-weight: bold;
     text-align: center;
     position: fixed; 
-    top: 77%;
-    animation: pulsate 1s infinite ease-in-out; /* Apply animation */
+    top: 79.5%;
+    animation: boom 1s infinite ease-in-out; /* Apply animation */
 }
 
-@keyframes pulsate {
+@keyframes boom {
     0%, 100% {
         font-size: 3vh; /* Start and end at 3vh */
     }
