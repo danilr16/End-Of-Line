@@ -208,7 +208,7 @@ class UserRestController {
 
 	@PatchMapping("/addFriend/{username}")
 	public ResponseEntity<List<User>> addFriend(@PathVariable String username){
-		try{
+		
 		User currentUser = userService.findCurrentUser();
 		User newFriend = userService.findUser(username);
 		if(currentUser.getFriends().contains(newFriend)){
@@ -223,11 +223,7 @@ class UserRestController {
 		userService.updateUser(newFriend, newFriend.getId());
 		List<User> newFriends = List.of(currentUser,newFriend); 
 		return new ResponseEntity<>(newFriends,HttpStatus.OK);
-	}
-		catch(Exception e){
-			e.printStackTrace();
-			return null;
-		}
+	
 	}
 
 	@PatchMapping("/removeFriend")

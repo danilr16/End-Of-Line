@@ -1,10 +1,13 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -36,6 +39,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -45,6 +49,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.request.LoginRequest;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.SecurityConfiguration;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.jwt.JwtUtils;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.services.UserDetailsImpl;
+import es.us.dp1.lx_xy_24_25.your_game_name.dto.FriendDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.dto.UserProfileUpdateDTO;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
@@ -57,6 +62,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.user.AuthoritiesService;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserRestController;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
+import lombok.With;
 
 /**
  * Test class for the {@link VetController}
@@ -403,4 +409,140 @@ class UserControllerTests {
 		games.add(game);
 		return games;
 	}
+
+	private static List<User> createValidFriendList(User user) {
+		List<User> users = new ArrayList<>();
+		user.setId(16);
+		user.setUsername("friend1");
+		user.setPassword("password");
+		user.setAuthority(new Authorities());
+		users.add(user);
+		return users;
+	}
+	
+	@Test
+	@WithMockUser("player")
+	void shouldReturnFriends() throws Exception {
+		User mockUser = mock(User.class);
+		when(userService.findCurrentUser()).thenReturn(mockUser);
+		when(mockUser.getFriends()).thenReturn(createValidFriendList(new User()));
+
+		mockMvc.perform(get(BASE_URL + "/friends"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(1))
+				.andExpect(jsonPath("$[0].username").value("friend1"));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(mockUser, times(1)).getFriends();
+	}
+
+	@Test
+    @WithMockUser("player")
+    void shouldAddFriend() throws Exception {
+        User currentUser = new User();
+        currentUser.setId(1);
+        currentUser.setUsername("currentUser");
+        currentUser.setFriends(new ArrayList<>());
+		currentUser.setAuthority(new Authorities());
+
+        User newFriend = new User();
+        newFriend.setId(2);
+        newFriend.setUsername("newFriend");
+        newFriend.setFriends(new ArrayList<>());
+		newFriend.setAuthority(new Authorities());
+
+        when(userService.findCurrentUser()).thenReturn(currentUser);
+        when(userService.findUser("newFriend")).thenReturn(newFriend);
+
+		when(userService.updateUser(currentUser, currentUser.getId())).thenReturn(currentUser);
+		when(userService.updateUser(newFriend, newFriend.getId())).thenReturn(newFriend);
+
+        MvcResult result = mockMvc.perform(patch(BASE_URL +"/addFriend/{username}",newFriend.getUsername()).with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2)) 
+            	.andExpect(jsonPath("$[0].username").value("currentUser")) 
+            	.andExpect(jsonPath("$[1].username").value("newFriend"))
+				.andReturn();
+	
+		String jsonResponse = result.getResponse().getContentAsString();
+		System.out.println("Response JSON: " + jsonResponse);
+
+        verify(userService, times(1)).findCurrentUser();
+        verify(userService, times(1)).findUser("newFriend");
+        verify(userService, times(1)).updateUser(currentUser, currentUser.getId());
+        verify(userService, times(1)).updateUser(newFriend, newFriend.getId());
+    }
+
+	@Test
+	@WithMockUser("player")
+	void should_not_add_yourself_as_a_friend() throws Exception {
+
+		User currentUser = new User();
+        currentUser.setId(1);
+        currentUser.setUsername("currentUser");
+        currentUser.setFriends(new ArrayList<>());
+		currentUser.setAuthority(new Authorities());
+
+		User newFriend = currentUser;
+
+
+		when(userService.findCurrentUser()).thenReturn(currentUser);
+        when(userService.findUser(newFriend.getUsername())).thenReturn(newFriend);
+		
+
+		when(userService.updateUser(currentUser, currentUser.getId())).thenReturn(currentUser);
+		when(userService.updateUser(newFriend, newFriend.getId())).thenReturn(newFriend);
+		
+		mockMvc.perform(patch(BASE_URL + "/addFriend/{username}",newFriend.getUsername()).with(csrf()))
+				.andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException))
+				.andExpect(result -> 
+                assertEquals("You can't add yourself as a friend!", 
+                             result.getResolvedException().getMessage()));
+
+	}
+
+
+	@Test
+	@WithMockUser("player")
+	public void shouldThrowAccessDeniedIfAlreadyFriends() throws Exception {
+		
+		User currentUser = new User();
+		currentUser.setId(1);
+		currentUser.setUsername("player1");
+		currentUser.setFriends(new ArrayList<>());
+
+		
+		User newFriend = new User();
+		newFriend.setId(2);
+		newFriend.setUsername("newFriend");
+		newFriend.setFriends(new ArrayList<>());
+
+		
+		currentUser.getFriends().add(newFriend);
+
+		
+		when(userService.findCurrentUser()).thenReturn(currentUser);
+		when(userService.findUser("newFriend")).thenReturn(newFriend);
+
+		when(userService.updateUser(currentUser, currentUser.getId())).thenReturn(currentUser);
+		when(userService.updateUser(newFriend, newFriend.getId())).thenReturn(newFriend);
+
+		
+		mockMvc.perform(patch(BASE_URL + "/addFriend/{username}", "newFriend").with(csrf()))
+				.andExpect(status().isForbidden()) 
+				.andExpect(result -> 
+					assertTrue(result.getResolvedException() instanceof AccessDeniedException))
+				.andExpect(result -> 
+				assertEquals("You are already friends with this user!", 
+								result.getResolvedException().getMessage()));
+
+		
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService, times(1)).findUser("newFriend");
+		verifyNoMoreInteractions(userService); 
+	}
+
+
+
 }
