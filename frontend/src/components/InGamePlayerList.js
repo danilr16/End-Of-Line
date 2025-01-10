@@ -71,7 +71,8 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                                         height: '16px',
                                         marginLeft: '10px', 
                                         position:'relative',
-                                        opacity:'0.5'
+                                        opacity:'0.5',
+                                        color: 'white',
                                     }}
                                 />
                             )}
@@ -82,6 +83,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                                         height: '16px',
                                         marginLeft: '10px', 
                                         position:'relative',
+                                        color:'rgb(255, 195, 66)',
                                     }}
                                 />
                             )}
