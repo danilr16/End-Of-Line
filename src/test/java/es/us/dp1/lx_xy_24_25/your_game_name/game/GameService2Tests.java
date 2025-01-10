@@ -102,6 +102,8 @@ public class GameService2Tests {
         p.setUser(host);
         p.setCardsPlayedThisTurn(0);
         p.setTurnStarted(LocalDateTime.now());
+        p.setScore(0);
+        p.setEnergy(3);
         User user2 = new User();
         user2.setId(2);
         p2 = new Player();
@@ -109,6 +111,8 @@ public class GameService2Tests {
         p2.setState(PlayerState.PLAYING);
         p.setCardsPlayedThisTurn(0);
         p2.setUser(user2);
+        p2.setEnergy(3);
+        p2.setScore(0);
         User user3 = new User();
         user3.setId(3);
         Player p3 = new Player();
@@ -139,8 +143,10 @@ public class GameService2Tests {
         p.setHand(playerHand);
         PackCard pc2 = new PackCard();
         pc2.setNumCards(20);
+        List<Card> cards2 = GameService1Tests.simCreate25Cards(p2);
         Hand h2 = new Hand();
         h2.setNumCards(5);
+        h2.setCards(new ArrayList<>(cards2.subList(0, 5)));
         p2.setHand(h2);
         p2.setPackCards(new ArrayList<>(List.of(pc2)));
         PackCard pc3 = new PackCard();
@@ -262,6 +268,7 @@ public class GameService2Tests {
         simGame.setGameMode(mode);
         simGame.setSpectators(spectators);
         simGame.setTable(table);
+        simGame.setStarted(LocalDateTime.of(2024, 12, 25, 12, 23, 45));
     }
 
     @Test
@@ -533,34 +540,34 @@ public class GameService2Tests {
     @Test
     void shouldManageGameDifferentGameModes() throws ConflictException, UnfeasibleToJumpTeam {
         GameService spyService = Mockito.spy(gameService);
-        doNothing().when(spyService).gameInProcessSingle(any(Game.class), any(User.class));
-        doNothing().when(spyService).gameInProcess(any(Game.class), any(User.class));
-        doNothing().when(spyService).gameInProcessCoop(any(Game.class), any(User.class));
-        doNothing().when(spyService).gameInProcessTeam(any(Game.class), any(User.class));
+        doNothing().when(spyService).gameInProcessSingle(any(Game.class));
+        doNothing().when(spyService).gameInProcess(any(Game.class));
+        doNothing().when(spyService).gameInProcessCoop(any(Game.class));
+        doNothing().when(spyService).gameInProcessTeam(any(Game.class));
         //VERSUS
         spyService.manageGame(simGame, p.getUser());
-        verify(spyService).gameInProcess(any(Game.class), any(User.class));
+        verify(spyService).gameInProcess(any(Game.class));
 
         //PUZZLE_SINGLE
         simGame.setGameMode(GameMode.PUZZLE_SINGLE);
         spyService.manageGame(simGame, p.getUser());
-        verify(spyService).gameInProcessSingle(any(Game.class), any(User.class));
+        verify(spyService).gameInProcessSingle(any(Game.class));
 
         //PUZZLE_COOP
         simGame.setGameMode(GameMode.PUZZLE_COOP);
         spyService.manageGame(simGame, p.getUser());
-        verify(spyService).gameInProcessCoop(any(Game.class), any(User.class));
+        verify(spyService).gameInProcessCoop(any(Game.class));
 
         //TEAM_BATTLE
         simGame.setGameMode(GameMode.TEAM_BATTLE);
         spyService.manageGame(simGame, p.getUser());
-        verify(spyService).gameInProcessTeam(any(Game.class), any(User.class));
+        verify(spyService).gameInProcessTeam(any(Game.class));
     }
 
     @Test
     void shouldThrowConflictErrorManagingGame() throws ConflictException, UnfeasibleToJumpTeam {
         GameService spyService = Mockito.spy(gameService);
-        doThrow(ConflictException.class).when(spyService).gameInProcess(any(Game.class), any(User.class));
+        doThrow(ConflictException.class).when(spyService).gameInProcess(any(Game.class));
         assertThrows(ConflictException.class, () -> spyService.manageGame(simGame, p.getUser()));
     }
 
@@ -758,5 +765,235 @@ public class GameService2Tests {
 
         verify(teamService).deleteTeam(any(Team.class));
         verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameInProcessUserPlaying() throws ConflictException, UnfeasibleToJumpTeam {
+        GameService spyService = Mockito.spy(gameService);
+        when(playerService.findPlayer(anyInt())).thenReturn(p);
+        doNothing().when(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+
+        spyService.gameInProcess(simGame);
+        verify(playerService).findPlayer(anyInt());
+        verify(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameInProcessUserLost() throws ConflictException, UnfeasibleToJumpTeam {
+        GameService spyService = Mockito.spy(gameService);
+        p.setState(PlayerState.LOST);
+        when(playerService.findPlayer(anyInt())).thenReturn(p);
+        doNothing().when(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+        doNothing().when(spyService).nextTurn(any(Game.class), any(Player.class));
+
+        spyService.gameInProcess(simGame);
+        verify(playerService).findPlayer(anyInt());
+        verify(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+        verify(spyService).nextTurn(any(Game.class), any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameInProcessEndGame() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.getPlayers().stream().forEach(pl -> pl.setState(PlayerState.LOST));
+        p.setState(PlayerState.PLAYING);
+
+        gameService.gameInProcess(simGame);
+        assertEquals(GameState.END, simGame.getGameState());
+        assertEquals(PlayerState.WON, p.getState());
+        assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+        assertEquals(1, p.getUser().getWinningStreak());
+        assertEquals(1, p.getUser().getMaxStreak());
+
+        verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameSingleUserPlaying() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(1);
+        simGame.setPlayers(new ArrayList<>(List.of(p)));
+        simGame.setGameMode(GameMode.PUZZLE_SINGLE);
+        simGame.setInitialTurn(List.of(1));
+        simGame.setOrderTurn(List.of(1));
+        GameService spyService = Mockito.spy(gameService);
+        
+        when(tableCardService.tableCardFull(any(TableCard.class))).thenCallRealMethod();
+        when(playerService.findPlayer(anyInt())).thenReturn(p);
+        doNothing().when(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+
+        spyService.gameInProcessSingle(simGame);
+        verify(tableCardService).tableCardFull(any(TableCard.class));
+        verify(playerService).findPlayer(anyInt());
+        verify(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameSingleTableFull() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(1);
+        simGame.setPlayers(new ArrayList<>(List.of(p)));
+        simGame.setGameMode(GameMode.PUZZLE_SINGLE);
+        simGame.setInitialTurn(List.of(1));
+        simGame.setOrderTurn(List.of(1));
+        p.getUser().setMaxStreak(2);
+        p.getUser().setWinningStreak(2);
+
+        when(tableCardService.tableCardFull(any(TableCard.class))).thenReturn(true);
+
+        gameService.gameInProcessSingle(simGame);
+        assertEquals(GameState.END, simGame.getGameState());
+        assertEquals(PlayerState.WON, p.getState());
+        assertTrue(p.getScore() > 0);
+        assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+        assertEquals(3, p.getUser().getWinningStreak());
+        assertEquals(3, p.getUser().getMaxStreak());
+
+        verify(tableCardService).tableCardFull(any(TableCard.class));
+        verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameSingleUserLost() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(1);
+        simGame.setPlayers(new ArrayList<>(List.of(p)));
+        simGame.setGameMode(GameMode.PUZZLE_SINGLE);
+        simGame.setInitialTurn(List.of(1));
+        simGame.setOrderTurn(List.of(1));
+        p.setState(PlayerState.LOST);
+        
+        gameService.gameInProcessSingle(simGame);
+        assertEquals(GameState.END, simGame.getGameState());
+        assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+    }
+
+    @Test
+    void shouldManageGameCoopUserPlaying() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(2);
+        simGame.setPlayers(new ArrayList<>(List.of(p, p2)));
+        simGame.setGameMode(GameMode.PUZZLE_COOP);
+        simGame.setInitialTurn(List.of(1,2));
+        simGame.setOrderTurn(List.of(1,2));
+        GameService spyService = Mockito.spy(gameService);
+        
+        when(tableCardService.tableCardFull(any(TableCard.class))).thenCallRealMethod();
+        when(playerService.findPlayer(anyInt())).thenReturn(p);
+        doNothing().when(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+
+        spyService.gameInProcessCoop(simGame);
+        verify(playerService).findPlayer(anyInt());
+        verify(tableCardService).tableCardFull(any(TableCard.class));
+        verify(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameTableFull() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(2);
+        simGame.setPlayers(new ArrayList<>(List.of(p, p2)));
+        simGame.setGameMode(GameMode.PUZZLE_COOP);
+        simGame.setInitialTurn(List.of(1,2));
+        simGame.setOrderTurn(List.of(1,2));
+        p.getUser().setMaxStreak(3);
+        p.getUser().setWinningStreak(1);
+
+        when(tableCardService.tableCardFull(any(TableCard.class))).thenReturn(true);
+
+        gameService.gameInProcessCoop(simGame);
+        assertEquals(PlayerState.WON, p.getState());
+        assertEquals(PlayerState.WON, p2.getState());
+        assertTrue(p.getScore() > 0);
+        assertTrue(p2.getScore() > 0);
+        assertEquals(GameState.END, simGame.getGameState());assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+        assertEquals(2, p.getUser().getWinningStreak());
+        assertEquals(3, p.getUser().getMaxStreak());
+        assertEquals(1, p2.getUser().getWinningStreak());
+        assertEquals(1, p2.getUser().getMaxStreak());
+
+        verify(playerService, times(2)).updatePlayer(any(Player.class));
+        verify(tableCardService).tableCardFull(any(TableCard.class));
+    }
+
+    @Test
+    void shouldManageGameCoopUserLost() throws ConflictException, UnfeasibleToJumpTeam {
+        simGame.setNumPlayers(2);
+        simGame.setPlayers(new ArrayList<>(List.of(p, p2)));
+        simGame.setGameMode(GameMode.PUZZLE_COOP);
+        simGame.setInitialTurn(List.of(1,2));
+        simGame.setOrderTurn(List.of(1,2));
+        p.setState(PlayerState.LOST);
+        p.getUser().setMaxStreak(3);
+        p.getUser().setWinningStreak(1);
+
+        gameService.gameInProcessCoop(simGame);
+        assertEquals(PlayerState.LOST, p.getState());
+        assertEquals(PlayerState.LOST, p2.getState());
+        assertTrue(p.getScore() == 0);
+        assertTrue(p2.getScore() == 0);
+        assertEquals(GameState.END, simGame.getGameState());
+        assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+        assertEquals(0, p.getUser().getWinningStreak());
+        assertEquals(3, p.getUser().getMaxStreak());
+
+        verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    private void updateGameToTeamBattle() {
+        List<Team> teams = new ArrayList<>();
+        Team team1 = new Team();
+        team1.setPlayer1(p);
+        team1.setPlayer2(p2);
+        teams.add(team1);
+        Team team2 = new Team();
+        team2.setPlayer1(simGame.getPlayers().get(2));
+        team2.setPlayer2(simGame.getPlayers().get(3));
+        teams.add(team2);
+        simGame.setGameMode(GameMode.TEAM_BATTLE);
+        simGame.setTeams(teams);
+    }
+
+    @Test
+    void shouldManageGameTeamPlaying() throws ConflictException, UnfeasibleToJumpTeam {
+        updateGameToTeamBattle();
+        GameService spyService = Mockito.spy(gameService);
+
+        when(playerService.findPlayer(anyInt())).thenReturn(p);
+        doNothing().when(spyService).manageTurnOfPlayer(any(Game.class), any(Player.class));
+        doNothing().when(spyService).nextTurn(any(Game.class), any(Player.class));
+        
+        spyService.gameInProcessTeam(simGame);
+
+        //Comprobamos que aunque pierda un integrante del equipo, el compañero sigue jugando
+        p.setState(PlayerState.LOST);
+        spyService.gameInProcessTeam(simGame);
+
+        verify(playerService, times(2)).findPlayer(anyInt());
+        verify(spyService, times(2)).manageTurnOfPlayer(any(Game.class), 
+            any(Player.class));
+        verify(spyService).nextTurn(any(Game.class), 
+            any(Player.class));
+    }
+
+    @Test
+    void shouldManageGameTeamLost() throws ConflictException, UnfeasibleToJumpTeam {
+        updateGameToTeamBattle();
+        Team team = simGame.getTeams().get(simGame.getTeams().size()-1);
+        team.getPlayer1().setState(PlayerState.LOST);
+        team.getPlayer2().setState(PlayerState.LOST);
+
+        gameService.gameInProcessTeam(simGame);
+        assertEquals(PlayerState.WON, p.getState());
+        assertEquals(PlayerState.WON, p2.getState());
+        assertEquals(GameState.END, simGame.getGameState());
+        assertNotNull(simGame.getDuration());
+        assertTrue(simGame.getDuration() > 0);
+        assertEquals(1, p.getUser().getWinningStreak());
+        assertEquals(1, p.getUser().getMaxStreak());
+        assertEquals(1, p2.getUser().getWinningStreak());
+        assertEquals(1, p2.getUser().getMaxStreak());
+
+        verify(teamService, times(2)).deleteTeam(any(Team.class));
+        verify(playerService, times(2)).updatePlayer(any(Player.class));
     }
 }

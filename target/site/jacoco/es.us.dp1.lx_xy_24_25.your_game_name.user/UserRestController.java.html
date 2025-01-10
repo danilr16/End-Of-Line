@@ -93,142 +93,150 @@ class UserRestController {
 <span class="fc" id="L93">		return new ResponseEntity&lt;&gt;(res, HttpStatus.OK);</span>
 	}
 
+	@GetMapping(&quot;/gamesAsplayer&quot;)
+	public ResponseEntity&lt;List&lt;GameDTO&gt;&gt; findAllGamesAsPlayer() {
+<span class="nc" id="L98">		User user = userService.findCurrentUser();</span>
+<span class="nc" id="L99">		List&lt;Game&gt; games = userService.findAllGamesWithUser(user);</span>
+<span class="nc" id="L100">		List&lt;GameDTO&gt; res = games.stream().map(g -&gt; GameDTO.convertGameToDTO(g)).collect(Collectors.toList());</span>
+<span class="nc" id="L101">		return new ResponseEntity&lt;&gt;(res, HttpStatus.OK);</span>
+	}
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity&lt;User&gt; create(@RequestBody @Valid User user) {
-<span class="fc" id="L99">		User savedUser = userService.saveUser(user);</span>
-<span class="fc" id="L100">		return new ResponseEntity&lt;&gt;(savedUser, HttpStatus.CREATED);</span>
+<span class="fc" id="L107">		User savedUser = userService.saveUser(user);</span>
+<span class="fc" id="L108">		return new ResponseEntity&lt;&gt;(savedUser, HttpStatus.CREATED);</span>
 	}
 
 	@PutMapping(value = &quot;{userId}&quot;)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity&lt;User&gt; update(@PathVariable(&quot;userId&quot;) Integer id, @RequestBody @Valid User user) {
-<span class="fc" id="L106">		RestPreconditions.checkNotNull(userService.findUser(id), &quot;User&quot;, &quot;ID&quot;, id);</span>
-<span class="fc" id="L107">		return new ResponseEntity&lt;&gt;(this.userService.updateUser(user, id), HttpStatus.OK);</span>
+<span class="fc" id="L114">		RestPreconditions.checkNotNull(userService.findUser(id), &quot;User&quot;, &quot;ID&quot;, id);</span>
+<span class="fc" id="L115">		return new ResponseEntity&lt;&gt;(this.userService.updateUser(user, id), HttpStatus.OK);</span>
 	}
 
 	@DeleteMapping(value = &quot;{userId}&quot;)
 	@ResponseStatus(HttpStatus.OK)
 	public ResponseEntity&lt;MessageResponse&gt; delete(@PathVariable(&quot;userId&quot;) int id) {
-<span class="fc" id="L113">		RestPreconditions.checkNotNull(userService.findUser(id), &quot;User&quot;, &quot;ID&quot;, id);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (userService.findCurrentUser().getId() != id) {</span>
-<span class="fc" id="L115">			userService.deleteUser(id);</span>
-<span class="fc" id="L116">			return new ResponseEntity&lt;&gt;(new MessageResponse(&quot;User deleted!&quot;), HttpStatus.OK);</span>
+<span class="fc" id="L121">		RestPreconditions.checkNotNull(userService.findUser(id), &quot;User&quot;, &quot;ID&quot;, id);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (userService.findCurrentUser().getId() != id) {</span>
+<span class="fc" id="L123">			userService.deleteUser(id);</span>
+<span class="fc" id="L124">			return new ResponseEntity&lt;&gt;(new MessageResponse(&quot;User deleted!&quot;), HttpStatus.OK);</span>
 		} else
-<span class="fc" id="L118">			throw new AccessDeniedException(&quot;You can't delete yourself!&quot;);</span>
+<span class="fc" id="L126">			throw new AccessDeniedException(&quot;You can't delete yourself!&quot;);</span>
 	}
 
 	@PatchMapping(&quot;/myProfile&quot;)
 	public ResponseEntity&lt;User&gt; updateMyProfile(@RequestBody UserProfileUpdateDTO userUpdateDTO) {
-<span class="fc" id="L123">		User toUpdate = userService.findCurrentUser();</span>
-<span class="fc" id="L124">		int id = toUpdate.getId();</span>
-<span class="fc" id="L125">		String newUsername = userUpdateDTO.getNewUsername();</span>
-<span class="fc" id="L126">		String newImage = userUpdateDTO.getNewImage();</span>
+<span class="fc" id="L131">		User toUpdate = userService.findCurrentUser();</span>
+<span class="fc" id="L132">		int id = toUpdate.getId();</span>
+<span class="fc" id="L133">		String newUsername = userUpdateDTO.getNewUsername();</span>
+<span class="fc" id="L134">		String newImage = userUpdateDTO.getNewImage();</span>
 
-<span class="pc bpc" id="L128" title="2 of 4 branches missed.">		if (newUsername != null &amp;&amp; !newUsername.strip().isEmpty()) {</span>
-<span class="pc bpc" id="L129" title="1 of 2 branches missed.">			if (!userService.existsUser(newUsername)) {</span>
-<span class="fc" id="L130">				toUpdate.setUsername(newUsername);</span>
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">		if (newUsername != null &amp;&amp; !newUsername.strip().isEmpty()) {</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if (!userService.existsUser(newUsername)) {</span>
+<span class="fc" id="L138">				toUpdate.setUsername(newUsername);</span>
 			} else {
-<span class="nc" id="L132">				throw new AccessDeniedException(&quot;There already is a user with that username!&quot;);</span>
+<span class="nc" id="L140">				throw new AccessDeniedException(&quot;There already is a user with that username!&quot;);</span>
 			}
 		}
-<span class="pc bpc" id="L135" title="2 of 4 branches missed.">		if (newImage != null &amp;&amp; !newImage.strip().isEmpty()) {</span>
-<span class="fc" id="L136">			toUpdate.setImage(newImage);</span>
+<span class="pc bpc" id="L143" title="2 of 4 branches missed.">		if (newImage != null &amp;&amp; !newImage.strip().isEmpty()) {</span>
+<span class="fc" id="L144">			toUpdate.setImage(newImage);</span>
 		}
-<span class="fc" id="L138">		userService.updateUser(toUpdate, id);</span>
-<span class="fc" id="L139">		return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
+<span class="fc" id="L146">		userService.updateUser(toUpdate, id);</span>
+<span class="fc" id="L147">		return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
 
 	}
 
 	@GetMapping(&quot;/currentUser&quot;)
 	public ResponseEntity&lt;User&gt; findCurrentUser() {
-<span class="fc" id="L145">		User user = userService.findCurrentUser();</span>
-<span class="fc" id="L146">		return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</span>
+<span class="fc" id="L153">		User user = userService.findCurrentUser();</span>
+<span class="fc" id="L154">		return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</span>
 	}
 	@GetMapping(&quot;/currentUserDTO&quot;)
 	public ResponseEntity&lt;UserDTO&gt; findCurrentUserDTO() {
-<span class="nc" id="L150">		User user = userService.findCurrentUser();</span>
-<span class="nc" id="L151">		UserDTO userDTO = UserDTO.convertUserToDTO(user);</span>
-<span class="nc" id="L152">		return new ResponseEntity&lt;&gt;(userDTO, HttpStatus.OK);</span>
+<span class="nc" id="L158">		User user = userService.findCurrentUser();</span>
+<span class="nc" id="L159">		UserDTO userDTO = UserDTO.convertUserToDTO(user);</span>
+<span class="nc" id="L160">		return new ResponseEntity&lt;&gt;(userDTO, HttpStatus.OK);</span>
 	}
 	
   @PatchMapping(&quot;/myProfile/update-password&quot;)
      public ResponseEntity&lt;User&gt; updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
-<span class="fc" id="L157">         User toUpdate = userService.findCurrentUser();</span>
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		 if (toUpdate == null) {</span>
-<span class="nc" id="L159">			throw new AccessDeniedException(&quot;User not authenticated&quot;);</span>
+<span class="fc" id="L165">         User toUpdate = userService.findCurrentUser();</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		 if (toUpdate == null) {</span>
+<span class="nc" id="L167">			throw new AccessDeniedException(&quot;User not authenticated&quot;);</span>
 		}
-<span class="fc" id="L161">         int id = toUpdate.getId();</span>
-<span class="fc" id="L162">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
-<span class="fc" id="L163">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
+<span class="fc" id="L169">         int id = toUpdate.getId();</span>
+<span class="fc" id="L170">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
+<span class="fc" id="L171">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
 		 //Comprobamos que todos los campos sean válidos
-<span class="pc bpc" id="L165" title="4 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
-<span class="nc" id="L166">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
+<span class="pc bpc" id="L173" title="4 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
+<span class="nc" id="L174">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
          }
 		 //Comprobamos que la antigua contraseña sea correcta
-<span class="pc bpc" id="L169" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
-<span class="fc" id="L171">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
+<span class="pc bpc" id="L177" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
+<span class="fc" id="L179">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
              }
          }
 		 //Comprobamos que la nueva contraseña sea diferente a la antigua
-<span class="fc bfc" id="L175" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
 			//Comprobamos que la nueva contraseña sea válida
-<span class="pc bpc" id="L177" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
-<span class="fc" id="L178">				String encodePassword = encoder.encode(newPassword);</span>
-<span class="fc" id="L179">				toUpdate.setPassword(encodePassword);</span>
-<span class="fc" id="L180">			}else{</span>
-<span class="nc" id="L181">				throw new AccessDeniedException(&quot;The new password is not valid&quot;);</span>
+<span class="pc bpc" id="L185" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
+<span class="fc" id="L186">				String encodePassword = encoder.encode(newPassword);</span>
+<span class="fc" id="L187">				toUpdate.setPassword(encodePassword);</span>
+<span class="fc" id="L188">			}else{</span>
+<span class="nc" id="L189">				throw new AccessDeniedException(&quot;The new password is not valid&quot;);</span>
 			}
              
          } else {
-<span class="fc" id="L185">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
+<span class="fc" id="L193">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
          }
-<span class="fc" id="L187">         userService.updateUser(toUpdate, id);</span>
-<span class="fc" id="L188">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
+<span class="fc" id="L195">         userService.updateUser(toUpdate, id);</span>
+<span class="fc" id="L196">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
 
      }
 	}
 	 
 	@GetMapping(&quot;/friends&quot;)
 	public ResponseEntity&lt;List&lt;FriendDTO&gt;&gt; findFriends() {
-<span class="nc" id="L195">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L196">		List&lt;User&gt; friends = currentUser.getFriends();</span>
-<span class="nc" id="L197">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
-<span class="nc" id="L198">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
+<span class="nc" id="L203">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L204">		List&lt;User&gt; friends = currentUser.getFriends();</span>
+<span class="nc" id="L205">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
+<span class="nc" id="L206">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
 	}
 
 	@PatchMapping(&quot;/addFriend/{username}&quot;)
 	public ResponseEntity&lt;List&lt;User&gt;&gt; addFriend(@PathVariable String username){
 		try{
-<span class="nc" id="L204">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L205">		User newFriend = userService.findUser(username);</span>
-<span class="nc bnc" id="L206" title="All 2 branches missed.">		if(currentUser.getFriends().contains(newFriend)){</span>
-<span class="nc" id="L207">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
+<span class="nc" id="L212">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L213">		User newFriend = userService.findUser(username);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">		if(currentUser.getFriends().contains(newFriend)){</span>
+<span class="nc" id="L215">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
 		}
-<span class="nc bnc" id="L209" title="All 2 branches missed.">		if(currentUser.equals(newFriend)){</span>
-<span class="nc" id="L210">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">		if(currentUser.equals(newFriend)){</span>
+<span class="nc" id="L218">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
 		}
-<span class="nc" id="L212">		currentUser.getFriends().add(newFriend);</span>
-<span class="nc" id="L213">		newFriend.getFriends().add(currentUser);</span>
-<span class="nc" id="L214">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="nc" id="L215">		userService.updateUser(newFriend, newFriend.getId());</span>
-<span class="nc" id="L216">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
-<span class="nc" id="L217">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
+<span class="nc" id="L220">		currentUser.getFriends().add(newFriend);</span>
+<span class="nc" id="L221">		newFriend.getFriends().add(currentUser);</span>
+<span class="nc" id="L222">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="nc" id="L223">		userService.updateUser(newFriend, newFriend.getId());</span>
+<span class="nc" id="L224">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
+<span class="nc" id="L225">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
 	}
-<span class="nc" id="L219">		catch(Exception e){</span>
-<span class="nc" id="L220">			e.printStackTrace();</span>
-<span class="nc" id="L221">			return null;</span>
+<span class="nc" id="L227">		catch(Exception e){</span>
+<span class="nc" id="L228">			e.printStackTrace();</span>
+<span class="nc" id="L229">			return null;</span>
 		}
 	}
 
 	@PatchMapping(&quot;/removeFriend&quot;)
 	public ResponseEntity&lt;User&gt; removeFriend(@RequestBody String username){
-<span class="nc" id="L227">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L228">		User toRemoveFriend = userService.findUser(username);</span>
-<span class="nc" id="L229">		currentUser.getFriends().remove(toRemoveFriend);</span>
-<span class="nc" id="L230">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="nc" id="L231">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
+<span class="nc" id="L235">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L236">		User toRemoveFriend = userService.findUser(username);</span>
+<span class="nc" id="L237">		currentUser.getFriends().remove(toRemoveFriend);</span>
+<span class="nc" id="L238">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="nc" id="L239">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
 	}
 
 
