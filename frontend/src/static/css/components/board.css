@@ -38,14 +38,14 @@
     text-align: center;
     position: fixed; 
     top: 79.5%;
-    animation: boom 1s infinite ease-in-out; /* Apply animation */
+    animation: boom 1s infinite ease-in-out; 
 }
 
 @keyframes boom {
     0%, 100% {
-        font-size: 3vh; /* Start and end at 3vh */
+        font-size: 3vh; 
     }
     50% {
-        font-size: 3.4vh; /* Increase to 3.5vh at the midpoint */
+        font-size: 3.4vh; 
     }
 }
