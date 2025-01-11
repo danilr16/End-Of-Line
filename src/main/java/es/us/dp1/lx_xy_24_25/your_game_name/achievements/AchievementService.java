@@ -101,9 +101,6 @@ public class AchievementService {
         List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS, defeatsStats);
 
         List<String> achievedNames = new ArrayList<>();
-/*         achievedNames.add(gamesPlayedStats.toString());
-        achievedNames.add(victoriesStats.toString());
-        achievedNames.add(defeatsStats.toString()); */
         
         for (Achievement achievement : unachievedGamesPlayed) {
             if (gamesPlayedStats >= achievement.getThreshold()) {
@@ -126,55 +123,13 @@ public class AchievementService {
 
     return achievedNames;
 }
-
-    
     private void markAchievement(User user, Achievement achievement) {
         if (!user.getAchievements().contains(achievement)) {
             user.getAchievements().add(achievement);
             this.userService.updateUser(user, user.getId());
         }
     }
-   /*  //Simulador para tests ELIMINAR
-    @Transactional
-    public List<String> checkAchievementSimulador(User user) {
-        Integer gamesPlayedStats = 1;
-        Integer victoriesStats = 0;
-        Integer defeatsStats = 0;
-
-        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements(Achievement.Metric.GAMES_PLAYED, 1);
-        List<Achievement> unachievedVictories = repository.findUnachievedAchievements(Achievement.Metric.VICTORIES,0 );
-        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS,0 );
-        
-
-        List<String> achievedNames = new ArrayList<>();
-
-        
-    for (Achievement achievement : unachievedGamesPlayed) {
-        if (gamesPlayedStats >= achievement.getThreshold()) {
-            markAchievement(user, achievement);
-            achievedNames.add(achievement.getName());
-        }
-    }
-    for (Achievement achievement : unachievedVictories) {
-        if (victoriesStats >= achievement.getThreshold()) {
-            markAchievement(user, achievement);
-            achievedNames.add(achievement.getName());
-        }
-    }
-    for (Achievement achievement : unachievedDefeats) {
-        if (defeatsStats >= achievement.getThreshold()) {
-            markAchievement(user, achievement);
-            achievedNames.add(achievement.getName());
-        }
-    }
-
-        return achievedNames;
-    } */
-
-
-
-    
-
+     
  
 
     
