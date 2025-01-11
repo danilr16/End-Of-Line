@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.achievements.Achievement.Metric;
 import es.us.dp1.lx_xy_24_25.your_game_name.configuration.SecurityConfiguration;
-import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.AccessDeniedException;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.Authorities;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;

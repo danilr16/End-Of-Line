@@ -76,7 +76,7 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
 
 
     if (isUsed) {
-        return null; // or return <React.Fragment /> to return nothing
+        return null; 
     }
     return (
         <React.Fragment>
@@ -88,8 +88,8 @@ const GameCard = ({ size, iconName, hoverable = true, beingDraggedCard, setBeing
                 className={classNames({
                     'game-card-container': true,
                     'non-hoverable': !hoverable,
-                    'dragging': beingDraggedCard === index || isDragging.current, // Use ref to check dragging state
-                    'hovered': isHovered // Optional: add a class when hovered
+                    'dragging': beingDraggedCard === index || isDragging.current, 
+                    'hovered': isHovered 
                 })}
                 style={{ minWidth: `${size}px`, minHeight: `${size+10}px` }}
             />

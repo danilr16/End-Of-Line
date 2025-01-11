@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService;
+import es.us.dp1.lx_xy_24_25.your_game_name.notification.Notification;
+import es.us.dp1.lx_xy_24_25.your_game_name.notification.NotificationService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 
@@ -40,12 +42,15 @@ public class UserService {
 	private UserRepository userRepository;	
 	private PlayerService playerService;
 	private GameService gameService;
+	private NotificationService notificationService;
 
 	@Autowired
-	public UserService(UserRepository userRepository, PlayerService playerService, GameService gameService) {
+	public UserService(UserRepository userRepository, PlayerService playerService, 
+		GameService gameService, NotificationService notificationService) {
 		this.userRepository = userRepository;
 		this.playerService = playerService;
 		this.gameService = gameService;
+		this.notificationService = notificationService;
 	}
 
 	@Transactional
@@ -109,6 +114,12 @@ public class UserService {
 	}
 
 	@Transactional
+	public List<Game> findAllGamesWithUser(User user) {
+		List<Game> games = (List<Game>) userRepository.findAllGamesByUser(user);
+		return games;
+	}
+
+	@Transactional
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		List<Game> games = this.findAllGamesByUserHost(toDelete);
@@ -124,10 +135,12 @@ public class UserService {
 			friend.getFriends().remove(toDelete);
 			this.updateUser(friend, friend.getId());
 		}
+		List<Notification> notifications = notificationService.findAllByUser(toDelete).get();
+		for (Notification notification: notifications) {
+			this.notificationService.deleteNotification(notification.getId());
+		}
 		toDelete.setFriends(new ArrayList<>());
 		this.updateUser(toDelete, id);
 		this.userRepository.delete(toDelete);
 	}
-	
-
 }

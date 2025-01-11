@@ -406,7 +406,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcess(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {// Lógica de gestión de una partida VERSUS en progreso
+    public void gameInProcess(Game game) throws ConflictException, UnfeasibleToJumpTeam {// Lógica de gestión de una partida VERSUS en progreso
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -431,13 +431,14 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessSingle(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {
+    public void gameInProcessSingle(Game game) throws ConflictException, UnfeasibleToJumpTeam {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
             this.turn0(game, players);
         } else {
             if (players.isEmpty()) {
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game);
@@ -459,7 +460,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessCoop(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {//Revisar se puede jugar
+    public void gameInProcessCoop(Game game) throws ConflictException, UnfeasibleToJumpTeam {//Revisar se puede jugar
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
             .collect(Collectors.toList());
         if (game.getNTurn() == 0) {
@@ -481,6 +482,7 @@ public class GameService {
                     winner.setScore(sumInicHand + winner.getEnergy());
                     playerService.updatePlayer(winner);
                 }
+                updateStreaks(game);
                 game.setGameState(GameState.END);
                 game.setDuration(Duration.between(game.getStarted(), LocalDateTime.now()).toMinutesPart());
                 this.updateGame(game);
@@ -495,7 +497,7 @@ public class GameService {
     }
 
     @Transactional
-    public void gameInProcessTeam(Game game, User currentUser) throws ConflictException, UnfeasibleToJumpTeam {
+    public void gameInProcessTeam(Game game) throws ConflictException, UnfeasibleToJumpTeam {
         List<Player> players = game.getPlayers().stream().filter(p -> !p.getState().equals(PlayerState.LOST))
                 .collect(Collectors.toList());
         List<Team> teams = game.getTeams().stream().filter(t -> !t.lostTeam()).collect(Collectors.toList());
@@ -673,13 +675,13 @@ public class GameService {
         if (game.getGameState().equals(GameState.IN_PROCESS)) {
             GameMode gameMode = game.getGameMode();
             if (gameMode.equals(GameMode.PUZZLE_SINGLE)) {
-                this.gameInProcessSingle(game, currentUser);
+                this.gameInProcessSingle(game);
             } else if (gameMode.equals(GameMode.PUZZLE_COOP)) {
-                this.gameInProcessCoop(game, currentUser);
+                this.gameInProcessCoop(game);
             } else if (gameMode.equals(GameMode.TEAM_BATTLE)) {
-                this.gameInProcessTeam(game, currentUser);
-            } else {
-                this.gameInProcess(game, currentUser);
+                this.gameInProcessTeam(game);
+            } else if (gameMode.equals(GameMode.VERSUS)) {
+                this.gameInProcess(game);
             }
         }
     }
@@ -715,7 +717,7 @@ public class GameService {
     }
 
     private ResponseEntity<MessageResponse> manageUseOfBackAway(Player player, Game game, PowerType powerType) throws InvalidIndexOfTableCard, UnfeasibleToPlaceCard, UnfeasibleToJumpTeam {
-        if (player.getPlayedCards().size() >= 2) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
+        if (player.getPlayedCards().size() >= 3) {//Comprobamos que haya al menos dos cartas jugadas para poder hacer marcha atrás
             Card cardToBackAway = cardService
                     .findCard(player.getPlayedCards().get(player.getPlayedCards().size() - 2));
             List<Map<String, Integer>> newPossiblePositions = tableCardService
@@ -778,7 +780,7 @@ public class GameService {
     }
 
     @Transactional
-    public Game checkTeamBattle(Game game, User user) {
+    public Game checkTeamBattle(Game game) {
         if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
             if (game.getPlayers().size() < 4) {//Cambiar el modo de juego si no hay suficientes jugadores
                 game.setGameMode(GameMode.VERSUS);

@@ -27,6 +27,25 @@
     text-align: center;
     margin-top: -0.5%;
     position: fixed;
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -100%); /* Adjust for content size */
+    left: 50%;
+    transform: translate(-50%, -100%); 
+}
+
+.turn-sign {
+    font-size: 3vh;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    position: fixed; 
+    top: 79.5%;
+    animation: boom 1s infinite ease-in-out; 
+}
+
+@keyframes boom {
+    0%, 100% {
+        font-size: 3vh; 
+    }
+    50% {
+        font-size: 3.4vh; 
+    }
 }

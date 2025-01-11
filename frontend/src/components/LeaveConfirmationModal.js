@@ -5,30 +5,27 @@ function LeaveConfirmationModal({ showConfirmationModal, setShowConfirmationModa
 
     const [isBlurred, setIsBlurred] = useState(false);
 
-    // Start the exit animation when 'stay' is clicked
     const handleStay = () => {
         setIsExiting(true);
         setIsBlurred(false)
-        // Delay the hiding of the modal until the exit animation is complete
         setTimeout(() => {
-            setShowConfirmationModal(false); // Now hide the modal after animation
-            setIsExiting(false); // Reset the exit state for the next time
-        }, 1000); // Match duration to exit animation (0.5s)
+            setShowConfirmationModal(false); 
+            setIsExiting(false); 
+        }, 1000); 
     };
 
     useEffect(() => {
         if (showConfirmationModal) {
             setIsBlurred(true);
-            setIsExiting(false); // Ensure no exit animation when the modal is opening
+            setIsExiting(false); 
         }
     }, [showConfirmationModal]);
 
     return (
         <>
-            {/* Apply 'blurred' class only when modal is visible */}
             <div
                 className={`confirmation-modal-overlay ${isBlurred ? 'blurredOverlay' : ''}`}
-            ></div>  {/* Background overlay for blur effect */}
+            ></div> 
 
             {showConfirmationModal && (
                 <div className={`confirmation-modal ${isExiting ? 'popUp-exit' : ''}`}>

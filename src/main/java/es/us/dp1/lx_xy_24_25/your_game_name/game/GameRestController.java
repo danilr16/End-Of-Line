@@ -197,7 +197,7 @@ public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode")
             if (game.getPlayers().size() == 1) {
                 game.setGameMode(GameMode.PUZZLE_SINGLE);
             }
-            game = gameService.checkTeamBattle(game, user);
+            game = gameService.checkTeamBattle(game);
             packCardService.creaPackCards(game.getPlayers());
             Integer tableCardId = tableService.creaTableCard(game.getPlayers()).getId();
             game.setNumPlayers(game.getPlayers().size());

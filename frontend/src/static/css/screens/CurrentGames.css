@@ -94,7 +94,7 @@
     padding: 20px;
     margin-top: 2%;
     display: flex;
-    justify-content: space-between; /* Keeps the elements spaced out horizontally */
-    align-items: flex-start; /* Aligns child elements to the top */
+    justify-content: space-between; 
+    align-items: flex-start;
     flex-direction: row; 
 }

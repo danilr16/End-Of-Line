@@ -17,7 +17,7 @@ export default function MyGames(){
     const [visible, setVisible] = useState(false);
     const [games,setGames] = useFetchState(
         [],
-        `/api/v1/users/games`,
+        `/api/v1/users/gamesAsplayer`,
         jwt,
         setMessage,
         setVisible
@@ -44,7 +44,6 @@ export default function MyGames(){
 
     const win_lost = (game) => {
         const player = game.players.find(player => player.user.username == jwt_decode(jwt).sub);
-        console.log(game);
         if(player.playerState == "WON") return `myGames-td myGames-WON`;
         return "myGames-td myGames-LOST";
     }
@@ -103,7 +102,7 @@ export default function MyGames(){
         )}
 
     {isGameDataModalOpen && (
-                <MyGameModal selectedGame={selectedGame} closeGameDataModal={closeGameDataModal} parseGamemode={parseGamemode(selectedGame.gameMode)} winLost={gamePlayer(selectedGame).playerState} />
+                <MyGameModal selectedGame={selectedGame} closeGameDataModal={closeGameDataModal} parseGamemode={parseGamemode(selectedGame.gameMode)} winLost={gamePlayer(selectedGame).playerState} playerName={jwt_decode(jwt).sub} />
             )}
     </div>
 );

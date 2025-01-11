@@ -25,8 +25,9 @@ export default function CreateModal({
     const getMaxPlayerOptions = useCallback(() => {
         switch (selectedGamemode) {
             case 'versus':
+                return [2,3,4,5,6,7,8];
             case 'team_battle':
-                return [2, 3, 4, 5, 6, 7, 8];
+                return [4, 6, 8];
             case 'puzzle_coop':
                 return [2, 3, 4];
             case 'puzzle_single':

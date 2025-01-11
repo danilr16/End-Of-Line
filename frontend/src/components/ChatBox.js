@@ -17,7 +17,7 @@ export default function ChatBox({gameCode,user,jwt,colors}){
             if (!jwt) return; 
             const response = await request(`/api/v1/games/${gameCode}/chat`, 'GET', null, jwt);
             console.log("Fetched messages:", response.resContent);
-            setChat(response.resContent);  // Actualizar el chat con los mensajes previos
+            setChat(response.resContent);  
         }
         fetchChat();
     }, [jwt]);
@@ -27,7 +27,7 @@ export default function ChatBox({gameCode,user,jwt,colors}){
         const stompClient = new Client({
             webSocketFactory: () => sock,
             connectHeaders: {
-                Authorization: `Bearer ${jwt}`, // Agrega el token JWT aquí
+                Authorization: `Bearer ${jwt}`, 
             },
             onConnect: () => {
                 console.log("Connected to WebSocket");
@@ -63,7 +63,7 @@ export default function ChatBox({gameCode,user,jwt,colors}){
 
     const handleSendMessage = async () => {
         if (input.trim() === '') {
-            return; //Para que no se envíen mensajes vacíos
+            return; 
         }
 
         if (client && input.trim()) {
@@ -95,10 +95,13 @@ export default function ChatBox({gameCode,user,jwt,colors}){
                                     key={index} 
                                     className="chat-message" 
                                     style={{
-                                        color: colors[chatMessage.userName] != null ? `var(--player${colors[chatMessage.userName]}-normal)` : `var(--br-trans-grey-very-light)`
+                                        color: colors[chatMessage.userName] != null ? `var(--player${colors[chatMessage.userName]}-normal)` : `var(--br-trans-grey-very-light)`,
+                                        
                                     }}
                                 >
-                                    [{chatMessage.userName}]: <span className="message-content">{chatMessage.messageString}</span>
+                                    <span className="message-user" style={{
+                                        WebkitTextStroke: colors[chatMessage.userName] > 10 ? `0.5px var(--player${colors[chatMessage.userName]}-dark)` : "none",
+                                    }}>[{chatMessage.userName}]:</span> <span className="message-content">{chatMessage.messageString}</span>
                                 </div>
                             ))}
                         </div>
