@@ -6,8 +6,7 @@
 .invite-friends-icon-container{
     border-radius: 15%;
     bottom: 22vh;
-    border-top: 2px solid white;
-    border-right: 2px solid white;
+    border: 2px solid white;
     background-color:transparent;
     position: absolute;
     left:22vw;
