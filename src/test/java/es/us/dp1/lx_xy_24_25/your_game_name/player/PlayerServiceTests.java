@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class ChangingName {
+public class PlayerServiceTests {
     @Autowired 
     private PlayerService playerService;
     @Autowired 
