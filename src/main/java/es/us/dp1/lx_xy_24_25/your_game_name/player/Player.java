@@ -66,6 +66,7 @@ public class Player extends BaseEntity{
     List<Integer> possiblePositions;
     //Listas cuyos valores van a pares: valor índice 0 de possiblePositions va relacionado con valor índice 0 de possibleRotations
     //Indican las posiciones posibles y rotaciones necesarias donde el jugador puede colocar una carta
+    //Necesarias para mostrar en el frontend las casillas en el tablero donde poder colocar cartas
     List<Integer> possibleRotations;
 
     List<PowerType> usedPowers;
@@ -77,7 +78,8 @@ public class Player extends BaseEntity{
     @OneToMany(cascade = CascadeType.REMOVE)
     @NotNull
     @JoinColumn(name = "player_id")
-    List<PackCard> packCards;
+    List<PackCard> packCards;//Lista de packCards porque hay otros modos de juego con varios mazos
+                            //añadido para posible ampliación
 
     @PrePersist
     @PreUpdate

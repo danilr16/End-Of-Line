@@ -48,8 +48,9 @@ classDiagram
         +setAuthority(String authority)
     }
     class Metric {
-        +GAMES_PLAYED
-        +VICTORIES
+        GAMES_PLAYED
+        VICTORIES
+        DEFEATS
     }
     <<enumeration>> Metric
     class Achievement {
@@ -60,21 +61,27 @@ classDiagram
         +metric Metric
     }
     class User {
-        +username String
+        +username String (Unique)
         +password String
         +image String
+        +winningStreak Integer
+        +maxStreak Integer
         +authority Authorities (NotNull)
         +achievements List~Achievement~ (NotNull)
         +friends List~User~ (NotNull)
         +getUserName() String
         +getPassword() String
         +getImage() String
+        +getWinningStreak() Integer
+        +getMaxStreak() Integer
         +getAuthority() Authorities
         +getAchievements() List~Achievement~
         +getFriends() List~User~
         +setUserName(String username)
         +setPassword(String password)
         +setImage(String image)
+        +setWinningStreak(Integer winningStreak)
+        +setMaxStreak(Integer maxStreak)
         +setAuthority(Authorities authority)
         +setAchievements(List~Achievement~ achievements)
         +setFriends(List~User~ friends)
@@ -141,9 +148,19 @@ classDiagram
         PLAYING
         WON
         LOST
+        SPECTATING
     }
     <<enumeration>> PlayerState
+    class PowerType {
+        ACCELERATE
+        BRAKE
+        BACK_AWAY
+        EXTRA_GAS
+        JUMP_TEAM
+    }
+    <<enumeration>> PowerType
     class Player {
+        +version Integer
         +score Integer (Min(0))
         +energy Integer (Min(0), Max(3), NotNull)
         +state PlayerState
@@ -153,8 +170,12 @@ classDiagram
         +handChanged Boolean
         +cardsPlayedThisTurn Integer
         +energyUsedThisRound Boolean
+        +possiblePositions List~Integer~
+        +possibleRotations List~Integer~
+        +usedPowers List~PowerType~
         +hand Hand (NotNull)
         +packCards List~PackCard~ (NotNull)
+        +getVersion() Integer
         +getScore() Integer
         +getEnergy() Integer
         +getState() PlayerState
@@ -164,8 +185,12 @@ classDiagram
         +getHandChanged() Boolean
         +getCardsPlayedThisTurn() Integer
         +getEnergyUsedThisRound() Boolean
+        +getPossiblePositions() List~Integer~
+        +getPossibleRotations() List~Integer~
+        +getUsedPowers() List~PowerType~
         +gettHand() Hand
         +getPackCards() List~PackCard~
+        +setVersion(Integer version)
         +setScore(Integer score)
         +setEnergy(Integer energy)
         +setState(PlayerState state)
@@ -175,6 +200,9 @@ classDiagram
         +setHandChanged(Boolean handChanged)
         +setCardsPlayedThisTurn(Integer playedThisTurn)
         +setEnergyUsedThisRound(Boolean energyUsedThisRound)
+        +setPossiblePositions(List~Integer~ possiblePositions)
+        +setPossibleRotations(List~Integer~ possibleRotations)
+        +setUsedPowers(List~PowerType~ usedPowers)
         +settHand(Hand hand)
         +setPackCards(List~PackCard~ packCards)
         -prePersist()
@@ -219,6 +247,11 @@ classDiagram
         +setRows(List~Row~ rows)
         +homeNodes() Map~Integer,List~nodeCoordinates~~$
     }
+    class Team {
+        +player1 Player (NotNull)
+        +player2 Player
+        +lostTeam() Boolean
+    }
     class GameState {
         WAITING
         IN_PROCESS
@@ -237,15 +270,22 @@ classDiagram
     }
     <<enumeration>> GameMode
     class ChatMessage {
+        -jwt String
+        -gameCode String
         -userName String
         -messageString String
+        +getJwt() String
+        +getGameCode() String
         +getUserName() String
         +getMessageString() String
+        +setJwt(String jwt)
+        +setGameCode(String gameCode)
         +setUserName(String userName)
         +setMessageString(String userName)
     }
     <<embeddable>> ChatMessage
     class Game {
+        +version Integer
         +gameCode String (Unique)
         +host User
         +isPublic Boolean (NotNull)
@@ -262,6 +302,8 @@ classDiagram
         +spectators List~Player~
         +players List~Player~
         +table TableCard
+        +teams List~Team~
+        +getVersion() Integer
         +getGameCode() String
         +getHost() User
         +getIsPublic() Boolean
@@ -278,6 +320,8 @@ classDiagram
         +getSpectators() List~Player~
         +getPlayers() List~Player~
         +getTable() TableCard
+        +getTeams() List~Team~
+        +setVersion(Integer version)
         +setGameCode(String gameCode)
         +setHost(User host)
         +setIsPublic(Boolean isPublic)
@@ -294,6 +338,7 @@ classDiagram
         +setSpectators(List~Player~ spectators)
         +setPlayers(List~Player~ players)
         +setTable(TableCard table)
+        +setTeams(List~Team~ teams)
         -prePersist()
     }
     class nodeCoordinates {
@@ -321,20 +366,96 @@ classDiagram
     class GameValidator {
         +validate(Object obj, Errors errors)
     }
-    class UserProfileUpdateDTO {
-        -newUsername String
-        -newImage String
-        -oldPasswordDTO String
-        -newPasswordDTO String
-        +getNewUserName() String
-        +getNewImage() String
-        +getOldPasswordDTO() String
-        +getNewPasswordDTO() String
-        +setNewUserName() String
-        +setNewImage() String
-        +setOldPasswordDTO(String oldPasswordDTO)
-        +setNewPasswordDTO(String newPasswordDTO)
+    class NotificationType {
+        GAME_INVITATION
+        FRIEND_REQUEST
     }
+    <<enumeration>> NotificationType
+    class Notification {
+        +user User (NotNull)
+        +type NotificationType
+        +sender User
+        +gameCode String
+        +jwt String
+        +getUser() User
+        +getType() NotificationType
+        +getSender() User
+        +getGameCode() String
+        +getJwt() String
+        +setUser(User user)
+        +setType(NotificationType type)
+        +setSender(User sender) 
+        +setGameCode(String gameCode)
+        +setJwt(String jwt) 
+        +toDTO() NotificationDTO
+        +fromDTO(NotificationDTO dto, NotificationType type, User user, User sender) Notification$
+    }
+    class Victories {
+        +getUserName String
+        +setUserName(String userName)
+        +getVictories() Integer
+        +setVictories(Integer victories)
+    }
+    <<interface>> Victories
+    class Points {
+        +getUserName String
+        +setUserName(String userName)
+        +getPoints() Integer
+        +setPoints(Integer points)
+    }
+    <<interface>> Points
+    class Ranking {
+        +victories List~Victories~
+        +points List~Points~
+        +of(List~Victories~ victories, List~Points~ points) Ranking$
+    }
+    <<record>> Ranking
+    class BasicStatistics {
+        +getTotal() Integer
+        +setTotal(Integer total)
+        +getAverage() Double
+        +setAverage(Double average)
+        +getMin() Integer
+        +setMin(Integer min)
+        +getMax() Integer
+        +setMax(Integer max)
+    }
+    <<interface>> BasicStatistics
+    class PowerMostUsed {
+        +getPowerType() PowerType
+        +setPowerType(PowerType powerType)
+        +getTimesUsed() Integer
+        +setTimesUsed(Integer timesUsed)
+    }
+    <<interface>> PowerMostUsed
+    class MyGamesStatistics {
+        +victories BasicStatistics
+        +defeats BasicStatistics
+        +powersMostUsed List~PowerMostUsed~
+        +maxStreak Integer
+        +of(BasicStatistics victories, BasicStatistics defeats, List~PowerMostUsed~ powersMostUsed, Integer maxStreak) MyGamesStatistics$
+    }
+    <<record>> MyGamesStatistics
+    class NumGames {
+        +global BasicStatistics
+        +user BasicStatistics
+        +of(BasicStatistics global, BasicStatistics user) NumGames$
+    }
+    <<record>> NumGames
+    class NumPlayers {
+        +global BasicStatistics
+        +user BasicStatistics
+        +globalMostPlayed GameMode
+        +userMostPlayed GameMode
+        +of(BasicStatistics global, BasicStatistics user, GameMode globalMostPlayed, GameMode userMostPlayed) NumPlayers$
+    }
+    <<record>> NumPlayers
+    class DurationGames {
+        +global BasicStatistics
+        +user BasicStatistics
+        +of(BasicStatistics global, BasicStatistics user) DurationGames$
+    }
+    <<record>> DurationGames
 
     BaseEntity <|-- Authorities
     BaseEntity <|-- Achievement
@@ -347,6 +468,8 @@ classDiagram
     BaseEntity <|-- Row
     BaseEntity <|-- TableCard
     BaseEntity <|-- Game
+    BaseEntity <|-- Team
+    BaseEntity <|-- Notification
     User "*" --> "*" Achievement
     User "*" --> "1" Authorities
     User "*" <--> "*" User: isFriend
@@ -359,6 +482,9 @@ classDiagram
     Cell "0..1" --> "0..1" Card
     Row *--> "1..*" Cell
     TableCard *--> "1..*" Row
+    Team "0..1" --> "1..*" Player
+    Notification "*" --> "1..2" User
+    Game *--> "*" Team
     Game "*" --> "1" User
     Game "1" --> "1..*" Player
     Game *--> "1" TableCard
