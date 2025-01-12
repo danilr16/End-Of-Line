@@ -295,6 +295,13 @@ export default function Profile() {
         }
     };
     
+    useEffect(() => {
+        document.body.style.overflow = 'auto';
+    
+        return () => {
+          document.body.style.overflow = 'auto';
+        };
+      }, []); 
         
     const renderAchievement = (achievement) => {
         const isAchieved = achievements.some(userAchievements => userAchievements.id === achievement.id);
