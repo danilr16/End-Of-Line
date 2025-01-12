@@ -117,7 +117,7 @@ public class StatisticsService {
 
     @Transactional(readOnly = true)
     private List<PowerMostUsed> findPowersMostUsed(User user) {
-        return userRepository.findMostPlayedPowerType(user).stream().limit(2).collect(Collectors.toList());
+        return userRepository.findMostPlayedPowerType(user).stream().filter(p -> p.getPowerType() != null).limit(2).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

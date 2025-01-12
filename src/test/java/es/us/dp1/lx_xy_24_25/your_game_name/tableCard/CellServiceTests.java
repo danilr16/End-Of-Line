@@ -16,9 +16,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
-import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardRepository;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.CardService;
+import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 
 
 
@@ -29,7 +31,10 @@ public class CellServiceTests {
     private CellService cellService;
 
     @Autowired
-    private CardRepository cardRepository;
+    private CardService cardService;
+
+    @Autowired
+    private PlayerService playerService;
 
     @Test
     void shouldFindAll(){
@@ -56,30 +61,21 @@ public class CellServiceTests {
     @Test
     void shouldNotUpdateCellIfCardNotTheSame() {
         Cell cell = new Cell();
-        cell.setId(1);
         cell.setIsFull(false);
 
-        Card existingCard = new Card();
-        existingCard.setId(1);
-        existingCard.setType(Card.TypeCard.TYPE_1);
-        existingCard.setRotation(0);
-        existingCard.setPlayer(new Player());
+        Player player = playerService.findPlayer(1);
+        Card existingCard = Card.createByType(TypeCard.TYPE_1, player);
+        cardService.saveCard(existingCard);
 
         cell.setCard(existingCard);
         cellService.saveCell(cell);
 
-        Card newCard = new Card();
-        newCard.setId(2);
-        newCard.setType(Card.TypeCard.TYPE_2_DER);
-        newCard.setRotation(0);
-        newCard.setPlayer(new Player());
+        Card newCard = Card.createByType(TypeCard.TYPE_1, player);
+        cardService.saveCard(newCard);
 
-        Cell updatedCell = new Cell();
-        updatedCell.setId(1);
-        updatedCell.setCard(newCard);
-        updatedCell.setIsFull(true);
+        cell.setCard(newCard);
 
-        assertThrows(IllegalArgumentException.class, () -> cellService.updateCell(updatedCell, 1));
+        assertThrows(IllegalArgumentException.class, () -> cellService.updateCell(cell, cell.getId()));
     }
 
 
@@ -91,11 +87,9 @@ public class CellServiceTests {
         cell.setId(1);
         cell.setIsFull(false); 
 
-        Card card = new Card();
-        card.setId(1);
-        card.setType(Card.TypeCard.TYPE_1);
-        card.setRotation(0);
-        card.setPlayer(new Player());
+        Player player = playerService.findPlayer(1);
+        Card card = Card.createByType(TypeCard.TYPE_1, player);
+        cardService.saveCard(card);
         
         cell.setCard(card);
 
@@ -110,15 +104,12 @@ public class CellServiceTests {
     @Test
     void shouldSetIsFullTrueWhenUpdatingCellWithCard() {
         Cell cell = new Cell();
-        cell.setId(1);
         cell.setIsFull(false); 
         cellService.saveCell(cell);
 
-        Card card = new Card();
-        card.setId(1);
-        card.setType(Card.TypeCard.TYPE_1);
-        card.setRotation(0);
-        card.setPlayer(new Player());
+        Player player = playerService.findPlayer(1);
+        Card card = Card.createByType(TypeCard.TYPE_1, player);
+        cardService.saveCard(card);
 
         cell.setCard(card);
         Cell updatedCell = cellService.updateCell(cell, cell.getId());
@@ -129,13 +120,10 @@ public class CellServiceTests {
     @Test
     void shouldSetIsFullFalseWhenUpdatingCellWithoutCard() {
         Cell cell = new Cell();
-        cell.setId(1);
 
-        Card card = new Card();
-        card.setId(1);
-        card.setType(Card.TypeCard.TYPE_1);
-        card.setRotation(0);
-        card.setPlayer(new Player());
+        Player player = playerService.findPlayer(1);
+        Card card = Card.createByType(TypeCard.TYPE_1, player);
+        cardService.saveCard(card);
 
         cell.setCard(card);
         cell.setIsFull(true);

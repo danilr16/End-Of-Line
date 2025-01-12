@@ -78,17 +78,17 @@ import lombok.Setter;
 <span class="fc" id="L78">    }</span>
 
 	public Boolean hasAuthority(String auth) {
-<span class="nc" id="L81">		return authority.getAuthority().equals(auth);</span>
+<span class="fc" id="L81">		return authority.getAuthority().equals(auth);</span>
 	}
 	
 
 	public Boolean hasAnyAuthority(String... authorities) {
-<span class="nc" id="L86">		Boolean cond = false;</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (String auth : authorities) {</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			if (auth.equals(authority.getAuthority()))</span>
-<span class="nc" id="L89">				cond = true;</span>
+<span class="fc" id="L86">		Boolean cond = false;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (String auth : authorities) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (auth.equals(authority.getAuthority()))</span>
+<span class="fc" id="L89">				cond = true;</span>
 		}
-<span class="nc" id="L91">		return cond;</span>
+<span class="fc" id="L91">		return cond;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -95,10 +95,10 @@ class UserRestController {
 
 	@GetMapping(&quot;/gamesAsplayer&quot;)
 	public ResponseEntity&lt;List&lt;GameDTO&gt;&gt; findAllGamesAsPlayer() {
-<span class="nc" id="L98">		User user = userService.findCurrentUser();</span>
-<span class="nc" id="L99">		List&lt;Game&gt; games = userService.findAllGamesWithUser(user);</span>
-<span class="nc" id="L100">		List&lt;GameDTO&gt; res = games.stream().map(g -&gt; GameDTO.convertGameToDTO(g)).collect(Collectors.toList());</span>
-<span class="nc" id="L101">		return new ResponseEntity&lt;&gt;(res, HttpStatus.OK);</span>
+<span class="fc" id="L98">		User user = userService.findCurrentUser();</span>
+<span class="fc" id="L99">		List&lt;Game&gt; games = userService.findAllGamesWithUser(user);</span>
+<span class="pc" id="L100">		List&lt;GameDTO&gt; res = games.stream().map(g -&gt; GameDTO.convertGameToDTO(g)).collect(Collectors.toList());</span>
+<span class="fc" id="L101">		return new ResponseEntity&lt;&gt;(res, HttpStatus.OK);</span>
 	}
 
 	@PostMapping
@@ -200,43 +200,39 @@ class UserRestController {
 	 
 	@GetMapping(&quot;/friends&quot;)
 	public ResponseEntity&lt;List&lt;FriendDTO&gt;&gt; findFriends() {
-<span class="nc" id="L203">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L204">		List&lt;User&gt; friends = currentUser.getFriends();</span>
-<span class="nc" id="L205">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
-<span class="nc" id="L206">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
+<span class="fc" id="L203">		User currentUser = userService.findCurrentUser();</span>
+<span class="fc" id="L204">		List&lt;User&gt; friends = currentUser.getFriends();</span>
+<span class="fc" id="L205">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
+<span class="fc" id="L206">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
 	}
 
 	@PatchMapping(&quot;/addFriend/{username}&quot;)
 	public ResponseEntity&lt;List&lt;User&gt;&gt; addFriend(@PathVariable String username){
-		try{
-<span class="nc" id="L212">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L213">		User newFriend = userService.findUser(username);</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">		if(currentUser.getFriends().contains(newFriend)){</span>
-<span class="nc" id="L215">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
+		
+<span class="fc" id="L212">		User currentUser = userService.findCurrentUser();</span>
+<span class="fc" id="L213">		User newFriend = userService.findUser(username);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		if(currentUser.getFriends().contains(newFriend)){</span>
+<span class="fc" id="L215">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
 		}
-<span class="nc bnc" id="L217" title="All 2 branches missed.">		if(currentUser.equals(newFriend)){</span>
-<span class="nc" id="L218">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if(currentUser.equals(newFriend)){</span>
+<span class="fc" id="L218">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
 		}
-<span class="nc" id="L220">		currentUser.getFriends().add(newFriend);</span>
-<span class="nc" id="L221">		newFriend.getFriends().add(currentUser);</span>
-<span class="nc" id="L222">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="nc" id="L223">		userService.updateUser(newFriend, newFriend.getId());</span>
-<span class="nc" id="L224">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
-<span class="nc" id="L225">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
-	}
-<span class="nc" id="L227">		catch(Exception e){</span>
-<span class="nc" id="L228">			e.printStackTrace();</span>
-<span class="nc" id="L229">			return null;</span>
-		}
+<span class="fc" id="L220">		currentUser.getFriends().add(newFriend);</span>
+<span class="fc" id="L221">		newFriend.getFriends().add(currentUser);</span>
+<span class="fc" id="L222">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="fc" id="L223">		userService.updateUser(newFriend, newFriend.getId());</span>
+<span class="fc" id="L224">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
+<span class="fc" id="L225">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
+	
 	}
 
 	@PatchMapping(&quot;/removeFriend&quot;)
 	public ResponseEntity&lt;User&gt; removeFriend(@RequestBody String username){
-<span class="nc" id="L235">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L236">		User toRemoveFriend = userService.findUser(username);</span>
-<span class="nc" id="L237">		currentUser.getFriends().remove(toRemoveFriend);</span>
-<span class="nc" id="L238">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="nc" id="L239">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
+<span class="nc" id="L231">		User currentUser = userService.findCurrentUser();</span>
+<span class="nc" id="L232">		User toRemoveFriend = userService.findUser(username);</span>
+<span class="nc" id="L233">		currentUser.getFriends().remove(toRemoveFriend);</span>
+<span class="nc" id="L234">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="nc" id="L235">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
 	}
 
 
