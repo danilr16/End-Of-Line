@@ -15,11 +15,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -543,6 +545,25 @@ class UserControllerTests {
 		verifyNoMoreInteractions(userService); 
 	}
 
+	@Test
+	@WithMockUser("player")
+	public void shouldReturnEmpty() throws Exception {
+		User currentUser = new User();
+		currentUser.setId(1);
+		currentUser.setUsername("player1");
+
+		when(userService.findCurrentUser()).thenReturn(currentUser);
+		when(userService.findAllGamesWithUser(currentUser)).thenReturn(Collections.emptyList());
+
+		mockMvc.perform(get(BASE_URL + "/gamesAsplayer").with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$").isArray())
+			.andExpect(jsonPath("$").isEmpty());
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService, times(1)).findAllGamesWithUser(currentUser);
+	}
 
 
 }
