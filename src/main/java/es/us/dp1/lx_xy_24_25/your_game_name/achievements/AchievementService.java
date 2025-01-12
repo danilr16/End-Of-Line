@@ -86,38 +86,39 @@ public class AchievementService {
     }
         
     @Transactional
-    public List<String> checkAchievement(User user) {
-        Integer gamesPlayedStats = userRepository.findStatisticsOfUserNumGames(user).getTotal();
-        Integer victoriesStats = userRepository.findUserVictories(user).getTotal();
-        Integer defeatsStats = userRepository.findUserDefeats(user).getTotal();
+public List<String> checkAchievement(User user) {
+    Integer gamesPlayedStats = userRepository.findStatisticsOfUserNumGames(user).getTotal();
+    Integer victoriesStats = userRepository.findUserVictories(user).getTotal();
+    Integer defeatsStats = userRepository.findUserDefeats(user).getTotal();
 
-        List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements(Achievement.Metric.GAMES_PLAYED, gamesPlayedStats);
-        List<Achievement> unachievedVictories = repository.findUnachievedAchievements(Achievement.Metric.VICTORIES, victoriesStats);
-        List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS, defeatsStats);
+    List<Achievement> unachievedGamesPlayed = repository.findUnachievedAchievements(Achievement.Metric.GAMES_PLAYED, gamesPlayedStats);
+    List<Achievement> unachievedVictories = repository.findUnachievedAchievements(Achievement.Metric.VICTORIES, victoriesStats);
+    List<Achievement> unachievedDefeats = repository.findUnachievedAchievements(Achievement.Metric.DEFEATS, defeatsStats);
 
-        List<String> achievedNames = new ArrayList<>();
-        
-        for (Achievement achievement : unachievedGamesPlayed) {
-            if (gamesPlayedStats >= achievement.getThreshold()) {
-                markAchievement(user, achievement);
-                achievedNames.add(achievement.getName());
-            }
+    List<String> achievedNames = new ArrayList<>();
+
+    for (Achievement achievement : unachievedGamesPlayed) {
+        if (gamesPlayedStats >= achievement.getThreshold() && !user.getAchievements().contains(achievement)) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
         }
-        for (Achievement achievement : unachievedVictories) {
-            if (victoriesStats >= achievement.getThreshold()) {
-                markAchievement(user, achievement);
-                achievedNames.add(achievement.getName());
-            }
+    }
+    for (Achievement achievement : unachievedVictories) {
+        if (victoriesStats >= achievement.getThreshold() && !user.getAchievements().contains(achievement)) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
         }
-        for (Achievement achievement : unachievedDefeats) {
-            if (defeatsStats >= achievement.getThreshold()) {
-                markAchievement(user, achievement);
-                achievedNames.add(achievement.getName());
-            }
+    }
+    for (Achievement achievement : unachievedDefeats) {
+        if (defeatsStats >= achievement.getThreshold() && !user.getAchievements().contains(achievement)) {
+            markAchievement(user, achievement);
+            achievedNames.add(achievement.getName());
         }
+    }
 
     return achievedNames;
 }
+
     private void markAchievement(User user, Achievement achievement) {
         if (!user.getAchievements().contains(achievement)) {
             user.getAchievements().add(achievement);
