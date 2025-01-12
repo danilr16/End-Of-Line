@@ -33,6 +33,7 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (7,'You get paid for this?','Play fifty matches','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',10,'GAMES_PLAYED');
 INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (8,'The Line of Eternity','Win fifty matches','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',50,'VICTORIES');
 INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (9,'The Habitual Loser',' Lose 50 matches. At this point, it is not a strategy; it is a lifestyle choice','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',50,'DEFEATS');
+INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (10,'End of Line','?','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',100,'VICTORIES');
 
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
