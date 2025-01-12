@@ -415,7 +415,7 @@ Describir porqué era interesante aplicar el patrón.
 ## Decisiones de diseño
 _En esta sección describiremos las decisiones de diseño que se han tomado a lo largo del desarrollo de la aplicación que vayan más allá de la mera aplicación de patrones de diseño o arquitectónicos._
 
-### Sistema de rotación de carta
+### Nombre problema
 #### Descripción del problema:*
 
 Describir el problema de diseño que se detectó, o el porqué era necesario plantearse las posibilidades de diseño disponibles para implementar la funcionalidad asociada a esta decisión de diseño.
@@ -507,8 +507,6 @@ Requiere almacenar y actualizar la lista de posiciones posibles para cada jugado
 
 *Justificación de la solución adoptada:*
 Conforme continuó el desarrollo del proyecto caímos en cuenta que es necesaria una función en el backend que calcule los movimientos posibles de un jugador para, si no tuviera movimientos posibles, marcarlo como que ha perdido la partida. Esta función fue la clave para resolver el problema. Sólo sería necesario tener un atributo por jugador, una lista de “posiciones posibles” para el siguiente turno, y pasarle esta información al frontend para que éste no realice peticiones PATCH con posiciones que no se encuentren en la lista. Y así en el backend, para determinar si la posición es válida, sólo tenemos que comprobar si la posición enviada por el frontend se encuentra en la lista de posiciones posibles. Además podemos usar esta lista para resaltar de forma visual las posiciones posibles en la interfaz de usuario.
-
-_Ejemplos de uso de la plantilla con otras decisiones de diseño:_
 
 ### Decisión 3: Sistema de drag and drop
 #### Descripción del problema:
@@ -802,3 +800,39 @@ En el frontend en una partida no se mostraban las casillas donde podías colocar
 #### Ventajas que presenta la nueva versión del código respecto de la versión original
 
 El frontend puede mostrar las casillas posibles donde colocar tus cartas al usar marcha atrás. Además, con esta refactorización se ha mejorado la limpieza y legibilidad del código.
+
+
+## Propuestas de A+
+
+### Sistema de Drag and Drop
+
+Se ha desarrollado e implementado un sistema de interfaz visual e interactiva para el módulo de juego que permite a los usuarios interactuar de manera intuitiva con el tablero y las cartas. Las funcionalidades del sistema son:
+- Arrastrar y soltar (drag and drop) las cartas.
+- Animaciones suaves y satisfactorias al realizar el drag.
+- Previsualización de posiciones posibles en el tablero mientras se realiza el drag.
+- Animación automática de mover las cartas del mazo a la mano del jugador.
+
+La implementación se ha realizado desde cero, sin utilizar librerías externas de drag and drop, puesto que las necesidades del proyecto eran demasiado específicas.
+
+El sistema visual se basa en componentes interactivos que gestionan tanto la detección de eventos (hover, clic, arrastre) como la representación visual animada de los elementos del juego:
+1. **Componente principal (`GameScreen`)**: Contiene el tablero (`Board`) y las cartas. Al hacer fetch de las cartas disponibles, las va añadiendo incrementalmente a otro estado separado (*currentCards*) cada 100ms. Esto permite una animación sutil pero más satisfactoria que las cartas añadiéndose todas a la vez.
+2. **Componentes de carta (`GameCard`)**: Cada carta tiene dos partes principales:
+   - Una **carta invisible** que actúa como *hitbox* para detectar eventos (hover, clic y arrastre).
+   - Una **carta visual (`CardOverlay`)** que se encarga de la representación animada. Esta se actualiza dinámicamente para dirigirse a:
+     - La posición de la carta invisible cuando no se está arrastrando.
+     - La posición del ratón mientras se realiza el drag.
+3. **Animaciones y previsualizaciones**: A través del uso de *animationFrames*, se realiza un interpolado suave (usando *lerping*) hacia la posición deseada. Además, mediante el atributo *possiblePositions* la carta rota mientras se arrastra según el espacio del tablero sobre el que se esté haciendo hover.
+
+### Quién lo ha realizado
+La implementación de este sistema ha sido diseñada y desarrollada en su totalidad por **Diego Terrón Hernández**.
+
+### Fuentes de información
+- [Documentación para manipulación de eventos del ratón.](https://www.geeksforgeeks.org/react-onmouseenter-event/)
+- [Artículos y tutoriales sobre el uso de *requestAnimationFrame* para animaciones.](https://layonez.medium.com/performant-animations-with-requestanimationframe-and-react-hooks-99a32c5c9fbf)
+
+### Dónde encontrarlo en el código
+- **Componente principal:** `GameScreen.js` (líneas 168-183 para añadir las cartas incrementalmente) (líneas 363-419 función que maneja el *drop* de las cartas) (líneas 652-666 genera las cartas)
+- **Componentes de carta:** 
+  - `GameCard.js` (todo el componente)
+  - `CardOverlay.js` (todo el componente)
+  - `CardIcon.js` (no interviene en el drag and drop pero sirve para representar el contenido de la carta)

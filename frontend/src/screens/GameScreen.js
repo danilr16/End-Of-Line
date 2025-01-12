@@ -173,12 +173,6 @@ export default function GameScreen() {
                 );
 
                 if (nextCard) {
-                    //const slideSound = new Audio('/sounds/card-slide.wav');
-                    //slideSound.play().catch((error) => {
-                    //    console.log('Error playing sound:', error);
-                    //}); 
-
-                    // SONIDO PRUEBA
                     return [...prevCurrentCards, nextCard];
                 }
                 return prevCurrentCards;
@@ -364,29 +358,6 @@ export default function GameScreen() {
     }, [game]);
 
     const [usedCards, setUsedCards] = useState(new Set());
-
-    const handCards = [
-        { iconName: "t_rl_4_card" },
-        { iconName: "t_fr_3_card" },
-        { iconName: "forward_1_card" },
-        { iconName: "l_r_2_card" },
-        { iconName: "t_fl_3_card" },
-    ].map((card, index) => (
-        <GameCard
-            key={index}
-            size={gridItemSize}
-            iconName={card.iconName}
-            setBeingDraggedCard={setBeingDraggedCard}
-            index={index}
-            beingDraggedCard={beingDraggedCard}
-            setDragging={setDragging}
-            dropIndex={hoveredIndex}
-            hoveredRotation={hoveredRotation}
-            isUsed={usedCards.has(index)}
-            color = {player ? findColorById(player.id) : 1}
-        />
-    ));
-
     
 
     const onDrop = (index, rot) => {
