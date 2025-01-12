@@ -39,7 +39,7 @@ public class AchievementServiceTests {
     @Test
     void shouldFindById() {
         Achievement achievement = achievementService.findAchievement(1);
-        assertEquals("1 partida", achievement.getName());;
+        assertEquals("First", achievement.getName());;
     }
 
     @Test
@@ -92,7 +92,7 @@ public class AchievementServiceTests {
     @Transactional
     void shouldNotUpdateAchievementDuplicated() {
         int idToUpdate = 1;
-		String newName="achievement2";
+		String newName="End of the Beginning";
 		Achievement achievement = this.achievementService.findAchievement(idToUpdate);
 		achievement.setName(newName);
         assertThrows(IllegalArgumentException.class, () -> achievementService.updateAchievement(achievement, idToUpdate));
@@ -132,33 +132,4 @@ public class AchievementServiceTests {
         cards.add(c9);
         return cards;
     }
-
-
-   /*  @Test
-    @Transactional
-    void shouldCheckAchievement(){
-        User user = userService.findUser(5);
-        List<String> achievements = new ArrayList<>();
-        Player p = new Player();
-        p.setUser(user);
-        p.setState(PlayerState.WON);
-        PackCard pc = new PackCard();
-        List<Card> cards = simCreate25Cards(p);
-        pc.setCards(cards);
-        pc.setId(1);
-        pc.setNumCards(cards.size());
-        List<PackCard> packCards = new ArrayList<>();
-        packCards.add(pc);
-        p.setPackCards(packCards);
-        Hand playerHand = new Hand();
-        playerHand.setId(1);
-        List<Card> handCards = new ArrayList<>(cards.subList(0, 5));
-        playerHand.setCards(handCards);
-        playerHand.setNumCards(handCards.size());
-        p.setHand(playerHand);
-        achievements.add("1 partida");
-        assertEquals(this.achievementService.checkAchievementSimulador(user), achievements);
-        assertEquals(this.achievementService.findAchievementByUserId(5).size(),achievements.size());
-
-    } */
 }
