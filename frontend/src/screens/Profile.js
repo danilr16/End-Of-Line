@@ -468,7 +468,7 @@ export default function Profile() {
                                     value={newUsername}
                                     placeholder="new username"
                                     onChange={(e) => setNewUsername(e.target.value)} 
-                                    className="editable-input" 
+                                    className="editable-input-username" 
                                 />
 
                                 
