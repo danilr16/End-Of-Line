@@ -5,8 +5,8 @@ const Rules = () => {
   return (
     <div className="pdf-container">
       <iframe
-          src="/ReglasEs.pdf"
-          title="Reglas"
+          src="/Rules.pdf"
+          title="Rules"
           width="100%"
           height="100%"
         />
