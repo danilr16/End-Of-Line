@@ -160,4 +160,36 @@ class UserServiceTests {
 		assertFalse(games.isEmpty());
 		assertTrue(games.size() >= 1);
 	}
+
+	@Test
+	void shouldHaveAuthority() {
+		User user = this.userService.findUser("player1");
+		String expectedAuthority = "PLAYER";
+
+		assertTrue(user.hasAuthority(expectedAuthority));
+	}
+
+	@Test
+	void shouldNotHaveAuthority() {
+		User user = this.userService.findUser("player1");
+		String expectedAuthority = "ADMIN";
+
+		assertFalse(user.hasAuthority(expectedAuthority));
+	}
+
+	@Test
+	void shouldHaveAnyAuthority() {
+		User user = this.userService.findUser("player1");
+		String[] authoritiesToCheck = {"PLAYER", "ADMIN"};
+
+		assertTrue(user.hasAnyAuthority(authoritiesToCheck));
+	}
+
+	@Test
+	void shouldNotHaveAnyAuthority() {
+		User user = this.userService.findUser("player1");
+		String[] authoritiesToCheck = {"OWNER", "ADMIN"};
+
+		assertFalse(user.hasAnyAuthority(authoritiesToCheck));
+	}
 }
