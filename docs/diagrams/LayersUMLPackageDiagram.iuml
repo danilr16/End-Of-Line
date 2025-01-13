@@ -4,12 +4,19 @@
 package "Presentation Layer" {
     RECTANGLE GameRestController
     RECTANGLE UserRestController
-    RECTANGLE AchievementRestController
+    RECTANGLE AchievementRestController    
+    RECTANGLE AuthController
+    RECTANGLE DevelopersController
+    RECTANGLE ExceptionHandlerController
+    RECTANGLE WSChatController
+    RECTANGLE StatisticsRestController
+    RECTANGLE NotificationController
+    RECTANGLE WSNotificationController
 }
 
 package "Business Logic Layer" {
     RECTANGLE GameService
-    RECTANGLE AchievmenentService
+    RECTANGLE AchievementService
     RECTANGLE CardService
     RECTANGLE HandService
     RECTANGLE PackCardService
@@ -19,6 +26,10 @@ package "Business Logic Layer" {
     RECTANGLE UserService
     RECTANGLE AuthoritiesService
     RECTANGLE RowService
+    RECTANGLE AuthService
+    RECTANGLE StatisticsService
+    RECTANGLE TeamService
+    RECTANGLE NotificationService
 }
 
 package "Resources Layer" {
@@ -28,6 +39,15 @@ package "Resources Layer" {
         - Optional<User> findById(Integer id)
         - Iterable<User> findAllByAuthority(String auth)
         - Iterable<Player> findAllPlayerByUser(User user)
+        - Iterable<Game> findAllGamesHostingByUser(User user)
+        - Iterable<Game> findAllGamesByUser(User user)
+        - BasicStatistics findStatisticsOfUserNumGames(User user)
+        - BasicStatistics findStatisticsOfUserDuration(User user)
+        - BasicStatistics findStatisticsOfUserNumPlayers(User user)
+        - List<GameMode> findMostPlayedGameModeByUser(User user)
+        - List<PowerMostUsed> findMostPlayedPowerType(User user)
+        - BasicStatistics findUserVictories(User user)
+        - BasicStatistics findUserDefeats(User user)
     }
     class AuthoritiesRepository {
         - Optional<Authorities> findByName(String authority)
@@ -36,8 +56,17 @@ package "Resources Layer" {
         - Optional<Game> findById(Integer id)
         - List<Game> findByGameStateIn(List<GameState> gameStates)
         - Optional<Game> findGameByGameCode(String gameCode)
+        - Optional<List<ChatMessage>> findGameChat( String gameCode);
+        - BasicStatistics findStatisticsOfGlobalNumGames()
+        - BasicStatistics findStatisticsOfGlobalDuration()
+        - BasicStatistics findStatisticsOfGlobalNumPlayers()
+        - List<GameMode> findMostPlayedGameMode()
+        - List<Victories> findRankingVictories()
+        - List<Points> findRankingPoints()
     }
     class AchievementRepository {
+        - List<Achievement> findByNameOrDescription(String name, String description)
+        - List<Achievement> findUnachievedAchievements(Achievement.Metric metric, Integer userProgress)
 
     }
     class CardRepository {
@@ -50,7 +79,7 @@ package "Resources Layer" {
 
     }
     class PlayerRepository {
-        - Iterable<Game> findAllGameByPlayer(Player player)
+
     }
     class TableCardRepository {
 
@@ -60,6 +89,14 @@ package "Resources Layer" {
     }
     class RowRepository {
 
+    }
+    class TeamRepository {
+
+    }
+    class NotificationRepository{
+        - Optional<List<Notification>> findByUser(User user)
+        - Optional<List<Notification>> findByUserSender(User user, User sender)
+        - Optional<List<Notification>> findAllByUser(User user)
     }
 }
 
@@ -71,19 +108,33 @@ GameRestController -.-> HandService
 GameRestController -.-> TableCardService
 GameRestController -.-> PackCardService
 GameRestController -.-> CardService
-GameRestController -.-> CellService
+GameRestController -.-> TeamService
 
 UserRestController -.-> UserService
 UserRestController -.-> AuthoritiesService
-UserRestController -.-> PlayerService
 
-AchievementRestController -.-> AchievmenentService
+AchievementRestController -.-> AchievementService
 AchievementRestController -.-> UserService
+
+AuthController -.-> UserService
+AuthController -.-> AuthService
+
+WSChatController -.-> GameService
+
+StatisticsRestController -.-> StatisticsService
+StatisticsRestController -.-> UserService
+
+NotificationController -.-> NotificationService
+NotificationController -.-> UserService
+
+WSNotificationController -.-> NotificationService
+WSNotificationController -.-> UserService
+
 
 ' Connections from Business Logic Layer to Resources Layer
 GameService -down-> GameRepository
-AchievmenentService -down-> AchievementRepository
-AchievmenentService -down-> UserRepository
+AchievementService -down-> AchievementRepository
+AchievementService -down-> UserRepository
 CardService -down-> CardRepository
 HandService -down-> HandRepository
 PackCardService -down-> PackCardRepository
@@ -93,6 +144,10 @@ UserService -down-> UserRepository
 AuthoritiesService -down-> AuthoritiesRepository
 CellService -down-> CellRepository
 RowService -down-> RowRepository
+StatisticsService -down-> GameRepository
+StatisticsService -down-> UserRepository
+TeamService -down-> TeamRepository
+NotificationService -down-> NotificationRepository
 
 ' Internal Business Logic Layer connections
 GameService -down-> PackCardService
@@ -100,12 +155,20 @@ GameService -down-> HandService
 GameService -down-> PlayerService
 GameService -down-> CardService
 GameService -down-> TableCardService
+GameService -down-> CellService
+GameService -down-> TeamService
 PackCardService -down-> CardService
 PackCardService -down-> PlayerService
 TableCardService -down-> CellService
 TableCardService -down-> CardService
 TableCardService -down-> PlayerService
 TableCardService -down-> RowService
+AchievementService -down-> UserService
+UserService -down-> PlayerService
+UserService -down-> GameService 
+UserService -down-> NotificationService 
+AuthService -down-> UserService
+AuthService -down-> AuthoritiesService
 
 ' Styles
 @enduml
