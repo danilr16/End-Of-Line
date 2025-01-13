@@ -186,12 +186,12 @@
     margin-right: 10px;
     margin-bottom: 15px;
     opacity: 0.5;
+    border-radius: 12px;
 }
 .achievement-item-achieved{
     display: flex;
     align-items: center;
     margin: 8px 0;
-
 }
 
 .achievement-image-achieved {
@@ -199,6 +199,8 @@
     height: 60px;
     margin-right: 10px;
     margin-bottom: 15px;
+    border-radius: 12px;
+
 }
 
 .achievement-details {
