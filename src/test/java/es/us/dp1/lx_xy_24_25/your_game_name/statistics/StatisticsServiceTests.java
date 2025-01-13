@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PowerType;
 import es.us.dp1.lx_xy_24_25.your_game_name.statistics.StatisticsClasses.BasicStatistics;
 import es.us.dp1.lx_xy_24_25.your_game_name.statistics.StatisticsClasses.DurationGames;
 import es.us.dp1.lx_xy_24_25.your_game_name.statistics.StatisticsClasses.MyGamesStatistics;
@@ -66,7 +67,8 @@ public class StatisticsServiceTests {
         assertNull(defeats.getMax());
         assertNull(defeats.getMin());
         assertTrue(res.maxStreak() >= 3);
-        assertTrue(powers.isEmpty());
+        assertTrue(powers.size() >= 1);
+        assertTrue(powers.stream().findFirst().get().getPowerType().equals(PowerType.ACCELERATE));
     }
 
     @Test

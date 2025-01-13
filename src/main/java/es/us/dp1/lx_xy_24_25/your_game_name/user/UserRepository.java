@@ -57,8 +57,8 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 	"GROUP BY g.gameMode ORDER BY count(g) DESC")
     List<GameMode> findMostPlayedGameModeByUser(User user);
 
-	@Query("SELECT p.usedPowers AS powerType, count(p.usedPowers) AS timesUsed FROM Game g INNER JOIN g.players p "+ 
-	"WHERE p.user = :user AND g.gameState = END AND p.usedPowers IS NOT NULL GROUP BY p.usedPowers ORDER BY count(p.usedPowers) DESC")
+	@Query("SELECT pw AS powerType, count(pw) AS timesUsed FROM Player p INNER JOIN p.usedPowers pw "+ 
+	"WHERE p.user = :user AND (p.state = WON OR p.state = LOST) GROUP BY pw ORDER BY count(pw) DESC")
 	List<PowerMostUsed> findMostPlayedPowerType(User user);
 
 	@Query("SELECT count(CASE WHEN p.state = WON THEN 1 END) AS total, avg(CASE WHEN p.state = WON THEN 1 ELSE 0 END) AS average " + 
@@ -68,5 +68,4 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 	@Query("SELECT count(CASE WHEN p.state = LOST THEN 1 END) AS total, avg(CASE WHEN p.state = LOST THEN 1 ELSE 0 END) AS average FROM Game g " + 
 	"INNER JOIN g.players p WHERE p.user = :user AND g.gameState = END")
 	BasicStatistics findUserDefeats(User user);
-	
 }

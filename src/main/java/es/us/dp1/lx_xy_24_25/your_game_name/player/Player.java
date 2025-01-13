@@ -8,6 +8,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.model.BaseEntity;
 import es.us.dp1.lx_xy_24_25.your_game_name.packCards.PackCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -69,6 +70,8 @@ public class Player extends BaseEntity{
     //Necesarias para mostrar en el frontend las casillas en el tablero donde poder colocar cartas
     List<Integer> possibleRotations;
 
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
     List<PowerType> usedPowers;
 
     @NotNull
