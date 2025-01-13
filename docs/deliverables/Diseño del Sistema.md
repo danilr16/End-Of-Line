@@ -538,6 +538,40 @@ Indicar las clases o paquetes creados como resultado de la aplicación del patr�
 
 Describir porqué era interesante aplicar el patrón.
 
+### Patrón: < Modelo-Vista-Controlador (MVC) >
+*Tipo*: Arquitectónico
+
+*Contexto de Aplicación*: el patrón MVC ha sido aplicado en el proyecto del juego de mesa End of Line, desarrollado con React para el frontend y Spring Boot para el backend. Este patrón organiza la lógica de negocio (controladores y servicios en el backend) y la interfaz de usuario (componentes de React en el frontend) para garantizar una separación clara de responsabilidades. Las siguientes capas corresponden al patrón:
+
+- Modelo: representa los datos del juego y su lógica, implementados en el backend como entidades (Game, Player, etc.) y repositorios que gestionan el acceso a la base de datos.
+- Vista: incluye los componentes de React en el frontend, como tableros, cartas y elementos interactivos, que renderizan la interfaz del juego.
+- Controlador: implementado en Spring Boot mediante controladores REST (GameRestController), los cuales gestionan las peticiones del frontend y procesan las respuestas.
+
+*Paquetes creados en alto nivel:* 
+- frontend (relativo a la vista dentro del modelo)
+- src ( relativo a los controladores y repositorios así como la lógica del juego que corresponden con el controlador y el modelo)
+
+*Ventajas alcanzadas al aplicar el patrón*: La aplicación del patrón MVC facilita la separación de responsabilidades, lo que hace que el código sea más modular y mantenible. Cada capa (modelo, vista y controlador) puede evolucionar de manera independiente, permitiendo modificar la lógica de negocio sin afectar la interfaz de usuario, o actualizar la vista sin alterar los datos o controladores. Además, esta estructura mejora la escalabilidad del proyecto, facilita las pruebas unitarias (especialmente en el backend) y promueve la reutilización del código, ya que cada componente está claramente definido y desacoplado.
+
+### Patrón: < Builder Jerárquico >
+*Tipo*: Diseño
+
+*Contexto :* Dentro del juego End Of Line existe la necesidad de creación de tableros para los diferentes modos de juego existentes, los cuales pueden depender del número de jugadores o del modo de juego en sí mismo. Para la creación de un objeto tablero se plantea la duda de realizar un único constructor con todos los atributos necesarios para crear los diferentes tableros o la descomposición del mismo para fomentar la mayor cohesión dentro del proyecto. Aquí es donde entra el patrón Builder Jerárquico el cual descompone la creación de un objeto de muchos atributos en un constructor que llama a subconstructores que crean partes del tablero para que luego el constructor principal junte cada parte y cree el tablero completo. De esta forma se crean celdas que contendrán las cartas, estas celdas estarán incluidas en las llamadas filas que a su vez formarán el tablero con una lista de filas.
+
+
+La parte de la aplicación donde se ha incluido este patrón es en el paquete tableCard encargado de la creación del tablero el cual cuenta con las siguientes clases relativas al patrón:
+
+- Cell
+- Row
+- TableCard
+
+
+*Ventajas alcanzadas al aplicar el patrón* : 
+- Claridad: Divide un constructor complejo en pasos más pequeños y claros.
+- Extensibilidad: Es fácil agregar nuevas configuraciones o partes al objeto sin modificar las existentes
+
+Aplicar el patrón Builder jerárquico es interesante porque simplifica la creación de objetos complejos al dividir el proceso en pasos más manejables y organizados. Esto mejora la claridad del código, ya que cada subconstructor se enfoca en configurar una parte específica del objeto, reduciendo la complejidad de manejar múltiples atributos en un único constructor. Además, promueve la extensibilidad, permitiendo agregar nuevas configuraciones o validaciones sin alterar la lógica existente. Por último, facilita la mantenibilidad y la reutilización, ya que las configuraciones específicas están encapsuladas en métodos o clases especializadas dentro del Builder.
+
 ## Decisiones de diseño
 _En esta sección describiremos las decisiones de diseño que se han tomado a lo largo del desarrollo de la aplicación que vayan más allá de la mera aplicación de patrones de diseño o arquitectónicos._
 
