@@ -48,6 +48,10 @@ export default function IndividualStats() {
         return <p> Loading... </p>;
     }
 
+    if (powersStats) {
+        console.log(powersStats.powersMostUsed);
+    }
+
     return (
         <div className="main-container">
             <div className="screen-title">
@@ -80,9 +84,9 @@ export default function IndividualStats() {
                         <thead><th colSpan="2">Most used powers</th></thead>
                         <tbody>
                             <tr>
-                                {Object.entries(powersStats.powersMostUsed).map(([key, value], index) => (
-                                    <td key={index}>{index + 1 + OrdinalValue(index + 1) + "\n"} {key + "\n"} {value} uses</td>
-                                ))}
+                                {powersStats && powersStats.powersMostUsed ? powersStats.powersMostUsed.map((entry, index) => (
+                                    <td key={index}>{index + 1 + OrdinalValue(index + 1) + "\n"} {entry.powerType + "\n"} {entry.timesUsed} uses</td>
+                                )): <></>}
                             </tr>
                         </tbody>
                     </table>
