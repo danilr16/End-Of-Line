@@ -195,8 +195,10 @@ public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode")
         User user = userService.findCurrentUser();
         if (game.getGameState().equals(GameState.WAITING) && game.getHost().equals(user)) {
             if (game.getPlayers().size() == 1) {
+                if (!game.getGameMode().equals(GameMode.PUZZLE_SINGLE)) {
+                    gameService.sendSystemMessage(gameCode, "You are playing alone, so we have changed the game mode to Puzzle Single");
+                }
                 game.setGameMode(GameMode.PUZZLE_SINGLE);
-                gameService.sendSystemMessage(gameCode, "You are playing alone, so we have changed the game mode to Puzzle Single");
             }
             game = gameService.checkTeamBattle(game);
             packCardService.creaPackCards(game.getPlayers());

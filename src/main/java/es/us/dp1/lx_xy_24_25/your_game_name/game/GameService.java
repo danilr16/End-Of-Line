@@ -312,7 +312,7 @@ public class GameService {
         if (playing.getEnergy() == 0) {
             return true;
         }
-        if (playing.getPlayedCards().size() >= 2) {//Comprobar que puedes usar back_away
+        if (playing.getPlayedCards().size() >= 3) {//Comprobar que puedes usar back_away
             Card possibleGoBack = cardService.findCard(playing.getPlayedCards().get(playing.getPlayedCards().size()-2));
             if (!tableCardService.getPossiblePositionsForPlayer(tableCard, playing, possibleGoBack, null, false).isEmpty()) {
                 canGoBack = true;
@@ -573,6 +573,7 @@ public class GameService {
         }
         player.setPossiblePositions(positions);
         player.setPossibleRotations(rotations);
+        player.getPlayedCards().remove(player.getPlayedCards().size()-1);
         playerService.updatePlayer(player);
     }
 
