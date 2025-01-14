@@ -6,8 +6,12 @@
 .invite-friends-icon-container{
     border-radius: 15%;
     bottom: 22vh;
-    border: 2px solid white;
-    background-color:transparent;
+    border: none;
+    background-color:var(--br-trans-grey);
     position: absolute;
     left:22vw;
+}
+
+.invite-friends-icon-container:hover{
+    background-color:var(--br-trans-grey-light);
 }
