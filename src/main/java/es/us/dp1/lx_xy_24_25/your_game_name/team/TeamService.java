@@ -1,5 +1,7 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.team;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -45,14 +47,35 @@ public class TeamService {
     
     @Transactional
     public Game joinATeam(Game game, Player player) {
-        Team lastTeam = game.getTeams().get(game.getTeams().size()-1);
-        if (lastTeam.getPlayer2() == null) {
-            lastTeam.setPlayer2(player);
-            this.updateTeam(lastTeam);
+        Optional<Team> teamToJoin = game.getTeams().stream().filter(t -> t.getPlayer2() == null).findFirst();
+        if (teamToJoin.isPresent()) {
+            Team team = teamToJoin.get();
+            team.setPlayer2(player);
+            this.updateTeam(team);
         } else {
             Team newTeam = this.saveTeamByPlayers(player, null);
             game.getTeams().add(newTeam);
         }
         return game;
+    }
+
+    @Transactional
+    public void leaveTeam(Game game, Player player) {
+        for (Team team: game.getTeams()) {
+            if (team.getPlayer1().equals(player)) {
+                if (team.getPlayer2() == null) {
+                    this.deleteTeam(team);
+                } else {
+                    team.setPlayer1(team.getPlayer2());
+                    team.setPlayer2(null);
+                    this.updateTeam(team);
+                }
+            } else if (team.getPlayer2() != null) {
+                if (team.getPlayer2().equals(player)) {
+                    team.setPlayer2(null);
+                    this.updateTeam(team);
+                }
+            }
+        }
     }
 }

@@ -804,13 +804,14 @@ public class GameService {
                     t--;
                 }
                 this.sendSystemMessage(game.getGameCode(), "There aren't enough players to play Team Battle, so we have changed the game mode to Versus");
-            } else if (game.getPlayers().size() % 2 == 1) {//Cambiar ultimo jugador que se ha unido a espectador si el número de jugadores es impar
-                Player player = game.getPlayers().get(game.getPlayers().size() - 1);
+            } else if (game.getPlayers().size() % 2 == 1) {//Cambiar el jugador que está solo en team battle a espectador
+                Team team = game.getTeams().stream().filter(t -> t.getPlayer2() == null).findFirst().get();
+                Player player = team.getPlayer1();
                 game.getPlayers().remove(player);
                 player.setState(PlayerState.SPECTATING);
                 playerService.updatePlayer(player);
                 game.getSpectators().add(player);
-                Team team = game.getTeams().remove(game.getTeams().size()-1);
+                game.getTeams().remove(team);
                 teamService.deleteTeam(team);
             }
         }

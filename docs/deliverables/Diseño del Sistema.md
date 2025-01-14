@@ -115,7 +115,7 @@ classDiagram
         +type TypeCard (NotNull)
         +iniciative Integer (Min(0), Max(5))
         +rotation Integer (Min(0), Max(3), NotNull)
-        +player Player (NotNull)
+        +player Player
         +output Output
         +outputs List~Integer~
         +input Integer
@@ -174,7 +174,7 @@ classDiagram
         +possiblePositions List~Integer~
         +possibleRotations List~Integer~
         +usedPowers List~PowerType~
-        +hand Hand (NotNull)
+        +hand Hand
         +packCards List~PackCard~ (NotNull)
         +getVersion() Integer
         +getScore() Integer

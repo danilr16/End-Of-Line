@@ -222,6 +222,9 @@ public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode")
             Player player = game.getPlayers().stream().filter(p -> p.getUser().equals(user)).findFirst().get(); 
             if(game.getGameState().equals(GameState.WAITING)){
                 game.getPlayers().remove(player);
+                if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
+                    teamService.leaveTeam(game, player);
+                }
                 playerService.deletePlayer(player);
                 }
             else if(game.getGameState().equals(GameState.IN_PROCESS) && player.getState() != PlayerState.LOST){
@@ -260,6 +263,10 @@ public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode")
                 if(game.getPlayers().stream().filter(p->!p.equals(player)).map(p->p.getUser()).anyMatch(p->!player.getUser().getFriends().contains(p)))
                     throw new AccessDeniedException("You are not friends with every player in this room");
                 player.setState(PlayerState.SPECTATING);
+                playerService.updatePlayer(player);
+                if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
+                    teamService.leaveTeam(game, player);
+                }
                 game.getPlayers().remove(player);
                 game.getSpectators().add(player);
                 gameService.updateGame(game);
@@ -278,6 +285,10 @@ public ResponseEntity<MessageResponse> joinAsSpectator(@PathVariable("gameCode")
             && game.getGameState().equals(GameState.WAITING)){
                 Player player = game.getSpectators().stream().filter(p -> p.getUser().equals(user)).findFirst().get();
                 player.setState(PlayerState.PLAYING);
+                playerService.updatePlayer(player);
+                if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
+                    teamService.joinATeam(game, player);
+                }
                 game.getSpectators().remove(player);
                 game.getPlayers().add(player);
                 gameService.updateGame(game);
