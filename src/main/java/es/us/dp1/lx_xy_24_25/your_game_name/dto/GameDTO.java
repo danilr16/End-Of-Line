@@ -3,6 +3,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.dto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameMode;
@@ -32,6 +33,7 @@ public class GameDTO {
     private LocalDateTime started;
     private LocalDateTime timestamp;
     private Integer NTurn;
+    private List<TeamDTO> teams;
 
     public GameDTO(){
         
@@ -40,7 +42,7 @@ public class GameDTO {
     public GameDTO( String gameCode, Boolean isPublic, Integer numPlayers,Integer turn,
         Integer duration, List<Integer> orderTurn, List<Integer> initialTurn,List<UserDTO> spectators,
         List<PlayerDTO> players, TableCardDTO tableCard, UserDTO host, GameMode gameMode, GameState gameState,LocalDateTime started, 
-        LocalDateTime timestamp, Integer NTurn){
+        LocalDateTime timestamp, Integer NTurn, List<TeamDTO> teams){
         this.gameCode = gameCode;
         this.isPublic = isPublic;
         this.numPlayers = numPlayers;
@@ -57,6 +59,7 @@ public class GameDTO {
         this.started = started;
         this.timestamp = timestamp;
         this.NTurn = NTurn;
+        this.teams = teams;
     }
 
 
@@ -85,10 +88,14 @@ public class GameDTO {
         //Convertir tabla 
         TableCardDTO tableDTO = TableCardDTO.tableCardToDTO(g.getTable());
 
+        List<TeamDTO> teamsDTO = new ArrayList<>();
+        if (g.getTeams() != null) {
+            teamsDTO = g.getTeams().stream().filter(t -> t != null).map(t -> TeamDTO.convertToDTO(t)).collect(Collectors.toList());
+        }
 
         GameDTO res = new GameDTO(g.getGameCode(),g.getIsPublic(),g.getNumPlayers(),g.getTurn(),g.getDuration(),g.getOrderTurn(),
         g.getInitialTurn(),spectatorsConverted,playersConverted,tableDTO,hostConverted,g.getGameMode(),g.getGameState(),g.getStarted(), 
-        LocalDateTime.now(), g.getNTurn());
+        LocalDateTime.now(), g.getNTurn(), teamsDTO);
         return res;
 
         }
