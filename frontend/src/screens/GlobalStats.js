@@ -59,7 +59,7 @@ export default function IndividualStats() {
                         <thead><th>Longest game</th></thead>
                         <tbody>
                             <tr><td>Global: {durationStats.global.max} minutes</td></tr>
-                            <tr><td>Individual: {durationStats.user.max} minutes</td></tr>
+                            <tr><td>{durationStats.user.max !== null? `Individual: ${durationStats.user.max} minutes` : 'Individual:'}</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -68,7 +68,7 @@ export default function IndividualStats() {
                         <thead><th>Shortest game</th></thead>
                         <tbody>
                             <tr><td>Global: {durationStats.global.min} minutes</td></tr>
-                            <tr><td>Individual: {durationStats.user.min} minutes</td></tr>
+                            <tr><td>{durationStats.user.min !== null ? `Individual: ${durationStats.user.min} minutes` : 'Individual:'}</td></tr>
                         </tbody>
                     </table>
                 </div>

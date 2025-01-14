@@ -50,8 +50,7 @@ public class Card extends BaseEntity{
     @NotNull
     Integer rotation;
 
-    @NotNull
-    @ManyToOne(optional = false)
+    @ManyToOne
     Player player;
 
     @Transient
