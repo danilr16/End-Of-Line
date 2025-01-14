@@ -131,21 +131,21 @@ public class TableCardService {
         return card;
     }
 
-    private void createBlocks(TableCard tableCard, Player player) {//Crea los bloqueos en los modos puzzle
+    private void createBlocks(TableCard tableCard, Player player) {//Crea los bloqueos en el modo puzzle single
         SecureRandom rand = new SecureRandom();
-        Integer blocks = rand.nextInt(1, 4);
+        Integer blocks = rand.nextInt(1, 4);//Se generan aleatoriamente entre 1 y 3 bloqueos
         List<Integer> indices = new ArrayList<>();
         for (int i = 1; i <= blocks; i++) {
             Integer index = rand.nextInt(1, 26);
-            while (index == 8 || index == 13) {
+            while (index == 8 || index == 13) {//Evitar bloques en las casillas de nodo de inicio y arriba del nodo
                 index = rand.nextInt(1, 26);
             }
             indices.add(index);
         }
-        if (indices.containsAll(List.of(3, 7, 9))) {
+        if (indices.containsAll(List.of(3, 7, 9))) {//Evitar rodear las casillas del nodo de inicio (no se podría ganar)
             createBlocks(tableCard, player);
         } else {
-            for (Integer index : indices) {
+            for (Integer index : indices) {//Crear bloqueos
                 Card block = Card.createByType(TypeCard.BLOCK_CARD, player);
                 cardService.saveCard(block);
                 Integer c = Math.floorMod(index - 1, tableCard.getNumColum()) + 1;
