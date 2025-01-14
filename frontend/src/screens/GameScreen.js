@@ -318,6 +318,16 @@ export default function GameScreen() {
         Array(gridSize).fill(null).map(() => Array(gridSize).fill(null))
     );
     
+    const [shineIntervalStart, setShineIntervalStart] = useState(null);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setShineIntervalStart(Date.now()); 
+        }, 6000);
+    
+        return () => clearInterval(intervalId);
+    }, []);
+
     useEffect(() => {
         if (game !== null && game.tableCard !== null) {
             const { rows } = game.tableCard;
@@ -331,12 +341,16 @@ export default function GameScreen() {
                 row.cells.forEach((cell, colIndex) => {
                     if (cell.isFull && cell.card) {
                         const cardName = cell.card.type;
+                        const rlist = playerRef.current == null ? null : playerRef.current.playedCards.slice().reverse()
                         const updatedCell = (
                             <GameCardIcon 
                                 key={`${rowIndex}-${colIndex}`} 
                                 iconName={cardNameMapping[cardName]} 
                                 rotation={cell.card.rotation} 
                                 color={findColorById(cell.card.playerId)} 
+                                shine = {cell.card.playerId==playerRef.current?.id && game.gameState !== 'END'}
+                                msDelay={rlist?.indexOf(cell.card.id)*120}
+                                intervalStart={shineIntervalStart}
                             />
                         );
 
@@ -615,7 +629,7 @@ export default function GameScreen() {
                 <InGamePlayerList players = {players} spectators = {game.spectators} colors = {playerColors}
                     gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers} playerTurnIndex = {game.gameState == "IN_PROCESS" ? findPlayerIndexById(game.turn): null}/>
 
-                    {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0 && player?.id) && (
+                    {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0) && (
                         <Board 
                             gridSize={gridSize} 
                             gridItemSize={gridItemSize} 
@@ -634,7 +648,7 @@ export default function GameScreen() {
                             canDrop = {player && game.turn === player.id && game.gameState == "IN_PROCESS"}
                             secondsLeft = {secondsLeft}
                             state = {game.gameState}
-                            turn = {game.turn === player.id}
+                            turn = {game.turn === player?.id}
                         />
                     )}
 

@@ -147,6 +147,7 @@ public class TableCardService {
         } else {
             for (Integer index : indices) {//Crear bloqueos
                 Card block = Card.createByType(TypeCard.BLOCK_CARD, player);
+                block.setRotation(rand.nextInt(0, 4));
                 cardService.saveCard(block);
                 Integer c = Math.floorMod(index - 1, tableCard.getNumColum()) + 1;
                 Integer f = (index - 1) / tableCard.getNumColum() + 1;
