@@ -912,6 +912,7 @@ public class GameService1Tests {
         player.setUsedPowers(new ArrayList<>());
         player.setPossiblePositions(new ArrayList<>());
         player.setPossibleRotations(new ArrayList<>());
+        player.setPlayedCards(new ArrayList<>(List.of(1,2,3)));
 
         List<Card> cards = simCreate25Cards(player);
         Hand hand = new Hand();
