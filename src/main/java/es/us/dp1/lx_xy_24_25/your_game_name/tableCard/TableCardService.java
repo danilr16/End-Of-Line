@@ -15,6 +15,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.TypeTable;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.TableCard.nodeCoordinates;
 import jakarta.validation.Valid;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +78,9 @@ public class TableCardService {
         for (int i = 0; i < numJugadores; i++) {
             Player player = players.get(i);
             Card nodePlayer = createHomeNode(tableCard, player, ls.get(i).f(), ls.get(i).c(), ls.get(i).rotation());
+            if (players.size() == 1) {
+                createBlocks(tableCard, player);
+            }
             List<Map<String, Integer>> possiblePositions = getPossiblePositionsForPlayer(tableCard, player, nodePlayer, null, false);
             List<Integer> positions = new ArrayList<>();
             List<Integer> rotations = new ArrayList<>();
@@ -127,6 +131,32 @@ public class TableCardService {
         return card;
     }
 
+    private void createBlocks(TableCard tableCard, Player player) {//Crea los bloqueos en los modos puzzle
+        SecureRandom rand = new SecureRandom();
+        Integer blocks = rand.nextInt(1, 4);
+        List<Integer> indices = new ArrayList<>();
+        for (int i = 1; i <= blocks; i++) {
+            Integer index = rand.nextInt(1, 26);
+            while (index == 8 || index == 13) {
+                index = rand.nextInt(1, 26);
+            }
+            indices.add(index);
+        }
+        if (indices.containsAll(List.of(3, 7, 9))) {
+            createBlocks(tableCard, player);
+        } else {
+            for (Integer index : indices) {
+                Card block = Card.createByType(TypeCard.BLOCK_CARD, player);
+                cardService.saveCard(block);
+                Integer c = Math.floorMod(index - 1, tableCard.getNumColum()) + 1;
+                Integer f = (index - 1) / tableCard.getNumColum() + 1;
+                Cell cell = this.getCellAt(tableCard, f, c);
+                cell.setCard(block);
+                cell.setIsFull(true);
+                cellService.updateCell(cell, cell.getId());
+            }
+        }
+    }
 
     @Transactional
     private Cell getCellAt(TableCard tableCard, Integer f, Integer c) {
