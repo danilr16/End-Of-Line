@@ -558,9 +558,9 @@ Describir porqué era interesante aplicar el patrón.
 *Ventajas alcanzadas al aplicar el patrón*: La aplicación del patrón MVC facilita la separación de responsabilidades, lo que hace que el código sea más modular y mantenible. Cada capa (modelo, vista y controlador) puede evolucionar de manera independiente, permitiendo modificar la lógica de negocio sin afectar la interfaz de usuario, o actualizar la vista sin alterar los datos o controladores. Además, esta estructura mejora la escalabilidad del proyecto, facilita las pruebas unitarias (especialmente en el backend) y promueve la reutilización del código, ya que cada componente está claramente definido y desacoplado.
 
 ### Patrón: < Builder Jerárquico >
-*Tipo*: Diseño
+*Tipo*: de Diseño
 
-*Contexto :* Dentro del juego End Of Line existe la necesidad de creación de tableros para los diferentes modos de juego existentes, los cuales pueden depender del número de jugadores o del modo de juego en sí mismo. Para la creación de un objeto tablero se plantea la duda de realizar un único constructor con todos los atributos necesarios para crear los diferentes tableros o la descomposición del mismo para fomentar la mayor cohesión dentro del proyecto. Aquí es donde entra el patrón Builder Jerárquico el cual descompone la creación de un objeto de muchos atributos en un constructor que llama a subconstructores que crean partes del tablero para que luego el constructor principal junte cada parte y cree el tablero completo. De esta forma se crean celdas que contendrán las cartas, estas celdas estarán incluidas en las llamadas filas que a su vez formarán el tablero con una lista de filas.
+*Contexto*: Dentro del juego End Of Line existe la necesidad de creación de tableros para los diferentes modos de juego existentes, los cuales pueden depender del número de jugadores o del modo de juego en sí mismo. Para la creación de un objeto tablero se plantea la duda de realizar un único constructor con todos los atributos necesarios para crear los diferentes tableros o la descomposición del mismo para fomentar la mayor cohesión dentro del proyecto. Aquí es donde entra el patrón Builder Jerárquico el cual descompone la creación de un objeto de muchos atributos en un constructor que llama a subconstructores que crean partes del tablero para que luego el constructor principal junte cada parte y cree el tablero completo. De esta forma se crean celdas que contendrán las cartas, estas celdas estarán incluidas en las llamadas filas que a su vez formarán el tablero con una lista de filas.
 
 
 La parte de la aplicación donde se ha incluido este patrón es en el paquete tableCard encargado de la creación del tablero el cual cuenta con las siguientes clases relativas al patrón:
@@ -570,11 +570,40 @@ La parte de la aplicación donde se ha incluido este patrón es en el paquete ta
 - TableCard
 
 
-*Ventajas alcanzadas al aplicar el patrón* : 
+*Ventajas alcanzadas al aplicar el patrón*: 
 - Claridad: Divide un constructor complejo en pasos más pequeños y claros.
-- Extensibilidad: Es fácil agregar nuevas configuraciones o partes al objeto sin modificar las existentes
+- Extensibilidad: Es fácil agregar nuevas configuraciones o partes al objeto sin modificar las existentes.
 
 Aplicar el patrón Builder jerárquico es interesante porque simplifica la creación de objetos complejos al dividir el proceso en pasos más manejables y organizados. Esto mejora la claridad del código, ya que cada subconstructor se enfoca en configurar una parte específica del objeto, reduciendo la complejidad de manejar múltiples atributos en un único constructor. Además, promueve la extensibilidad, permitiendo agregar nuevas configuraciones o validaciones sin alterar la lógica existente. Por último, facilita la mantenibilidad y la reutilización, ya que las configuraciones específicas están encapsuladas en métodos o clases especializadas dentro del Builder.
+
+### Patrón: < Hooks >
+*Tipo*: de Diseño
+
+*Contexto*: como se ha descrito anteriormente, utilizamos el patrón Modelo-Vista-Controlador, de modo que si estamos en frontend y queremos obtener datos desde el backend sin modificar la capa de presentación, los hooks son la herramienta indicada. Pero principalmente el objetivo que persigue el Patrón Hooks, y por lo que decidimos usarlo, es añadir estados a los componentes, de modo que no se tienen que estar gestionando estos continuamente y hace que el código sea más sencillo y legible. Por último, también permiten crear hooks personalizados, en la parte de clases o paquetes creados se dan ejemplos en el proyecto.
+
+Este patrón se ha aplicado en prácticamente todos los ficheros de código del paquete frontend, es decir, se utiliza para todas las pantallas debido a su utilidad para obtener datos del backend.
+
+*Clases o paquetes creados*: la aplicación de este patrón ha derivado en la utilización de 2 hooks personalizados: useFetchState y useFetchData.
+
+*Ventajas alcanzadas al aplicar el patrón*:
+- Claridad del código: no es necesario repetir en todos los componentes, o incluso varias veces en el mismo, la lógica necesaria para actualizar los estados de estos.
+- Personalización: la posibilidad de crear hooks personalizados, adaptados a las necesidades de los desarrolladores, permite una gestión mucho más sencilla de los estados de los componentes.
+- Aislamiento: permite hacer cosas como obtener datos del backend sin afectar a la capa de presentación, o la vista en MVC.
+
+Aplicar el patrón hooks es interesante porque resuelve el problema de la gestión de los estados de los componentes en el frontend de una manera sencilla, su flexibilidad y personalización permite simplificar mucho el código, eliminando la necesidad de repetir trozos de código que gestionen los estados de los componentes, lo cual hace que el código sea más fácil de desarrollar, y de mantener posteriormente. Además, es una herramienta bastante útil para obtener la información necesaria del backend y poder mostrársela al usuario.
+
+### Patrón: < Composite >
+*Tipo*: de Diseño
+
+*Contexto de Aplicación*: en este proyecto se tienen por un lado cartas; entidades individuales, y por otro lado mazos o manos; que también son entidades individuales. El tratamiento de todas esas entidades sería en principio diferente, cuando realmente las segundas son agrupaciones de la primera, esto es poco uniforme. Para mejorar este tratamiento se utiliza el patrón Composite, que permite tratar objetos individuales (cartas) y objetos compuestos de esos objetos individuales (mazos o manos) de la misma forma, de modo que no es necesario diferenciar constantemente entre los dos casos en el código.
+
+Este patrón se aplica a las entidades Card, Hand y PackCard.
+
+*Ventajas alcanzadas al aplicar el patrón*:
+- Uniformidad: tanto las cartas como colecciones de estas se tratan de forma uniforme.
+- Flexibilidad: la aplicación de este patrón permite añadir nuevas funcionalidades sin necesidad de modificar la estructura básica de las entidades.
+
+Es interesante aplicar este patrón porque permite realizar operaciones sobre cartas y colecciones de ellas (como barajar o buscar cartas) con relativa facilidad, sin tener que hacer cambios en la definición de las entidades de la base de datos, lo cual podría hacer que gran parte del código que tenga que ver con esas entidades funcionase mal.
 
 ## Decisiones de diseño
 _En esta sección describiremos las decisiones de diseño que se han tomado a lo largo del desarrollo de la aplicación que vayan más allá de la mera aplicación de patrones de diseño o arquitectónicos._
