@@ -164,7 +164,6 @@ TableCardService -down-> CardService
 TableCardService -down-> PlayerService
 TableCardService -down-> RowService
 AchievementService -down-> UserService
-UserService -down-> PlayerService
 UserService -down-> GameService 
 UserService -down-> NotificationService 
 AuthService -down-> UserService
