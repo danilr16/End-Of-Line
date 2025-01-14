@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,26 +32,28 @@ import org.springframework.transaction.annotation.Transactional;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.Game;
 import es.us.dp1.lx_xy_24_25.your_game_name.game.GameService;
+import es.us.dp1.lx_xy_24_25.your_game_name.game.GameState;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.Notification;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.NotificationService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
-import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
+import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 
 @Service
 public class UserService {
 
 	private UserRepository userRepository;	
-	private PlayerService playerService;
 	private GameService gameService;
 	private NotificationService notificationService;
+	private CellService cellService;
 
 	@Autowired
-	public UserService(UserRepository userRepository, PlayerService playerService, 
-		GameService gameService, NotificationService notificationService) {
+	public UserService(UserRepository userRepository, GameService gameService, 
+	NotificationService notificationService, CellService cellService) {
 		this.userRepository = userRepository;
-		this.playerService = playerService;
 		this.gameService = gameService;
 		this.notificationService = notificationService;
+		this.cellService = cellService;
 	}
 
 	@Transactional
@@ -123,12 +126,16 @@ public class UserService {
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		List<Game> games = this.findAllGamesByUserHost(toDelete);
+		List<Cell> cells = games.stream().filter(g -> !g.getGameState().equals(GameState.WAITING))//Antes de eliminar todas las cartas hay que quitar la referencia en las celdas
+			.map(g -> g.getTable().getRows()).flatMap(List::stream).map(r -> r.getCells()).flatMap(List::stream)//Para evitar problemas de consistencia
+			.filter(c -> c.getCard() != null).filter(c -> c.getCard().getPlayer().getUser().equals(toDelete))
+			.collect(Collectors.toList());
+		for (Cell cell: cells) {
+			cell.setCard(null);
+			cellService.updateCell(cell, cell.getId());
+		}
 		for (Game game: games) {
 			this.gameService.deleteGame(game.getId());
-		}
-		List<Player> players = (List<Player>) findAllPlayerByUser(toDelete);
-		for (Player player: players) {
-			this.playerService.deletePlayer(player);
 		}
 		List<User> friends = toDelete.getFriends();
 		for (User friend: friends) {

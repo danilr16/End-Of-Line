@@ -65,7 +65,7 @@ export default function IndividualStats() {
                     Maximum points obtained: {userScoreStats.user.max}
                 </div>
                 <div className="longest-victory-streak">
-                    Longest victory streak: {powersStats.maxStreak == null ? 0 : powersStats.maxStreak}
+                    Longest victory streak: {powersStats.maxStreak}
                 </div>
             </div>
             <div className="tables">
@@ -74,7 +74,7 @@ export default function IndividualStats() {
                         <thead><th>Most played gamemode</th></thead>
                         <tbody>
                             <tr>
-                                <td>{String(gameModeStats.userMostPlayed).replace("_", " ")}</td>
+                                {gameModeStats.userMostPlayed && <td>{String(gameModeStats.userMostPlayed).replace("_", " ")}</td>}
                             </tr>
                         </tbody>
                     </table>
