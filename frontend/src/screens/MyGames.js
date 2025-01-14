@@ -27,6 +27,12 @@ export default function MyGames(){
         return <p className="myGames-title">Cargando partidas...</p>
     }
 
+    const isGameFinished = (game) => {
+        const player = game.players.find(player => player.user.username == jwt_decode(jwt).sub);
+        if(player.playerState == "WON" || player.playerState == "LOST") return true;
+        return false;
+    }
+
     const openGameDataModal = (game) => {
         setSelectedGame(game);
         setIsGameDataModalOpen(true);
@@ -70,7 +76,7 @@ export default function MyGames(){
         ) : (
             <ul className="myGames-table">
                 {games.map((item, index) => (
-            <div className= {win_lost(item)} key={index} onClick={() => openGameDataModal(item)} style={{ cursor: 'pointer' }}>
+            isGameFinished(item) && (<div className= {win_lost(item)} key={index} onClick={() => openGameDataModal(item)} style={{ cursor: 'pointer' }}>
                 <span className="myGames-tr">GameMode: {parseGamemode(item.gameMode)}</span>
                 {gamePlayer(item).playerState === "LOST" && (
                                                 <Skull
@@ -96,7 +102,7 @@ export default function MyGames(){
                                                 />
                                             )}
 
-        </div>
+        </div>)
       ))}
             </ul>
         )}
