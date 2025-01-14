@@ -348,7 +348,7 @@ export default function GameScreen() {
                                 iconName={cardNameMapping[cardName]} 
                                 rotation={cell.card.rotation} 
                                 color={findColorById(cell.card.playerId)} 
-                                shine = {cell.card.playerId==playerRef.current?.id && game.gameState !== 'END'}
+                                shine = {cell.card.playerId==playerRef.current?.id && game.gameState !== 'END' && game.turn === player?.id && rlist.includes(cell.card.id)}
                                 msDelay={rlist?.indexOf(cell.card.id)*120}
                                 intervalStart={shineIntervalStart}
                             />
