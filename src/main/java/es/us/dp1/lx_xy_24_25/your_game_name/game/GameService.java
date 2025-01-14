@@ -803,7 +803,7 @@ public class GameService {
                     teamService.deleteTeam(team);
                     t--;
                 }
-                this.sendSystemMessage(game.getGameCode(), "There aren't enough players to play Team Battle, so we have changed the game mode to Versus");
+                this.sendSystemMessage(game.getGameCode(), "There aren't enough players to play Team Battle, so the game mode has changed to Versus");
             } else if (game.getPlayers().size() % 2 == 1) {//Cambiar el jugador que está solo en team battle a espectador
                 Team team = game.getTeams().stream().filter(t -> t.getPlayer2() == null).findFirst().get();
                 Player player = team.getPlayer1();

@@ -164,7 +164,7 @@ function AppNavbar() {
                         {ownerLinks} */} 
                     </Nav>
                     <Nav className="ms-auto mb-2 mb-lg-0" navbar>
-                        <FaBell onClick={()=>{setShowNotification(!showNotifications)}} style={{ marginRight: '20px',top: '6px',position: 'relative', fontSize: '1.5rem' , color:"#1A1207"}} />
+                        <FaBell onClick={()=>{setShowNotification(!showNotifications)}} style={{ marginRight: '20px',top: '6px',position: 'relative', fontSize: '1.5rem' , color:"#1A1207", cursor: 'pointer'}} />
                         
                         {publicLinks}
                         {userLogout} 
