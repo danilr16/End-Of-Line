@@ -500,21 +500,24 @@ classDiagram
 ![Diagrama-de-capas](http://www.plantuml.com/plantuml/png/fPVTRjiw3CVl_HGwkraAj7k1Sr2iIOkkG3-2f3ldMhCPLvWi1PAoBXZwxiTKOeTnQBdUTh76ue_K1_-qgSy-I1SsbSx-Ac2b38Z5pUpvwl7s_aRaMdgVPMkPVvSbY0zp1nvCa45P8-xb5jm7yIiJGX2VMrd10doOMHESrHfS1_ZgmIM1g_n5mG-em8HZ3h4kkmallO6kwoZQhi7vNkJcPmvhtCuNQOhQt0l-jvozoFurB_5GV52vJsxjqGQrKdaymCHKFTWRISLquvK1xyMzBLMUIiOIt0-LG_yXyy1CkeAtu57nbdczkdw_kSP5yhPd-Kr3l-iCjEOjg2RUWjAmJWK5dWSMzhNVarZODFTi0sH5BNpc6uBcSm7URbmE_ZYLiGBt9REsNWNhjcZQ_xiGJr6zKl-3pALOALDCj_ZRo0eco-2KASLc_tn67AVMQf16m4_bWq_wf2UxAoPt9a09JgY2qdS17AQLq5TQJxTDOhRDLB8UO1rHCSHrzxXRwWJ_YujaFL7uhHy--2_MXtgot_HEkKsbL_b16T7lyFYqGgV7JHNZ_7w4wusBulcZDUnEi6SLzpKSj_vWY_ts7wmFqQTenkb1i07czXKS-jL8qOqIZS_RDRn_5mZ-g_9WdG8_pkqQLY33YTCRgIpoaXWgC88sqdyazI8RLPzEWcSt51sPH4NH314IV-F6uSvCMYCEr4JP_FHdwGdnroxKp1RjVihzC-iSvy8FuWDuBqkuF4J2qOde1lbxX5PljVqcTLinPwDTsr8PxqfgP7Hfd7gqkjsvBAJvhanvK3DJFCg4OtetD66aIzeaNbmn9C6eR9_SDVZSgPZH9kUcDfmtkIiEzhF1e5-Dt0qLnEGdvE7J0zHnSr75F-UYKJZMvTpPqe6lXNgoI-m9wFPE26n7qaJRbWnGCUzffcrJqXYsAqa2UuyqW9r4cg0TnO7yrLkkbD_NA_yo7-My15FG4ESY_lGuF2uUzWRiUjwmKVeePjOOoD71YvMpbJYzZOXW1TSOPwUN4d7nwUAIziUz3AvcY47j35Eer26cLTW0s8fwY7iFGzlM3FSxS0vz3DTpP_GznRWm5n7UWrr8XZEc0CvE-_kCNknuOMJSvQv5cJi1pxFBftNG1Rah0yVJm6HROqEp7dnmhXgvkiDwx5niCdAougAmhoQUDcsGQFwx936zpm7NJSYs6WY2OmHfgvGWE4OGMdiKQyO9IjuC58oZ1ADbJqdkYnEhRs2Vf12x934HX_Q6JKWS8qXpNoR4qMUCw9vFS1hajj6-c0Y2OmHXfDoY_2SIvOlTXpDIyxBD3-9czSgzUpd9K3ilWHGnC0F_gU1ocBAJ4-wLDHdZ66OxT6diSj8GZh7G-0aFeXrwIz1l6pTPcg1domASJcEP9jR2sFblx4Un35iDFliCfjXK-dy0)
 
 ## Descomposición del mockups del tablero de juego en componentes
+![Descomposición en componentes de la interfaz de juego](.\images\image-gameScreen.png)
+ - App – Componente principal de la aplicación
+    - $\color{#FF7F27}{\textsf{NavBar – Barra de navegación superior.}}$
+      - $\color{#ED1C24}{\textsf{[ NavButton ]. Permite acceder a opciones del usuario y a las reglas del juego.}}$
+      - $\color{#7F7F7F}{\textsf{[ NotificationButton ]. Área de notificaciones del juego.}}$
 
-En esta sección procesaremos el mockup del tablero de juego (o los mockups si el tablero cambia en las distintas fases del juego). Etiquetaremos las zonas de cada una de las pantallas para identificar componentes a implementar. Para cada mockup se especificará el árbol de jerarquía de componentes, así como, para cada componente el estado que necesita mantener, las llamadas a la API que debe realizar y los parámetros de configuración global que consideramos que necesita usar cada componente concreto. 
-Por ejemplo, para la pantalla de visualización de métricas del usuario en un hipotético módulo de juego social:
+    - $\color{#22B14C}{\textsf{PlayersPanel  – Muestra la lista de jugadores de la partida.}}$
+        - $\color{#167331}{\textsf{[ Player ]. Nombre del jugador con iconos asociados.}}$
 
-![Descomposición en componentes de la interfaz de estadísticas](https://github.com/gii-is-DP1/react-petclinic/assets/756431/12b36c37-39ed-422e-b8d9-56c94753cbdc)
+    - $\color{#FFF200}{\textsf{GameBoard – En este componente se desarrollará el juego. En las celdas se colocan las cartas de cada jugador. }}$
 
-  - App – Componente principal de la aplicación
-    - $\color{orange}{\textsf{NavBar – Barra de navegación lateral}}$
-      - $\color{darkred}{\textsf{[ NavButton ]. Muestra un botón de navegación con un icono asociado.}}$
-    - $\color{darkblue}{\textsf{UserNotificationArea – Área de notificaciones e identificación del usuario actual}}$
-    - $\color{blue}{\textsf{MetricsBar – En este componente se muestran las métricas principales del juego. Se mostrarán 4 métricas: partidas jugadas, puntos logrados, tiempo total, y cartas jugadas.}}$
-      - $\color{darkgreen}{\textsf{[ MetricWell ] – Proporciona el valor y el incremento semanal de una métrica concreta. }}$
-    - $\color{purple}{\textsf{GamesEvolutionChart – Muestra la tendencia de evolución en ellos últimos 4 meses en cuanto a partida jugadas, ganadas, perdidas y abandonadas.}}$
-    - $\color{yellow}{\textsf{PopularCardsChart – Muestra la proporción de las N (parámetro de configuración) cartas más jugadas en el juego por el jugador.}}$
-    - $\color{red}{\textsf{FrequentCoPlayersTable – Muestra los jugadores  con los que más se  ha jugado (de M en M donde M es un parámetro definido por la configuración del componente). Concretamente, se mostrarán la el nombre, la fecha de la última partida, la localización del jugador el porcentaje de partidas jugadas por ambos en las que el usuario ha ganado y si el jugador es amigo o no del usuario.}}$
+    - $\color{#A349A4}{\textsf{Chat – Muestra los mensajes que escriben los jugadores de la partida.}}$
+
+    - $\color{#00A2E8}{\textsf{HandCard – Muestra la mano de cartas que tiene el jugador }}$
+        - $\color{#3F48CC}{\textsf{[ Card ]. Cartas que están disponibles para colocar.}}$
+
+    - $\color{#FFAEC9}{\textsf{EnergyCard – Muestra la energía que tiene el jugador. Se desbloquea para poder utilizar los diferentes poderes.}}$
+
 
 ## Documentación de las APIs
 Se considerará parte del documento de diseño del sistema la documentación generada para las APIs, que debe incluir como mínimo, una descripción general de las distintas APIs/tags  proporcionadas. Una descripción de los distintos endpoints y operaciones soportadas. Y la especificación de las políticas de seguridad especificadas para cada endpoint y operación. Por ejemplo: “la operación POST sobre el endpoint /api/v1/game, debe realizarse por parte de un usuario autenticado como Player”.
