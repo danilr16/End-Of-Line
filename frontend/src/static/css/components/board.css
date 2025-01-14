@@ -31,6 +31,17 @@
     transform: translate(-50%, -100%); 
 }
 
+.current-turn {
+    font-size: 80%;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: -0.2%;
+    position: fixed;
+    left: 39%;
+    transform: translate(-50%, -100%); 
+}
+
 .turn-sign {
     font-size: 3vh;
     color: white;

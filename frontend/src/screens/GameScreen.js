@@ -649,6 +649,7 @@ export default function GameScreen() {
                             secondsLeft = {secondsLeft}
                             state = {game.gameState}
                             turn = {game.turn === player?.id}
+                            round = {game.nturn}
                         />
                     )}
 
