@@ -818,6 +818,7 @@ public class GameService1Tests {
         assertTrue(gameService.cantContinuePlaying(testGame, testPlayer));
 
         testPlayer.setUsedPowers(List.of(PowerType.BACK_AWAY)); //Suponemos ahora que el jugador ha usado el poder marcha atrás, por lo que aún podría seguir jugado
+        testPlayer.setPossiblePositions(List.of(2,6));
         assertFalse(gameService.cantContinuePlaying(testGame, testPlayer));
 
     }

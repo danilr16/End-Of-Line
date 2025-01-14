@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class Card extends BaseEntity{
 
     public enum TypeCard {
-        TYPE_1,TYPE_2_IZQ,TYPE_2_DER,TYPE_3_IZQ,TYPE_3_DER,TYPE_4,TYPE_5,TYPE_0,INICIO
+        TYPE_1,TYPE_2_IZQ,TYPE_2_DER,TYPE_3_IZQ,TYPE_3_DER,TYPE_4,TYPE_5,TYPE_0,INICIO,BLOCK_CARD
     }
 
     public static record Output(List<Integer> outputs, Integer input) {
@@ -115,6 +115,8 @@ public class Card extends BaseEntity{
         } else if(type.equals(TypeCard.INICIO)) {
             List<Integer> outputs = new ArrayList<>(List.of(2));
             card.setOutput(Output.of(outputs, null));
+        } else if(type.equals(TypeCard.BLOCK_CARD)) {
+            card.setOutput(Output.of(new ArrayList<>(), null));
         } else {
             card = null;
         }

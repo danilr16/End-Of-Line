@@ -284,7 +284,8 @@ public class GameService {
                     return cantUsePowers(playing, game, tableCard, lastPlaced);
                 } else {
                     PowerType pwr = playing.getUsedPowers().get(playing.getUsedPowers().size() - 1);
-                    return !(pwr.equals(PowerType.BACK_AWAY) || pwr.equals(PowerType.JUMP_TEAM));
+                    List<Integer> newPossiblePositions = playing.getPossiblePositions();
+                    return !(pwr.equals(PowerType.BACK_AWAY) || pwr.equals(PowerType.JUMP_TEAM)) || newPossiblePositions.isEmpty();
                 }
             } else {
                 return true;
