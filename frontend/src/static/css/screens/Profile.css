@@ -233,7 +233,7 @@
     transition: opacity 0.3s ease;
 }
 
-.modal-profile-container{
+.modal-profile-container {
     text-align: center;
     position: relative;  
     top: 200px;          
@@ -241,13 +241,17 @@
     flex-direction: column;
     padding: 20px;
     background-color: #f4f4f4;
-    width: 800px;
-    height: 290px;
+    max-width: 50%; 
+    max-height: 80%;
+    width: auto;    
+    height: auto;    
     border-radius: 25px;
     animation: slideFadeIn 2s ease forwards;
     margin: auto;
-
+    overflow: auto;  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
+
 
 .modal-input-container{
     text-align: center;

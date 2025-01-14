@@ -20,7 +20,7 @@ export default function Profile() {
     const [oldPassword, setOldPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState(''); 
 
-    const [editingAchievementID, setEditingAchievementID] = useState(null); // id del logro a edicitar
+    const [editingAchievementID, setEditingAchievementID] = useState(null); // id del logro a editar
     const [newNameAchievement, setNewNameAchievement] = useState(''); 
     const [newDescriptionAchievement, setNewDescriptionAchievement] = useState(''); 
     const [newImageAchievement, setNewImageAchievement] = useState(''); 
@@ -44,11 +44,18 @@ export default function Profile() {
 
 
     const predefinedImages = [
-        "https://cdn-icons-png.flaticon.com/512/9368/9368199.png",
-        "https://cdn-icons-png.flaticon.com/512/9368/9368199.png",
-        "https://cdn-icons-png.flaticon.com/512/3135/3135768.png",
-        "https://cdn-icons-png.flaticon.com/512/2920/2920072.png",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9o9d6uNkVAJUTyjn3nIX7ff6fABWy3SOCGU-J6WELR-0d7zcovc0_nxn_ahdERI54_I&usqp=CAU"
+        "https://cdn-icons-png.flaticon.com/128/414/414681.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414686.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414682.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414683.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414679.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414696.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414710.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414691.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414692.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414695.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414684.png"
+
     ];
     
 
