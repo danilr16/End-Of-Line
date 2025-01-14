@@ -22,7 +22,7 @@ public class Cell extends BaseEntity{
     @NotNull
     Boolean isFull;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn
     Card card;
 

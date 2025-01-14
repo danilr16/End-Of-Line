@@ -316,7 +316,7 @@ export default function Profile() {
             return (
                 <div key={achievement.id} className={`achievement-item${isAchieved ? '-achieved' : ''}`}>
                     <div className="achievement-one">
-                        <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  />
+                        {achievement.image ? <img src={achievement.image} className={`achievement-image${isAchieved ? '-achieved' : ''}`}  /> : <></>}
                         <div className="achievement-details">
                             <h4>{achievement.name}</h4>
                             <p>{achievement.description}</p>

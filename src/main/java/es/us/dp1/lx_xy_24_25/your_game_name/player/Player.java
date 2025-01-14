@@ -74,8 +74,7 @@ public class Player extends BaseEntity{
     @Enumerated(EnumType.STRING)
     List<PowerType> usedPowers;
 
-    @NotNull
-    @OneToOne(optional = false, cascade = CascadeType.REMOVE)
+    @OneToOne(optional = false, cascade = CascadeType.REMOVE, orphanRemoval = true)
     Hand hand;
 
     @OneToMany(cascade = CascadeType.REMOVE)
