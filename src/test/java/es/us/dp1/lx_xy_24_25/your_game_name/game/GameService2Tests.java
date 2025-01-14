@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import es.us.dp1.lx_xy_24_25.your_game_name.auth.payload.response.MessageResponse;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
@@ -86,6 +87,9 @@ public class GameService2Tests {
 
     @Mock
     private TeamService teamService;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     private Game simGame;
 

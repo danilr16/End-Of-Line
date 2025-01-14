@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 
@@ -56,11 +57,12 @@ public class GameService {
     private TableCardService tableCardService;
     private CellService cellService;
     private TeamService teamService;
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     public GameService(GameRepository gameRepository, PackCardService packCardService, HandService handService
         , PlayerService playerService, CardService cardService, TableCardService tableCardService,
-        CellService cellService, TeamService teamService){
+        CellService cellService, TeamService teamService, SimpMessagingTemplate messagingTemplate){
         this.gameRepository = gameRepository;
         this.packCardService = packCardService;
         this.handService = handService;
@@ -69,6 +71,7 @@ public class GameService {
         this.tableCardService = tableCardService;
         this.cellService = cellService;
         this.teamService = teamService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Transactional(readOnly = true)
@@ -125,6 +128,14 @@ public class GameService {
         this.updateGame(game);
         return newChat;
 
+    }
+
+    public void sendSystemMessage(String gameCode, String message) {
+        ChatMessage systemMessage = new ChatMessage();
+        systemMessage.setUserName("System");
+        systemMessage.setMessageString(message);
+        systemMessage.setGameCode(gameCode);
+        messagingTemplate.convertAndSend("/topic/chat", systemMessage);
     }
 
     //Par para devolver player y card en takeCard para el test
@@ -791,6 +802,7 @@ public class GameService {
                     teamService.deleteTeam(team);
                     t--;
                 }
+                this.sendSystemMessage(game.getGameCode(), "There aren't enough players to play Team Battle, so we have changed the game mode to Versus");
             } else if (game.getPlayers().size() % 2 == 1) {//Cambiar ultimo jugador que se ha unido a espectador si el número de jugadores es impar
                 Player player = game.getPlayers().get(game.getPlayers().size() - 1);
                 game.getPlayers().remove(player);

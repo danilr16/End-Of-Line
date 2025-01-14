@@ -108,6 +108,7 @@ classDiagram
         TIPO_5
         TIPO_0
         INICIO
+        BLOCK_CARD
     }
     <<enumeration>> TypeCard
     class Card {
