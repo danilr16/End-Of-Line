@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import { ReactComponent as BlockCard } from '../static/images/card-icons/block_card.svg';
 import { ReactComponent as Cross0Card } from '../static/images/card-icons/cross_0_card.svg';
 import { ReactComponent as Cross5Card } from '../static/images/card-icons/cross_5_card.svg';
@@ -14,7 +15,7 @@ import "../static/css/components/gameCardIcon.css"
 
 
 //Elemento icono, imagen renderizada sobre overlay y dropzone
-export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false}) => {
+export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false, msDelay = 0, shine = false, intervalStart}) => {
     const iconData = {
         block_card: { iconSize: { width: '50%', height: '50%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: BlockCard },
         cross_0_card: { iconSize: { width: '100%', height: '100%' }, iconPosition: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }, IconComponent: Cross0Card },
@@ -32,9 +33,32 @@ export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false
 
     const { iconSize, iconPosition, IconComponent } = iconData[iconName] || { iconSize: {}, iconPosition: {}, IconComponent: null };
 
-    if (!IconComponent) return null;
     
+    
+    const [isHighlightVisible, setHighlightVisible] = useState(false);
+
+    useEffect(() => {
+        if (intervalStart === null) return; 
+        
+
+        const timeSinceIntervalStart = Date.now() - intervalStart;
+        const remainingTime = ((5000 - (timeSinceIntervalStart + msDelay)) + 30000) % 5000; 
+    
+        const highlightTimeout = setTimeout(() => {
+          setHighlightVisible(true);
+          setTimeout(() => {
+            setHighlightVisible(false);
+          }, 600);
+        }, remainingTime);
+    
+        return () => {
+          clearTimeout(highlightTimeout);
+        };
+      }, [intervalStart, msDelay]);
+
     const transitionStyle = smoothRotation ? "transform 0.5s ease" : "none";
+
+    if (!IconComponent) return null;
 
     return (
         <div
@@ -44,7 +68,7 @@ export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false
                 height: '100%',
                 transform: `rotate(${rotation * 90}deg)`,
                 transformOrigin: 'center', 
-                backgroundColor: `var(--player${color}-normal)`,
+                backgroundColor: iconName == 'block_card' ? `var(--player${color}-dark)` : `var(--player${color}-normal)`,
                 transition: transitionStyle, 
             }}
         >
@@ -56,9 +80,25 @@ export const GameCardIcon = ({ iconName, rotation, color, smoothRotation = false
                     top: iconPosition.top,
                     left: iconPosition.left,
                     transform: iconPosition.transform,
-                    color: `var(--player${color}-dark)`,
+                    color: iconName == 'block_card' ? `var(--player${color}-normal)` : `var(--player${color}-dark)`,
                 }}
             />
+            {shine && iconName != 'block_card' && isHighlightVisible && (
+                <div
+                className="highlight-overlay"
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(255, 255, 255,0.8)",
+                    animation: "fadeOut 0.6s",
+                    borderRadius: "15%", 
+                    pointerEvents: "none",
+                }}
+                />
+            )}
         </div>
     );
 };
