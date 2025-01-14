@@ -125,4 +125,40 @@ public class TeamServiceTests {
         player3.setState(PlayerState.LOST);
         assertTrue(newTeam.lostTeam());
     }
+
+    @Test
+    void shouldLeaveTeamInATeamAlone() {
+        team.setPlayer2(player2);
+        Team team2 = new Team();
+        team2.setId(2);
+        team2.setPlayer1(player3);
+        Game game = new Game();
+        game.setTeams(new ArrayList<>(List.of(team, team2)));
+        teamService.leaveTeam(game, player3);
+        assertEquals(1, game.getTeams().stream().findFirst().get().getId());
+        verify(teamRepository).delete(any(Team.class));
+    }
+
+    @Test
+    void shouldLeaveTeamInATeamNotAlone1() {
+        team.setPlayer1(player2);
+        team.setPlayer2(player1);
+        Game game = new Game();
+        game.setTeams(new ArrayList<>(List.of(team)));
+        teamService.leaveTeam(game, player2);
+        assertNull(game.getTeams().get(0).getPlayer2());
+        assertEquals(player1, game.getTeams().get(0).getPlayer1());
+        verify(teamRepository).save(any(Team.class));
+    }
+
+    @Test
+    void shouldLeaveTeamInATeamNotAlone2() {
+        team.setPlayer2(player2);
+        Game game = new Game();
+        game.setTeams(new ArrayList<>(List.of(team)));
+        teamService.leaveTeam(game, player2);
+        assertNull(game.getTeams().get(0).getPlayer2());
+        assertEquals(player1, game.getTeams().get(0).getPlayer1());
+        verify(teamRepository).save(any(Team.class));
+    }
 }
