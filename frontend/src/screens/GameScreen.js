@@ -78,6 +78,7 @@ export default function GameScreen() {
     }, [gameCode, jwt, setMessage, setVisible, setGame]);
 
     useEffect(() => {
+        
         if (game?.turn) {
             const curPlayer = game.players[findPlayerIndexById(game.turn)]
             if (game?.timestamp && curPlayer?.turnStarted && requestSentAt) {
@@ -708,30 +709,29 @@ export default function GameScreen() {
                         />
                     )).filter((card, index) => !usedCards.has(card.id))}
                 </div>
-                {player && <div
-                    className="card-deck"
-                    style={{
-                        minWidth: `${gridItemSize}px`,
-                        minHeight: `${gridItemSize}px`,
-                        backgroundColor: `var(--player${findColorById(player.id)}-normal)`, 
-                        color: `var(--player${findColorById(player.id)}-dark)`, 
-                        boxShadow: `
-                            0px -1px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -2px 0px var(--player${findColorById(player.id)}-dark),
-                            0px -3px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -4px 0px var(--player${findColorById(player.id)}-dark),
-                            0px -5px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -6px 0px var(--player${findColorById(player.id)}-dark),
-                            0px -7px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -8px 0px var(--player${findColorById(player.id)}-dark),
-                            0px -9px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -10px 0px var(--player${findColorById(player.id)}-dark),
-                            0px -11px 0px var(--player${findColorById(player.id)}-normal),
-                            0px -12px 0px var(--player${findColorById(player.id)}-dark)
-                        `,
-                    }}
-                >
-                </div>}
+                {player && player.packCards[0]?.numCards > 0 && (
+                    <div
+                        className="card-deck"
+                        style={{
+                            minWidth: `${gridItemSize}px`,
+                            minHeight: `${gridItemSize}px`,
+                            backgroundColor: `var(--player${findColorById(player.id)}-normal)`, 
+                            color: `var(--player${findColorById(player.id)}-dark)`,
+                            boxShadow: (() => {
+                                const numCards = player.packCards[0].numCards;
+                                const shadowCount = Math.max(0, Math.floor(numCards / 2)); 
+
+                                let boxShadowString = "";
+                                for (let i = 1; i <= shadowCount; i++) {
+                                    boxShadowString += `0px -${i*2}px 0px var(--player${findColorById(player.id)}-normal), 0px -${i*2 + 1}px 0px var(--player${findColorById(player.id)}-dark), `;
+                                }
+
+                                return boxShadowString.slice(0, -2); 
+                            })()  
+                        }}
+                    >
+                    </div>
+                )}
             </div>
             
             {playerRef.current && game.gameState !== "WAITING" && (
