@@ -1,0 +1,123 @@
+@import "../colors.css";
+
+
+.game-li-container-test {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%; 
+    border: 1px solid var(--br-c-normal);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    background-color: var(--br-c-normal); 
+    margin: 16px auto;
+    padding: 16px; 
+}
+.game-li-container-test.team-battle {
+    background-color: var(--br-red);
+    border : 1px solid var(--br-red);
+}
+.game-li-container-test:hover {
+    transform: translateY(-5px);
+}
+
+
+.lock-icon-test {
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 24px;
+
+    color: rgba(0, 0, 0, 0.7); 
+    opacity: 0; 
+    transition: opacity 0.3s ease; 
+}
+
+.game-li-container-test.locked:hover .lock-icon {
+    opacity: 1;
+}
+
+.game-li-content-test {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.game-header-test,.game-info-test {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.game-code-test, .game-mode-test {
+    font-size: 20px;
+}
+
+.game-stats-test {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.stat-item-test {
+    display: flex;
+    align-items: center; 
+    gap: 8px;
+}
+
+.players-icon-test, .spectators-icon-test {
+    width: 24px;
+    height: 24px;
+}
+
+.player-number-test, .spectator-number-test {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1; 
+    margin: 0;
+
+}
+
+.current-games-container-test {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(400px,1fr));
+    justify-items: start;
+    max-width: 100vw; 
+    gap: 20px;
+}
+
+
+
+.test-button {
+    background-color: var(--br-blue) !important;
+    color: var(--br-blue-dark) !important;
+    border: 4px solid var(--br-blue-light) !important;
+
+}
+.test-button2{
+    background-color: var(--br-green) !important;
+    color: var(--br-green-dark) !important;
+    border: 4px solid var(--br-green-light) !important; 
+}
+.test-button3{
+    background-color: var(--br-c-normal) !important;
+    color: var(--br-c-dark) !important;
+    border: 4px solid var(--br-c-light) !important; 
+}
+.test-button4{
+    background-color: var(--br-red) !important; 
+    color: var(--br-red-dark) !important;
+    border: 4px solid var(--br-red-light) !important;
+}
+.test-button-group{
+    display: flex !important;
+    justify-content: center !important;
+    width: 50% !important;
+    align-items: center !important;
+    margin-left: 25% !important;
+}
+

@@ -12,7 +12,19 @@ import PlanList from "./public/plan";
 import tokenService from "./services/token.service";
 import UserListAdmin from "./admin/users/UserListAdmin";
 import UserEditAdmin from "./admin/users/UserEditAdmin";
+import GameListAdmin from "./admin/games/GameListAdmin";
 import SwaggerDocs from "./public/swagger";
+import Rules from './screens/Rules';
+import CurrentGames from "./screens/CurrentGames";
+import MyGames from "./screens/MyGames";
+import Profile from './screens/Profile';
+import Stats from './screens/Stats';
+import IndividualStats from "./screens/IndividualStats";
+import GlobalStats from "./screens/GlobalStats";
+import Ranking from "./screens/Ranking";
+import GameScreen from "./screens/GameScreen";
+import { ColorProvider } from "./ColorContext";
+import { AlertProvider } from "./AlertContext";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -46,13 +58,13 @@ function App() {
       adminRoutes = (
         <>
           <Route path="/users" exact={true} element={<PrivateRoute><UserListAdmin /></PrivateRoute>} />
-          <Route path="/users/:username" exact={true} element={<PrivateRoute><UserEditAdmin /></PrivateRoute>} />          
+          <Route path="/users/:username" exact={true} element={<PrivateRoute><UserEditAdmin /></PrivateRoute>} />
+          <Route path="/games" exact={true} element={<PrivateRoute><GameListAdmin /></PrivateRoute>} />          
         </>)
     }
     if (role === "PLAYER") {
       ownerRoutes = (
         <>
-          
         </>)
     }    
   })
@@ -61,6 +73,10 @@ function App() {
       <>        
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/rules" element={<Rules />} />
+        <Route path="/test" element={<MyGames />} />
+        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  
+        
       </>
     )
   } else {
@@ -69,26 +85,40 @@ function App() {
         {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}        
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/rules" element={<Rules />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/stats" element={<Stats />} />
+        <Route path="/individualStats" element={<IndividualStats />} />
+        <Route path="/globalStats" element={<GlobalStats />} />
+        <Route path="/ranking" element={<Ranking />} />
+        <Route path="/games/current" element={<CurrentGames />} />
+        <Route path="/users/games" exact={true} element={<PrivateRoute><MyGames /></PrivateRoute>} />
+        <Route path="/game/:gameCode" exact={true} element={<PrivateRoute><GameScreen /></PrivateRoute>} />  
       </>
-    )
+  )
   }
 
   return (
-    <div>
-      <ErrorBoundary FallbackComponent={ErrorFallback} >
-        <AppNavbar />
-        <Routes>
-          <Route path="/" exact={true} element={<Home />} />
-          <Route path="/plans" element={<PlanList />} />
-          <Route path="/docs" element={<SwaggerDocs />} />
-          {publicRoutes}
-          {userRoutes}
-          {adminRoutes}
-          {ownerRoutes}
-          {vetRoutes}
-        </Routes>
-      </ErrorBoundary>
-    </div>
+    <AlertProvider>
+    <ColorProvider>
+      <div>
+        <ErrorBoundary FallbackComponent={ErrorFallback} >
+          <AppNavbar />
+          <Routes>
+            <Route path="/" exact={true} element={<Home />} />
+            <Route path="/plans" element={<PlanList />} />
+            <Route path="/docs" element={<SwaggerDocs />} />
+            <Route path="/rules" element={<Rules />} />
+            {publicRoutes}
+            {userRoutes}
+            {adminRoutes}
+            {ownerRoutes}
+            {vetRoutes}
+          </Routes>
+        </ErrorBoundary>
+      </div>
+    </ColorProvider>
+    </AlertProvider>
   );
 }
 

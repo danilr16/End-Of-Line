@@ -1,0 +1,84 @@
+@import "../colors.css";
+
+.friend-image{
+    height: 100px ;
+    width: 100px ; 
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 3px ;
+}
+.friend-container{
+    position: relative;
+    width: 125px;
+    height: 150px;
+    text-align: center;
+    line-height: 0px;
+    vertical-align: middle;
+}
+.friend-name{
+    margin-top:10px;
+    color:white;
+}
+
+.friend-list{
+    display: flex;
+    top: 10px;
+    gap:20px;
+    overflow-x: auto;
+    scrollbar-width: thin; 
+    scrollbar-color: var(--br-trans-grey-light) var(--br-dark); 
+}
+.friend-list::-webkit-scrollbar {
+    width: 8px;
+}
+.friend-list::-webkit-scrollbar-track {
+    background: var(--br-dark); 
+    border-radius: 4px;
+}
+.friend-list::-webkit-scrollbar-thumb {
+    background-color: var(--br-trans-grey-light); 
+    border-radius: 4px;
+}
+.friend-list-container{
+    margin-top: 10px;
+    position: relative;
+    top: 50px;
+    height: 150px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.friend-list-container.no-friends {
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+}
+
+.friend-list-container.with-friends {
+    display: block; 
+}
+
+.add-friend-button{
+    position: absolute;
+    background-color: #198754;
+    border: solid 1px #198754;
+    color: white;
+    border-radius: 7px;
+    bottom:150px;
+    right: 20px;
+}
+.add-friend-button:hover{
+    background-color: #024224;
+    border-color: #024224;
+}
+.no-friends-message {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    justify-content: center;
+}
+
+

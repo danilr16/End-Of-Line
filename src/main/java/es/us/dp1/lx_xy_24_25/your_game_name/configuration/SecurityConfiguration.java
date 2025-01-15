@@ -1,12 +1,5 @@
 package es.us.dp1.lx_xy_24_25.your_game_name.configuration;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,7 +37,6 @@ public class SecurityConfiguration {
 	DataSource dataSource;
 
 	private static final String ADMIN = "ADMIN";
-	private static final String CLINIC_OWNER = "CLINIC_OWNER";
 	
 
 	@Bean
@@ -70,8 +63,24 @@ public class SecurityConfiguration {
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/swagger-ui/**")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/developers")).permitAll()												
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/plan")).permitAll()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/games").authenticated()
+			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/myProfile").authenticated()
+			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/myProfile/update-password").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUser").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/currentUserDTO").authenticated()
+			.requestMatchers(HttpMethod.PATCH, "/api/v1/users/addFriend/**").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/users/friends").authenticated()
+			.requestMatchers(HttpMethod.GET,"/api/v1/users/gamesAsplayer").authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/users/**")).hasAuthority(ADMIN)
+			.requestMatchers(HttpMethod.GET, "/api/v1/games").hasAuthority(ADMIN)
+			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/games/**")).authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/achievements").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/achievements/myAchievement").authenticated()
+			.requestMatchers(HttpMethod.GET, "/api/v1/achievements/check").authenticated()
+			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/achievements/**")).hasAuthority(ADMIN)
+			.requestMatchers(AntPathRequestMatcher.antMatcher("/api/v1/statistics")).authenticated()
 			.requestMatchers(AntPathRequestMatcher.antMatcher("/h2-console/**")).permitAll()
+			.requestMatchers(AntPathRequestMatcher.antMatcher("/ws/**")).permitAll()
 			.anyRequest().authenticated())					
 			
 			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);		

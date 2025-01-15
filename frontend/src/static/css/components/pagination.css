@@ -1,0 +1,51 @@
+@import "../colors.css";
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    padding-left: 0;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+}
+.page-item {
+    display: flex;
+    
+}
+.page-item.active .page-link,
+.page-item.active .page-link:focus,
+.page-item.active .page-link:hover {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color:var(--br-selected-over-bg)  ;
+    border-color: #fff;
+}
+.page-item.disabled .page-link,
+.page-item.disabled .page-link:focus,
+.page-item.disabled .page-link:hover {
+    color: #818a91 ;
+    pointer-events: none;
+    cursor: not-allowed;
+    background-color: var(--br-dark);
+    border-color: #fff;
+}
+span.page-link {
+    position: relative;
+    float: left;
+    padding: 0.5rem 0.75rem;
+    margin-left: -1px;
+    color: #fff ;
+    text-decoration: none;
+    background-color: var(--br-dark) ;
+    border: 1px solid #fff;
+    cursor: pointer;
+}
+span.page-link:focus,
+span.page-link:hover {
+    color: #fff;
+    background-color: var(--br-hovered-over-bg);
+    border-color: #ddd;
+}
+

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Alert } from "reactstrap";
+import { useLocation } from "react-router-dom";
 import FormGenerator from "../../components/formGenerator/formGenerator";
 import tokenService from "../../services/token.service";
 import "../../static/css/auth/authButton.css";
@@ -8,7 +9,10 @@ import { loginFormInputs } from "./form/loginFormInputs";
 export default function Login() {
   const [message, setMessage] = useState(null)
   const loginFormRef = React.createRef();      
-  
+  const location = useLocation();
+
+  const gameCode = location.pathname.startsWith("/game/") ? location.pathname.split("/")[2] : null;
+
 
   async function handleSubmit({ values }) {
 
@@ -26,8 +30,13 @@ export default function Login() {
       .then(function (data) {
         tokenService.setUser(data);
         tokenService.updateLocalAccessToken(data.token);
-        window.location.href = "/dashboard";
+        if (gameCode) {
+          window.location.assign(`/game/${gameCode}`);
+        } else {
+          window.location.assign("/");
+        }
       })
+
       .catch((error) => {         
         setMessage(error);
       });            
@@ -42,7 +51,7 @@ export default function Login() {
           <></>
         )}
 
-        <h1>Login</h1>
+        <h1 style={{color: "#fff"}}>Login</h1>
 
         <div className="auth-form-container">
           <FormGenerator

@@ -6,6 +6,7 @@
   margin-top: 10rem;
   justify-content: space-evenly;
   align-items: center;
+  color:white;
 }
 
 .auth-form-container{
@@ -13,11 +14,20 @@
     max-width: 500px;
     height: 90%;
     width: 90%;
+    color: white;
+    background-color: var(--br-trans-grey);
+    padding: 30px;
+    border-radius: 3vh;
 }
 
 .auth-page-container h1 {
   text-align: center;
   font-size: 5em;
+}
+
+.auth-form-container input {
+  color: #fff; 
+  background-color: transparent; 
 }
 
 .options-row {

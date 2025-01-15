@@ -6,6 +6,7 @@ import "../../static/css/admin/adminPage.css";
 import deleteFromList from "../../util/deleteFromList";
 import getErrorModal from "../../util/getErrorModal";
 import useFetchState from "../../util/useFetchState";
+import Pagination from "../../components/Pagination";
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -20,17 +21,23 @@ export default function UserListAdmin() {
     setVisible
   );
   const [alerts, setAlerts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 5;
+  const pageFinalIndex = currentPage * itemsPerPage;
+  const pageInitialIndex = pageFinalIndex - itemsPerPage;
+  const totalPages = Math.ceil(users.length / itemsPerPage);
 
   const userList = users.map((user) => {
     return (
-      <tr key={user.id}>
+      <tr key={user.id} className="table-row">
         <td>{user.username}</td>
         <td>{user.authority.authority}</td>
         <td>
           <ButtonGroup>
             <Button
               size="sm"
-              color="primary"
+              className="edit-btn"
               aria-label={"edit-" + user.id}
               tag={Link}
               to={"/users/" + user.id}
@@ -39,7 +46,7 @@ export default function UserListAdmin() {
             </Button>
             <Button
               size="sm"
-              color="danger"
+              className="delete-btn"
               aria-label={"delete-" + user.id}
               onClick={() =>
                 deleteFromList(
@@ -59,6 +66,9 @@ export default function UserListAdmin() {
       </tr>
     );
   });
+
+  const userListPage = userList.slice(pageInitialIndex,pageFinalIndex);
+
   const modal = getErrorModal(setVisible, visible, message);
 
   return (
@@ -71,15 +81,16 @@ export default function UserListAdmin() {
       </Button>
       <div>
         <Table aria-label="users" className="mt-4">
-          <thead>
-            <tr>
+          <thead >
+            <tr className="table-row">
               <th>Username</th>
               <th>Authority</th>
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody>{userList}</tbody>
+          <tbody>{userListPage}</tbody>
         </Table>
+      <Pagination totalPages = {totalPages} currentPage = {currentPage} onPageChange = {(page) => setCurrentPage(page)}/>
       </div>
     </div>
   );

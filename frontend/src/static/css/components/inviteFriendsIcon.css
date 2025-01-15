@@ -1,0 +1,18 @@
+.invite-friends-icon-container svg{
+    height: 20px;
+    color: white;
+}
+
+.invite-friends-icon-container{
+    border-radius: 15%;
+    bottom: 22vh;
+    border: none;
+    background-color:var(--br-trans-grey);
+    position: absolute;
+    left:22vw;
+    transition: background-color 0.2s;
+}
+
+.invite-friends-icon-container:hover{
+    background-color:var(--br-trans-grey-light);
+}

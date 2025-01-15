@@ -1,57 +1,173 @@
 @startuml
+!define RECTANGLE class
 
-hide circle
-
-
-package " Presentation Layer " as Presentation {
-    hide members
-    class WelcomeController
-    class UserController
-    class OwnerController
-    class PetController
-    class VisitController
-    class VetController
+package "Presentation Layer" {
+    RECTANGLE GameRestController
+    RECTANGLE UserRestController
+    RECTANGLE AchievementRestController    
+    RECTANGLE AuthController
+    RECTANGLE DevelopersController
+    RECTANGLE ExceptionHandlerController
+    RECTANGLE WSChatController
+    RECTANGLE StatisticsRestController
+    RECTANGLE NotificationController
+    RECTANGLE WSNotificationController
 }
 
-package " Business Logic Layer " as BusinessLogic {
-    hide members
-    class AuthoritiesService
-    class UserService
-    class OwnerService
-    class PetService
-    class VisitService
-    class VetService
+package "Business Logic Layer" {
+    RECTANGLE GameService
+    RECTANGLE AchievementService
+    RECTANGLE CardService
+    RECTANGLE HandService
+    RECTANGLE PackCardService
+    RECTANGLE PlayerService
+    RECTANGLE TableCardService
+    RECTANGLE CellService
+    RECTANGLE UserService
+    RECTANGLE AuthoritiesService
+    RECTANGLE RowService
+    RECTANGLE AuthService
+    RECTANGLE StatisticsService
+    RECTANGLE TeamService
+    RECTANGLE NotificationService
 }
 
-package " Resources Layer " as Resources {
-    hide attributes
-    interface AuthoritiesRepository 
-    interface UserRepository 
-    interface PetRepository
-    interface VisitRepository {
-        List<Visit> findVisitByPetId(Integer PetId)
+package "Resources Layer" {
+    class UserRepository {
+        - Optional<User> findByUsername(String username)
+        - Boolean existsByUsername(String username)
+        - Optional<User> findById(Integer id)
+        - Iterable<User> findAllByAuthority(String auth)
+        - Iterable<Player> findAllPlayerByUser(User user)
+        - Iterable<Game> findAllGamesHostingByUser(User user)
+        - Iterable<Game> findAllGamesByUser(User user)
+        - BasicStatistics findStatisticsOfUserNumGames(User user)
+        - BasicStatistics findStatisticsOfUserDuration(User user)
+        - BasicStatistics findStatisticsOfUserNumPlayers(User user)
+        - List<GameMode> findMostPlayedGameModeByUser(User user)
+        - List<PowerMostUsed> findMostPlayedPowerType(User user)
+        - BasicStatistics findUserVictories(User user)
+        - BasicStatistics findUserDefeats(User user)
     }
-    interface OwnerRepository {
-        List<Owner> findByLastName(String lastname)
+    class AuthoritiesRepository {
+        - Optional<Authorities> findByName(String authority)
+    }
+    class GameRepository {
+        - Optional<Game> findById(Integer id)
+        - List<Game> findByGameStateIn(List<GameState> gameStates)
+        - Optional<Game> findGameByGameCode(String gameCode)
+        - Optional<List<ChatMessage>> findGameChat( String gameCode);
+        - BasicStatistics findStatisticsOfGlobalNumGames()
+        - BasicStatistics findStatisticsOfGlobalDuration()
+        - BasicStatistics findStatisticsOfGlobalNumPlayers()
+        - List<GameMode> findMostPlayedGameMode()
+        - List<Victories> findRankingVictories()
+        - List<Points> findRankingPoints()
+    }
+    class AchievementRepository {
+        - List<Achievement> findByNameOrDescription(String name, String description)
+        - List<Achievement> findUnachievedAchievements(Achievement.Metric metric, Integer userProgress)
+
+    }
+    class CardRepository {
+
+    }
+    class HandRepository {
+
+    }
+    class PackCardRepository {
+
+    }
+    class PlayerRepository {
+
+    }
+    class TableCardRepository {
+
+    }
+    class CellRepository {
+
+    }
+    class RowRepository {
+
+    }
+    class TeamRepository {
+
+    }
+    class NotificationRepository{
+        - Optional<List<Notification>> findByUser(User user)
+        - Optional<List<Notification>> findByUserSender(User user, User sender)
+        - Optional<List<Notification>> findAllByUser(User user)
     }
 }
 
-UserController  ..> OwnerService
-OwnerController ..> OwnerService
-PetController ..> OwnerService
-PetController ..> PetService
-VisitController ..> PetService
-VisitController ..> VetService
-VetController ..> VetService
+' Connections from Presentation Layer to Business Logic Layer
+GameRestController -.-> GameService
+GameRestController -.-> UserService
+GameRestController -.-> PlayerService
+GameRestController -.-> HandService
+GameRestController -.-> TableCardService
+GameRestController -.-> PackCardService
+GameRestController -.-> CardService
+GameRestController -.-> TeamService
 
-AuthoritiesService ..> UserService
-OwnerService ..> UserService
-OwnerService ..> AuthoritiesService
+UserRestController -.-> UserService
+UserRestController -.-> AuthoritiesService
 
-OwnerService ..> OwnerRepository
-UserService ..> UserRepository
-AuthoritiesService ..> AuthoritiesRepository
-PetService ..> PetRepository
-VisitService ..> VisitRepository
+AchievementRestController -.-> AchievementService
+AchievementRestController -.-> UserService
 
+AuthController -.-> UserService
+AuthController -.-> AuthService
+
+WSChatController -.-> GameService
+
+StatisticsRestController -.-> StatisticsService
+StatisticsRestController -.-> UserService
+
+NotificationController -.-> NotificationService
+NotificationController -.-> UserService
+
+WSNotificationController -.-> NotificationService
+WSNotificationController -.-> UserService
+
+
+' Connections from Business Logic Layer to Resources Layer
+GameService -down-> GameRepository
+AchievementService -down-> AchievementRepository
+AchievementService -down-> UserRepository
+CardService -down-> CardRepository
+HandService -down-> HandRepository
+PackCardService -down-> PackCardRepository
+PlayerService -down-> PlayerRepository
+TableCardService -down-> TableCardRepository
+UserService -down-> UserRepository
+AuthoritiesService -down-> AuthoritiesRepository
+CellService -down-> CellRepository
+RowService -down-> RowRepository
+StatisticsService -down-> GameRepository
+StatisticsService -down-> UserRepository
+TeamService -down-> TeamRepository
+NotificationService -down-> NotificationRepository
+
+' Internal Business Logic Layer connections
+GameService -down-> PackCardService
+GameService -down-> HandService
+GameService -down-> PlayerService
+GameService -down-> CardService
+GameService -down-> TableCardService
+GameService -down-> CellService
+GameService -down-> TeamService
+PackCardService -down-> CardService
+PackCardService -down-> PlayerService
+TableCardService -down-> CellService
+TableCardService -down-> CardService
+TableCardService -down-> PlayerService
+TableCardService -down-> RowService
+AchievementService -down-> UserService
+UserService -down-> GameService 
+UserService -down-> NotificationService 
+AuthService -down-> UserService
+AuthService -down-> AuthoritiesService
+
+' Styles
 @enduml

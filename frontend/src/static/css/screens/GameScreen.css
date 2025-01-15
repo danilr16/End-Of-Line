@@ -1,0 +1,439 @@
+@import "../colors.css";
+
+.bottom-container {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center; 
+    flex-direction: column; 
+    margin-top: 3%;
+    margin-bottom: 1%;
+}
+
+.card-container {
+    width: 40%;
+    height: 40%;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    gap: 1.8%; 
+    position:relative;
+}
+
+.no-select {
+    user-select: none; 
+}
+
+.card-deck {
+    position: absolute; 
+    top: 97%; 
+    left: 25%; 
+    color: var(--br-c-dark);
+    text-align: center;
+    font-size: 150%;
+    background-color: var(--br-c-normal);
+    border-radius: 15%;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    
+}
+
+.energy-card {
+    border-radius: 10px;
+    border: none;
+    position: absolute; 
+    bottom: 7.5%; 
+    right: 10%; 
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.icon-container {
+    position: absolute;
+    width: 100%; 
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.overlay-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 13%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; 
+    transition: opacity 0.3s;
+    font-size: 140%;
+}
+
+.overlay-button .button-text {
+    position: relative;
+    font-weight: bold;
+    text-shadow: 
+        0px 0px 6px rgba(0, 0, 0, 1)
+}
+
+.overlay-button.visible {
+    opacity: 1;  
+}
+
+.overlay-button:hover {
+    opacity: 1;
+}
+
+.leave-button {
+    margin-bottom: 5x;
+    margin-left: 10px;
+    background-color: var(--br-trans-grey);
+    color: var(--br-trans-grey-very-light);
+    border-radius: 10px;
+    border: none;
+    padding: 10px 30px;
+    transition: background-color 0.2s;
+    position: fixed;
+    bottom: 30px;  
+    left: 30px;   
+}
+
+.leave-button:hover {
+    background-color: var(--br-trans-grey-light);
+}
+
+.confirmation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 400; 
+    pointer-events: none; 
+    transition: background 0.3s ease, backdrop-filter 0.3s ease; 
+    backdrop-filter: blur(0px);
+}
+
+.confirmation-modal-overlay.blurredOverlay {
+    background: rgba(0, 0, 0, 0.2); 
+    backdrop-filter: blur(7px);
+    pointer-events: auto; 
+}
+
+
+.confirmation-modal {
+    position: fixed;
+    background-color: white;
+    padding: 25px 100px;
+    border-radius: 10px;
+    animation: popUp 0.5s ease forwards;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    z-index: 500;
+    transform: translate(-50%, -50%);
+}
+
+
+@keyframes popUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -250%);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+
+.popUp-exit {
+    animation: slideUpExit 0.5s ease forwards;
+}
+
+@keyframes slideUpExit {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -250%);
+    }
+}
+
+.modal-title {
+    color: black;
+}
+
+.modal-text {
+    margin-top: 10px;
+    color: black;
+    margin-bottom: 5px;
+}
+
+.modal-buttons {
+    display: flex;
+}
+
+.confirm-button {
+    background-color: var(--br-c-normal); 
+    border-radius: 10px;
+    border: none;
+    padding: 5px 50px;
+    color:black;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.confirm-button:hover {
+    background-color: var(--br-c-dark);
+    color: white; 
+}
+
+.cancel-button {
+    background-color: var(--br-black-transparency-light);
+    border-radius: 10px;
+    border: none;
+    padding: 5px 50px;
+    color:black;
+    margin-right: 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.cancel-button:hover {
+    background-color: var(--black-transparency);
+    color: white; 
+}
+
+@keyframes moveUp {
+    100%{
+        transform: translateY(-5px);
+    }
+}
+
+
+.start-game-button {
+    padding: 15px 30px; 
+    font-size: 25px; 
+    margin: 0 10px;
+    background-color: var(--br-c-normal); 
+    color: rgb(0,0,0); 
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s; 
+    margin-top: 32%;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); 
+    z-index: 40;
+}
+
+
+.start-game-button:hover {
+    background-color: var(--br-c-dark);
+    color: white; 
+}
+
+.waiting-sign {
+    font-size: 25px;
+    margin: 40% 30px;
+    color: var(--br-trans-grey-light);
+    border: none;
+    border-radius: 5px;
+    animation: pulse-color 1.5s infinite alternate;
+    margin-top: 15%;
+    text-align: center;
+}
+
+@keyframes pulse-color {
+    0% {
+        color: var(--br-trans-grey-light);
+    }
+    50% {
+        color: var(--br-trans-grey-very-light); 
+    }
+    100% {
+        color: var(--br-trans-grey-light); 
+    }
+}
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.circle {
+    position: absolute; 
+    width: 7vw;  
+    height: 7vw; 
+    border-radius: 50%; 
+    overflow: hidden;
+    background: transparent;
+    rotate: 45deg;
+    opacity: 0;  
+    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease; 
+}
+
+.circle.visible {
+    width: 11vw;  
+    height: 11vw;
+    opacity: 1;  
+}
+
+.segment {
+    position: absolute;
+    width: 50%; 
+    height: 50%;
+    background: var(--br-trans-grey); 
+    border: 0px solid var(--br-trans-grey-light); 
+    outline: 3px solid var(--br-grey-light);
+    outline-offset: -2px; 
+    z-index: -3;
+    transition: background 0.2s ease, box-shadow 0.3s ease; 
+}
+
+.segment:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.segment:hover {
+    background: var(--br-grey-light); 
+}
+
+.top-left {
+    top: 0;
+    left: 0;
+    border-top-left-radius: 100%; 
+    clip-path: circle(95% at 100% 100%);
+}
+
+.top-right {
+    top: 0;
+    right: 0;
+    border-top-right-radius: 100%; 
+    clip-path: circle(95% at 0% 100%);
+}
+
+.bottom-left {
+    bottom: 0;
+    left: 0;
+    border-bottom-left-radius: 100%; 
+    clip-path: circle(95% at 100% 0%);
+}
+
+.bottom-right {
+    bottom: 0;
+    right: 0;
+    border-bottom-right-radius: 100%;
+    clip-path: circle(95% at 0% 0%);
+}
+
+.inner-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 4vw);
+    height: calc(100% - 4vw);
+    background: var(--br-dark); 
+    border-radius: 50%;
+    z-index: -2; 
+    pointer-events: none;
+}
+
+.extra-power {
+    position: fixed;
+    top: 2vh;
+    left: 2vh;
+    width: 0vh;
+    height: 0vh;
+    background: var(--br-trans-grey); 
+    border: 0px solid var(--br-trans-grey-light); 
+    border-radius: 50%;
+    z-index: -3; 
+    opacity: 0.5;  
+    transition: background 0.3s ease, width 0.3s ease, height 0.3s ease, top 0.3s ease, left 0.3s ease, opacity 0.3s ease; 
+    pointer-events: none;
+}
+
+.extra-power.visible {
+    top: -9vh;
+    left: 11vh;
+    width: 4vh;
+    height: 4vh;
+    opacity: 1;  
+    pointer-events: all;
+}
+
+.extra-power:hover {
+    background: var(--br-grey-light); 
+}
+
+.message {
+    margin-bottom: 50px; 
+    color: var(--br-trans-grey-very-light);
+    font-size: 16px; 
+    text-align: center; 
+    font-size: 25px;
+}
+
+.rotate {
+    animation: rotate 1s linear;
+}
+
+
+
+.message {
+    margin-bottom: 50px; 
+    color: var(--br-trans-grey-very-light);
+    font-size: 16px; 
+    text-align: center; 
+    font-size: 25px;
+}
+
+.small-profile-image {
+    height: 3vh;
+    width: auto;
+    
+    margin-right: 15px;
+    border-radius: 50%;
+    position:'relative';
+}
+
+.reroll-button {
+    margin-bottom: 5x;
+    background-color: var(--br-trans-grey);
+    color: var(--br-trans-grey-very-light);
+    border-radius: 25%;
+    border: none;
+    width: 5vh;
+    height: 5vh;
+    transition: background-color 0.2s;
+    position: fixed;
+    bottom: calc(7.5vh);  
+    left: 26vw;  
+}
+
+.reroll-button:hover {
+    background-color: var(--br-trans-grey-light);
+}
