@@ -538,8 +538,10 @@ export default function GameScreen() {
             else if(!isSpectatorInGame && !isPlayerInGame){ //join as Spectator if possible
                 console.log("Tried to join as spectator")
                 const res = await request(`/api/v1/games/${gameCode}/joinAsSpectator`, "PATCH", null, jwt);
-                if(res.error) updateAlert("Error. You are not friends with every player");
-                navigate("/games/current")
+                if(res.error){ 
+                    updateAlert("Error. You are not friends with every player");
+                    navigate("/games/current")
+                }
             }
         }
     }
