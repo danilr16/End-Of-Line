@@ -142,7 +142,8 @@ public class TableCardService {
             }
             indices.add(index);
         }
-        if (indices.containsAll(List.of(3, 7, 9))) {//Evitar rodear las casillas del nodo de inicio (no se podría ganar)
+        if (indices.containsAll(List.of(3, 7, 9)) || indices.containsAll(List.of(7, 11, 17)) 
+            || indices.containsAll(List.of(9, 15, 19)) || indices.containsAll(List.of(17, 19, 23))) {//Evitar rodear las casillas del nodo de inicio (no se podría ganar)
             createBlocks(tableCard, player);
         } else {
             for (Integer index : indices) {//Crear bloqueos

@@ -797,12 +797,7 @@ public class GameService {
         if (game.getGameMode().equals(GameMode.TEAM_BATTLE)) {
             if (game.getPlayers().size() < 4) {//Cambiar el modo de juego si no hay suficientes jugadores
                 game.setGameMode(GameMode.VERSUS);
-                int t = game.getTeams().size()-1;
-                while (t >= 0) {
-                    Team team = game.getTeams().remove(t);
-                    teamService.deleteTeam(team);
-                    t--;
-                }
+                game = removeTeams(game);
                 this.sendSystemMessage(game.getGameCode(), "There aren't enough players to play Team Battle, so the game mode has changed to Versus");
             } else if (game.getPlayers().size() % 2 == 1) {//Cambiar el jugador que está solo en team battle a espectador
                 Team team = game.getTeams().stream().filter(t -> t.getPlayer2() == null).findFirst().get();
@@ -814,6 +809,17 @@ public class GameService {
                 game.getTeams().remove(team);
                 teamService.deleteTeam(team);
             }
+        }
+        return game;
+    }
+
+    @Transactional
+    public Game removeTeams(Game game) {
+        int t = game.getTeams().size() - 1;
+        while (t >= 0) {
+            Team team = game.getTeams().remove(t);
+            teamService.deleteTeam(team);
+            t--;
         }
         return game;
     }
