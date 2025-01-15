@@ -36,7 +36,6 @@ INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (
 INSERT INTO appachievements(id,name,description,image,threshold,metric) VALUES (10,'End of Line','?','https://play-lh.googleusercontent.com/6szjChhG7EeA15gx0eyPbagzO9Z3dgrS-GvlZy7erTaVm9lCi6prNw_AOejtz7puRfQ',100,'VICTORIES');
 
 INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,1);
-INSERT INTO appusers_achievements(user_id,achievements_id) VALUES (4,2);
 
 INSERT INTO app_table_cards(id, num_colum,num_row,type) VALUES (1,6,6,'JUGADORES_2');
 INSERT INTO appGames(id,host_id,is_public,num_players,game_mode,duration,n_turn,game_code,game_state,turn,version,initial_turn,order_turn,table_id) VALUES (1,4,true,1,'PUZZLE_SINGLE',5,4,'ABCDE','END',1,0,ARRAY[1],ARRAY[1],1);
@@ -46,9 +45,10 @@ INSERT INTO player_used_powers(player_id, used_powers) VALUES (1,'ACCELERATE');
 
 
 INSERT INTO app_pack_cards(id,num_cards,player_id) VALUES (1,15,1);
-INSERT INTO app_cards(hand_id,id,iniciative,pack_card_id,player_id,rotation,outputs,input,type) VALUES (1,1,1,1,1,0,ARRAY[2,3],0,'TYPE_1');
+INSERT INTO app_cards(hand_id,id,iniciative,player_id,rotation,outputs,input,type) VALUES (1,1,1,1,0,ARRAY[2,3],0,'TYPE_1');
+INSERT INTO app_cards(id,iniciative,player_id,rotation,outputs,input,type) VALUES (2,0,1,0,ARRAY[2,3],0,'TYPE_0');
 INSERT INTO app_rows(id,table_id) VALUES (1,1);
-INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (1,1,false,1);
+INSERT INTO app_cells(card_id, id,is_full,row_id) VALUES (2,1,false,1);
 
 INSERT INTO appusers_friends(friends_id,user_id) VALUES (1,20);
 INSERT INTO appusers_friends(friends_id,user_id) VALUES (4,20);

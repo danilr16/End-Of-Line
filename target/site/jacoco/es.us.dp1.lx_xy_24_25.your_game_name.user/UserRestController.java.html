@@ -134,10 +134,10 @@ class UserRestController {
 <span class="fc" id="L134">		String newImage = userUpdateDTO.getNewImage();</span>
 
 <span class="pc bpc" id="L136" title="2 of 4 branches missed.">		if (newUsername != null &amp;&amp; !newUsername.strip().isEmpty()) {</span>
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if (!userService.existsUser(newUsername)) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (!userService.existsUser(newUsername)) {</span>
 <span class="fc" id="L138">				toUpdate.setUsername(newUsername);</span>
 			} else {
-<span class="nc" id="L140">				throw new AccessDeniedException(&quot;There already is a user with that username!&quot;);</span>
+<span class="fc" id="L140">				throw new AccessDeniedException(&quot;There already is a user with that username!&quot;);</span>
 			}
 		}
 <span class="pc bpc" id="L143" title="2 of 4 branches missed.">		if (newImage != null &amp;&amp; !newImage.strip().isEmpty()) {</span>
@@ -155,86 +155,70 @@ class UserRestController {
 	}
 	@GetMapping(&quot;/currentUserDTO&quot;)
 	public ResponseEntity&lt;UserDTO&gt; findCurrentUserDTO() {
-<span class="nc" id="L158">		User user = userService.findCurrentUser();</span>
-<span class="nc" id="L159">		UserDTO userDTO = UserDTO.convertUserToDTO(user);</span>
-<span class="nc" id="L160">		return new ResponseEntity&lt;&gt;(userDTO, HttpStatus.OK);</span>
+<span class="fc" id="L158">		User user = userService.findCurrentUser();</span>
+<span class="fc" id="L159">		UserDTO userDTO = UserDTO.convertUserToDTO(user);</span>
+<span class="fc" id="L160">		return new ResponseEntity&lt;&gt;(userDTO, HttpStatus.OK);</span>
 	}
 	
   @PatchMapping(&quot;/myProfile/update-password&quot;)
      public ResponseEntity&lt;User&gt; updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
 <span class="fc" id="L165">         User toUpdate = userService.findCurrentUser();</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		 if (toUpdate == null) {</span>
-<span class="nc" id="L167">			throw new AccessDeniedException(&quot;User not authenticated&quot;);</span>
-		}
-<span class="fc" id="L169">         int id = toUpdate.getId();</span>
-<span class="fc" id="L170">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
-<span class="fc" id="L171">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
+<span class="fc" id="L166">         int id = toUpdate.getId();</span>
+<span class="fc" id="L167">		 String oldPassword = userUpdateDTO.getOldPasswordDTO();</span>
+<span class="fc" id="L168">		 String newPassword = userUpdateDTO.getNewPasswordDTO();</span>
 		 //Comprobamos que todos los campos sean válidos
-<span class="pc bpc" id="L173" title="4 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
-<span class="nc" id="L174">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
+<span class="pc bpc" id="L170" title="3 of 8 branches missed.">		 if (oldPassword == null || newPassword == null || newPassword.strip().isEmpty() || oldPassword.strip().isEmpty()) {</span>
+<span class="fc" id="L171">             throw new AccessDeniedException(&quot;All fields are required!&quot;);</span>
          }
 		 //Comprobamos que la antigua contraseña sea correcta
-<span class="pc bpc" id="L177" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
-<span class="fc" id="L179">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
+<span class="pc bpc" id="L174" title="2 of 4 branches missed.">         if (oldPassword != null &amp;&amp; !oldPassword.strip().isEmpty()) {</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			 if (!encoder.matches(oldPassword, toUpdate.getPassword())) {</span>
+<span class="fc" id="L176">                 throw new AccessDeniedException(&quot;The old password is incorrect!&quot;);</span>
              }
          }
 		 //Comprobamos que la nueva contraseña sea diferente a la antigua
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		 if (!newPassword.equals(oldPassword)) {</span>
 			//Comprobamos que la nueva contraseña sea válida
-<span class="pc bpc" id="L185" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
-<span class="fc" id="L186">				String encodePassword = encoder.encode(newPassword);</span>
-<span class="fc" id="L187">				toUpdate.setPassword(encodePassword);</span>
-<span class="fc" id="L188">			}else{</span>
-<span class="nc" id="L189">				throw new AccessDeniedException(&quot;The new password is not valid&quot;);</span>
-			}
+<span class="pc bpc" id="L182" title="2 of 4 branches missed.">			if(newPassword!= null &amp;&amp; !newPassword.strip().isEmpty()){</span>
+<span class="fc" id="L183">				String encodePassword = encoder.encode(newPassword);</span>
+<span class="fc" id="L184">				toUpdate.setPassword(encodePassword);</span>
+<span class="fc" id="L185">			}</span>
              
          } else {
-<span class="fc" id="L193">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
+<span class="fc" id="L188">             throw new AccessDeniedException(&quot;The new password can't be the same as the old password!&quot;);</span>
          }
-<span class="fc" id="L195">         userService.updateUser(toUpdate, id);</span>
-<span class="fc" id="L196">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
+<span class="fc" id="L190">         userService.updateUser(toUpdate, id);</span>
+<span class="fc" id="L191">         return new ResponseEntity&lt;&gt;(toUpdate, HttpStatus.OK);</span>
 
      }
 	}
 	 
 	@GetMapping(&quot;/friends&quot;)
 	public ResponseEntity&lt;List&lt;FriendDTO&gt;&gt; findFriends() {
-<span class="fc" id="L203">		User currentUser = userService.findCurrentUser();</span>
-<span class="fc" id="L204">		List&lt;User&gt; friends = currentUser.getFriends();</span>
-<span class="fc" id="L205">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
-<span class="fc" id="L206">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
+<span class="fc" id="L198">		User currentUser = userService.findCurrentUser();</span>
+<span class="fc" id="L199">		List&lt;User&gt; friends = currentUser.getFriends();</span>
+<span class="fc" id="L200">		List&lt;FriendDTO&gt; friendsDTO = friends.stream().map(FriendDTO::userToFriendDTO).collect(Collectors.toList());</span>
+<span class="fc" id="L201">		return new ResponseEntity&lt;&gt;(friendsDTO, HttpStatus.OK);</span>
 	}
 
 	@PatchMapping(&quot;/addFriend/{username}&quot;)
 	public ResponseEntity&lt;List&lt;User&gt;&gt; addFriend(@PathVariable String username){
 		
-<span class="fc" id="L212">		User currentUser = userService.findCurrentUser();</span>
-<span class="fc" id="L213">		User newFriend = userService.findUser(username);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">		if(currentUser.getFriends().contains(newFriend)){</span>
-<span class="fc" id="L215">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
+<span class="fc" id="L207">		User currentUser = userService.findCurrentUser();</span>
+<span class="fc" id="L208">		User newFriend = userService.findUser(username);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if(currentUser.getFriends().contains(newFriend)){</span>
+<span class="fc" id="L210">			throw new AccessDeniedException(&quot;You are already friends with this user!&quot;);</span>
 		}
-<span class="fc bfc" id="L217" title="All 2 branches covered.">		if(currentUser.equals(newFriend)){</span>
-<span class="fc" id="L218">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if(currentUser.equals(newFriend)){</span>
+<span class="fc" id="L213">			throw new AccessDeniedException(&quot;You can't add yourself as a friend!&quot;);</span>
 		}
-<span class="fc" id="L220">		currentUser.getFriends().add(newFriend);</span>
-<span class="fc" id="L221">		newFriend.getFriends().add(currentUser);</span>
-<span class="fc" id="L222">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="fc" id="L223">		userService.updateUser(newFriend, newFriend.getId());</span>
-<span class="fc" id="L224">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
-<span class="fc" id="L225">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
+<span class="fc" id="L215">		currentUser.getFriends().add(newFriend);</span>
+<span class="fc" id="L216">		newFriend.getFriends().add(currentUser);</span>
+<span class="fc" id="L217">		userService.updateUser(currentUser, currentUser.getId());</span>
+<span class="fc" id="L218">		userService.updateUser(newFriend, newFriend.getId());</span>
+<span class="fc" id="L219">		List&lt;User&gt; newFriends = List.of(currentUser,newFriend); </span>
+<span class="fc" id="L220">		return new ResponseEntity&lt;&gt;(newFriends,HttpStatus.OK);</span>
 	
 	}
-
-	@PatchMapping(&quot;/removeFriend&quot;)
-	public ResponseEntity&lt;User&gt; removeFriend(@RequestBody String username){
-<span class="nc" id="L231">		User currentUser = userService.findCurrentUser();</span>
-<span class="nc" id="L232">		User toRemoveFriend = userService.findUser(username);</span>
-<span class="nc" id="L233">		currentUser.getFriends().remove(toRemoveFriend);</span>
-<span class="nc" id="L234">		userService.updateUser(currentUser, currentUser.getId());</span>
-<span class="nc" id="L235">		return new ResponseEntity&lt;&gt;(currentUser,HttpStatus.OK);</span>
-	}
-
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -9,6 +9,8 @@ import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card;
 import es.us.dp1.lx_xy_24_25.your_game_name.cards.Card.TypeCard;
 import es.us.dp1.lx_xy_24_25.your_game_name.exceptions.ResourceNotFoundException;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.User;
+import es.us.dp1.lx_xy_24_25.your_game_name.user.UserService;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,9 @@ public class AchievementServiceTests {
 
     @Autowired
     private AchievementService achievementService;
+
+    @Autowired
+    private UserService userService;
 
     @Test
     void shouldFindAll() {
@@ -52,7 +57,7 @@ public class AchievementServiceTests {
     void shouldFindAllAchievementsFromUser() {
         List<Achievement> achievements = achievementService.findAchievementByUserId(4);
         assertTrue(!achievements.isEmpty());
-        assertTrue(achievements.size() >= 2);
+        assertTrue(achievements.size() >= 1);
     }
 
     @Test
@@ -131,5 +136,16 @@ public class AchievementServiceTests {
         Card c9 = Card.createByType(TypeCard.TYPE_1, player);
         cards.add(c9);
         return cards;
+    }
+
+    @Test
+    @Transactional
+    void shouldCheckAchievement() {
+        User user = userService.findUser(4);
+        Integer cont = user.getAchievements().size();
+        List<String> achievements = achievementService.checkAchievement(user);
+        Integer newCont = user.getAchievements().size();
+        assertEquals(cont + 1, newCont);
+        assertTrue(achievements.contains("End of the Beginning"));
     }
 }
