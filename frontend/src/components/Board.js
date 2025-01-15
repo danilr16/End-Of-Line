@@ -48,7 +48,7 @@ export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isD
                 {turn && canDrop && <p className="turn-sign" >IT'S YOUR TURN!</p>}
             </div>
             {state === "IN_PROCESS" && <p className="seconds-left">{secondsLeft}</p>}
-            {state === "IN_PROCESS" && <p className="current-turn">ROUND {round}</p>}
+            {state === "IN_PROCESS" && <p className="current-turn">TURN {round}</p>}
             
         </> 
     );

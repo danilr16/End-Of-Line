@@ -8,7 +8,7 @@ import { ReactComponent as Eye } from '../static/images/eye.svg';
 import { ReactComponent as Trophy } from '../static/images/trophy.svg';
 import { ReactComponent as Lightning } from '../static/images/energy-icons/lightning.svg';
 
-export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors, playerTurnIndex}){
+export default function InGamePlayerList({players,spectators,gamestate,username,gameCode,jwt,numPlayers, colors, playerTurnIndex, maxPlayers}){
 
     const {updateAlert} = useAlert();
     const userIsPlayer = players.some((p)=>p.user.username === username);
@@ -32,7 +32,7 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
         <div className="player-list-container">
             <ul className="player-list">
                 <h5 style={{ color: "white" }}>
-                    Players:
+                    Players: {gamestate === 'WAITING' ? `(${players.length}/${maxPlayers})` : ''}
                 </h5>
 
                 {players.map((player, index) => (
