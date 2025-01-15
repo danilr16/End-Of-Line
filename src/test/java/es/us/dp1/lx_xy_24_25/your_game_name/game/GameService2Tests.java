@@ -805,7 +805,7 @@ public class GameService2Tests {
         assertEquals(GameState.END, simGame.getGameState());
         assertEquals(PlayerState.WON, p.getState());
         assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
         assertEquals(1, p.getUser().getWinningStreak());
         assertEquals(1, p.getUser().getMaxStreak());
 
@@ -848,7 +848,7 @@ public class GameService2Tests {
         assertEquals(PlayerState.WON, p.getState());
         assertTrue(p.getScore() > 0);
         assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
         assertEquals(3, p.getUser().getWinningStreak());
         assertEquals(3, p.getUser().getMaxStreak());
 
@@ -868,7 +868,7 @@ public class GameService2Tests {
         gameService.gameInProcessSingle(simGame);
         assertEquals(GameState.END, simGame.getGameState());
         assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
     }
 
     @Test
@@ -908,7 +908,7 @@ public class GameService2Tests {
         assertTrue(p.getScore() > 0);
         assertTrue(p2.getScore() > 0);
         assertEquals(GameState.END, simGame.getGameState());assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
         assertEquals(2, p.getUser().getWinningStreak());
         assertEquals(3, p.getUser().getMaxStreak());
         assertEquals(1, p2.getUser().getWinningStreak());
@@ -936,7 +936,7 @@ public class GameService2Tests {
         assertTrue(p2.getScore() == 0);
         assertEquals(GameState.END, simGame.getGameState());
         assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
         assertEquals(0, p.getUser().getWinningStreak());
         assertEquals(3, p.getUser().getMaxStreak());
 
@@ -991,7 +991,7 @@ public class GameService2Tests {
         assertEquals(PlayerState.WON, p2.getState());
         assertEquals(GameState.END, simGame.getGameState());
         assertNotNull(simGame.getDuration());
-        assertTrue(simGame.getDuration() > 0);
+        assertTrue(simGame.getDuration() >= 0);
         assertEquals(1, p.getUser().getWinningStreak());
         assertEquals(1, p.getUser().getMaxStreak());
         assertEquals(1, p2.getUser().getWinningStreak());

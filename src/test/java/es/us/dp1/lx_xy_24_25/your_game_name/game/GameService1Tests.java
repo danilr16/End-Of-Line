@@ -777,6 +777,41 @@ public class GameService1Tests {
     }
 
     @Test
+    @Transactional
+    void shouldManageTurnCase4() throws Exception {
+        Game testGame = simGame; //Juego de prueba configurado previamente
+        Player testPlayer = createValidPlayer(); //Jugador de prueba
+        
+        testGame.setNTurn(2);
+        testPlayer.setTurnStarted(LocalDateTime.now());
+
+        GameService spyGs = Mockito.spy(gameService); 
+        doReturn(true).when(spyGs).cantContinuePlaying(any(Game.class), any(Player.class));
+        
+        spyGs.manageTurnOfPlayer(testGame, testPlayer);
+
+        assertTrue(testPlayer.getState() == PlayerState.LOST);
+        verify(spyGs).cantContinuePlaying(any(Game.class), any(Player.class));
+        verify(playerService).updatePlayer(any(Player.class));
+    }
+
+    @Test
+    @Transactional
+    void shouldManageTurnCase5() throws Exception {
+        Game testGame = simGame; //Juego de prueba configurado previamente
+        Player testPlayer = createValidPlayer(); //Jugador de prueba
+
+        GameService spyGs = Mockito.spy(gameService); 
+
+        testGame.setNTurn(1);
+        doNothing().when(spyGs).nextTurn(any(Game.class), any(Player.class));
+        
+        spyGs.manageTurnOfPlayer(testGame, testPlayer);
+
+        verify(spyGs).nextTurn(any(Game.class), any(Player.class));
+    }
+
+    @Test
     void cantContinuePlayingCase1() throws Exception {
 
         Game testGame = simGame;

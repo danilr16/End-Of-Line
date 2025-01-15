@@ -36,6 +36,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.game.GameState;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.Notification;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.NotificationService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 
@@ -46,14 +47,16 @@ public class UserService {
 	private GameService gameService;
 	private NotificationService notificationService;
 	private CellService cellService;
+	private PlayerService playerService;
 
 	@Autowired
 	public UserService(UserRepository userRepository, GameService gameService, 
-	NotificationService notificationService, CellService cellService) {
+	NotificationService notificationService, CellService cellService, PlayerService playerService) {
 		this.userRepository = userRepository;
 		this.gameService = gameService;
 		this.notificationService = notificationService;
 		this.cellService = cellService;
+		this.playerService = playerService;
 	}
 
 	@Transactional
@@ -126,7 +129,7 @@ public class UserService {
 	public void deleteUser(Integer id) {
 		User toDelete = findUser(id);
 		List<Game> games = this.findAllGamesByUserHost(toDelete);
-		List<Cell> cells = games.stream().filter(g -> !g.getGameState().equals(GameState.WAITING))//Antes de eliminar todas las cartas hay que quitar la referencia en las celdas
+		List<Cell> cells = this.findAllGamesWithUser(toDelete).stream().filter(g -> !g.getGameState().equals(GameState.WAITING))//Antes de eliminar todas las cartas hay que quitar la referencia en las celdas
 			.map(g -> g.getTable().getRows()).flatMap(List::stream).map(r -> r.getCells()).flatMap(List::stream)//Para evitar problemas de consistencia
 			.filter(c -> c.getCard() != null).filter(c -> c.getCard().getPlayer().getUser().equals(toDelete))
 			.collect(Collectors.toList());
@@ -134,16 +137,22 @@ public class UserService {
 			cell.setCard(null);
 			cellService.updateCell(cell, cell.getId());
 		}
-		for (Game game: games) {
+		for (Game game: games) {//Se eliminan los juegos hosteados por el usuario
 			this.gameService.deleteGame(game.getId());
 		}
-		List<User> friends = toDelete.getFriends();
-		for (User friend: friends) {
+		this.findAllGamesWithUser(toDelete).stream().map(g -> g.getPlayers()).flatMap(List::stream)//Se eliminan los jugadores con referencia al usuario 
+			.filter(p -> p.getUser().equals(toDelete)).forEach(p -> playerService.deletePlayer(p));//del resto de partidas
+		
+		this.findAllGamesWithUser(toDelete).stream().map(g -> g.getSpectators()).flatMap(List::stream)//Se eliminan los espectadores con referencia al usuario
+			.filter(p -> p.getUser().equals(toDelete)).forEach(p -> playerService.deletePlayer(p));//del resto de partidas
+		
+			List<User> friends = toDelete.getFriends();
+		for (User friend: friends) {//Eliminar referencia del usuario en la lista de amigos de los demas usuarios
 			friend.getFriends().remove(toDelete);
 			this.updateUser(friend, friend.getId());
 		}
 		List<Notification> notifications = notificationService.findAllByUser(toDelete).get();
-		for (Notification notification: notifications) {
+		for (Notification notification: notifications) {//Eliminar notificaciones con referencia al usuario
 			this.notificationService.deleteNotification(notification.getId());
 		}
 		toDelete.setFriends(new ArrayList<>());

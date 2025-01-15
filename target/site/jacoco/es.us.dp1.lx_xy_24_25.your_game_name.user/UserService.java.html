@@ -36,6 +36,7 @@ import es.us.dp1.lx_xy_24_25.your_game_name.game.GameState;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.Notification;
 import es.us.dp1.lx_xy_24_25.your_game_name.notification.NotificationService;
 import es.us.dp1.lx_xy_24_25.your_game_name.player.Player;
+import es.us.dp1.lx_xy_24_25.your_game_name.player.PlayerService;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.Cell;
 import es.us.dp1.lx_xy_24_25.your_game_name.tableCard.CellService;
 
@@ -46,109 +47,117 @@ public class UserService {
 	private GameService gameService;
 	private NotificationService notificationService;
 	private CellService cellService;
+	private PlayerService playerService;
 
 	@Autowired
 	public UserService(UserRepository userRepository, GameService gameService, 
-<span class="fc" id="L52">	NotificationService notificationService, CellService cellService) {</span>
-<span class="fc" id="L53">		this.userRepository = userRepository;</span>
-<span class="fc" id="L54">		this.gameService = gameService;</span>
-<span class="fc" id="L55">		this.notificationService = notificationService;</span>
-<span class="fc" id="L56">		this.cellService = cellService;</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L54">	NotificationService notificationService, CellService cellService, PlayerService playerService) {</span>
+<span class="fc" id="L55">		this.userRepository = userRepository;</span>
+<span class="fc" id="L56">		this.gameService = gameService;</span>
+<span class="fc" id="L57">		this.notificationService = notificationService;</span>
+<span class="fc" id="L58">		this.cellService = cellService;</span>
+<span class="fc" id="L59">		this.playerService = playerService;</span>
+<span class="fc" id="L60">	}</span>
 
 	@Transactional
 	public User saveUser(User user) throws DataAccessException {
-<span class="fc" id="L61">		userRepository.save(user);</span>
-<span class="fc" id="L62">		return user;</span>
+<span class="fc" id="L64">		userRepository.save(user);</span>
+<span class="fc" id="L65">		return user;</span>
 	}
 
 	@Transactional(readOnly = true)
 	public User findUser(String username) {
-<span class="fc" id="L67">		return userRepository.findByUsername(username)</span>
-<span class="fc" id="L68">				.orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;username&quot;, username));</span>
+<span class="fc" id="L70">		return userRepository.findByUsername(username)</span>
+<span class="fc" id="L71">				.orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;username&quot;, username));</span>
 	}
 
 	@Transactional(readOnly = true)
 	public User findUser(Integer id) {
-<span class="fc" id="L73">		return userRepository.findById(id).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;id&quot;, id));</span>
+<span class="fc" id="L76">		return userRepository.findById(id).orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;id&quot;, id));</span>
 	}	
 
 	@Transactional(readOnly = true)
 	public User findCurrentUser() {
-<span class="fc" id="L78">		Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (auth == null)</span>
-<span class="fc" id="L80">			throw new ResourceNotFoundException(&quot;Nobody authenticated!&quot;);</span>
+<span class="fc" id="L81">		Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (auth == null)</span>
+<span class="fc" id="L83">			throw new ResourceNotFoundException(&quot;Nobody authenticated!&quot;);</span>
 		else
-<span class="fc" id="L82">			return userRepository.findByUsername(auth.getName())</span>
-<span class="fc" id="L83">					.orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;Username&quot;, auth.getName()));</span>
+<span class="fc" id="L85">			return userRepository.findByUsername(auth.getName())</span>
+<span class="fc" id="L86">					.orElseThrow(() -&gt; new ResourceNotFoundException(&quot;User&quot;, &quot;Username&quot;, auth.getName()));</span>
 	}
 
 	public Boolean existsUser(String username) {
-<span class="fc" id="L87">		return userRepository.existsByUsername(username);</span>
+<span class="fc" id="L90">		return userRepository.existsByUsername(username);</span>
 	}
 
 	@Transactional(readOnly = true)
 	public Iterable&lt;User&gt; findAll() {
-<span class="fc" id="L92">		return userRepository.findAll();</span>
+<span class="fc" id="L95">		return userRepository.findAll();</span>
 	}
 
 	public Iterable&lt;User&gt; findAllByAuthority(String auth) {
-<span class="fc" id="L96">		return userRepository.findAllByAuthority(auth);</span>
+<span class="fc" id="L99">		return userRepository.findAllByAuthority(auth);</span>
 	}
 
 	@Transactional(readOnly = true)
 	public Iterable&lt;Player&gt; findAllPlayerByUser(User user) {
-<span class="fc" id="L101">		return userRepository.findAllPlayerByUser(user);</span>
+<span class="fc" id="L104">		return userRepository.findAllPlayerByUser(user);</span>
 	}
 
 	@Transactional
 	public User updateUser(@Valid User user, Integer idToUpdate) {
-<span class="fc" id="L106">		User toUpdate = findUser(idToUpdate);</span>
-<span class="fc" id="L107">		BeanUtils.copyProperties(user, toUpdate, &quot;id&quot;);</span>
-<span class="fc" id="L108">		userRepository.save(toUpdate);</span>
+<span class="fc" id="L109">		User toUpdate = findUser(idToUpdate);</span>
+<span class="fc" id="L110">		BeanUtils.copyProperties(user, toUpdate, &quot;id&quot;);</span>
+<span class="fc" id="L111">		userRepository.save(toUpdate);</span>
 
-<span class="fc" id="L110">		return toUpdate;</span>
+<span class="fc" id="L113">		return toUpdate;</span>
 	}
 
 	@Transactional
 	public List&lt;Game&gt; findAllGamesByUserHost(User user) {
-<span class="fc" id="L115">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesHostingByUser(user);</span>
-<span class="fc" id="L116">		return games;</span>
+<span class="fc" id="L118">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesHostingByUser(user);</span>
+<span class="fc" id="L119">		return games;</span>
 	}
 
 	@Transactional
 	public List&lt;Game&gt; findAllGamesWithUser(User user) {
-<span class="nc" id="L121">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesByUser(user);</span>
-<span class="nc" id="L122">		return games;</span>
+<span class="fc" id="L124">		List&lt;Game&gt; games = (List&lt;Game&gt;) userRepository.findAllGamesByUser(user);</span>
+<span class="fc" id="L125">		return games;</span>
 	}
 
 	@Transactional
 	public void deleteUser(Integer id) {
-<span class="fc" id="L127">		User toDelete = findUser(id);</span>
-<span class="fc" id="L128">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
-<span class="pc bnc" id="L129" title="All 2 branches missed.">		List&lt;Cell&gt; cells = games.stream().filter(g -&gt; !g.getGameState().equals(GameState.WAITING))//Antes de eliminar todas las cartas hay que quitar la referencia en las celdas</span>
-<span class="pc" id="L130">			.map(g -&gt; g.getTable().getRows()).flatMap(List::stream).map(r -&gt; r.getCells()).flatMap(List::stream)//Para evitar problemas de consistencia</span>
-<span class="pc bnc" id="L131" title="All 2 branches missed.">			.filter(c -&gt; c.getCard() != null).filter(c -&gt; c.getCard().getPlayer().getUser().equals(toDelete))</span>
-<span class="fc" id="L132">			.collect(Collectors.toList());</span>
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">		for (Cell cell: cells) {</span>
-<span class="nc" id="L134">			cell.setCard(null);</span>
-<span class="nc" id="L135">			cellService.updateCell(cell, cell.getId());</span>
-<span class="nc" id="L136">		}</span>
-<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		for (Game game: games) {</span>
-<span class="nc" id="L138">			this.gameService.deleteGame(game.getId());</span>
+<span class="fc" id="L130">		User toDelete = findUser(id);</span>
+<span class="fc" id="L131">		List&lt;Game&gt; games = this.findAllGamesByUserHost(toDelete);</span>
+<span class="pc bnc" id="L132" title="All 2 branches missed.">		List&lt;Cell&gt; cells = this.findAllGamesWithUser(toDelete).stream().filter(g -&gt; !g.getGameState().equals(GameState.WAITING))//Antes de eliminar todas las cartas hay que quitar la referencia en las celdas</span>
+<span class="pc" id="L133">			.map(g -&gt; g.getTable().getRows()).flatMap(List::stream).map(r -&gt; r.getCells()).flatMap(List::stream)//Para evitar problemas de consistencia</span>
+<span class="pc bnc" id="L134" title="All 2 branches missed.">			.filter(c -&gt; c.getCard() != null).filter(c -&gt; c.getCard().getPlayer().getUser().equals(toDelete))</span>
+<span class="fc" id="L135">			.collect(Collectors.toList());</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">		for (Cell cell: cells) {</span>
+<span class="nc" id="L137">			cell.setCard(null);</span>
+<span class="nc" id="L138">			cellService.updateCell(cell, cell.getId());</span>
 <span class="nc" id="L139">		}</span>
-<span class="fc" id="L140">		List&lt;User&gt; friends = toDelete.getFriends();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		for (User friend: friends) {</span>
-<span class="fc" id="L142">			friend.getFriends().remove(toDelete);</span>
-<span class="fc" id="L143">			this.updateUser(friend, friend.getId());</span>
-<span class="fc" id="L144">		}</span>
-<span class="fc" id="L145">		List&lt;Notification&gt; notifications = notificationService.findAllByUser(toDelete).get();</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (Notification notification: notifications) {</span>
-<span class="fc" id="L147">			this.notificationService.deleteNotification(notification.getId());</span>
-<span class="fc" id="L148">		}</span>
-<span class="fc" id="L149">		toDelete.setFriends(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L150">		this.updateUser(toDelete, id);</span>
-<span class="fc" id="L151">		this.userRepository.delete(toDelete);</span>
-<span class="fc" id="L152">	}</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">		for (Game game: games) {//Se eliminan los juegos hosteados por el usuario</span>
+<span class="nc" id="L141">			this.gameService.deleteGame(game.getId());</span>
+<span class="nc" id="L142">		}</span>
+<span class="pc" id="L143">		this.findAllGamesWithUser(toDelete).stream().map(g -&gt; g.getPlayers()).flatMap(List::stream)//Se eliminan los jugadores con referencia al usuario </span>
+<span class="pc" id="L144">			.filter(p -&gt; p.getUser().equals(toDelete)).forEach(p -&gt; playerService.deletePlayer(p));//del resto de partidas</span>
+		
+<span class="pc" id="L146">		this.findAllGamesWithUser(toDelete).stream().map(g -&gt; g.getSpectators()).flatMap(List::stream)//Se eliminan los espectadores con referencia al usuario</span>
+<span class="pc" id="L147">			.filter(p -&gt; p.getUser().equals(toDelete)).forEach(p -&gt; playerService.deletePlayer(p));//del resto de partidas</span>
+		
+<span class="fc" id="L149">			List&lt;User&gt; friends = toDelete.getFriends();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (User friend: friends) {//Eliminar referencia del usuario en la lista de amigos de los demas usuarios</span>
+<span class="fc" id="L151">			friend.getFriends().remove(toDelete);</span>
+<span class="fc" id="L152">			this.updateUser(friend, friend.getId());</span>
+<span class="fc" id="L153">		}</span>
+<span class="fc" id="L154">		List&lt;Notification&gt; notifications = notificationService.findAllByUser(toDelete).get();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		for (Notification notification: notifications) {//Eliminar notificaciones con referencia al usuario</span>
+<span class="fc" id="L156">			this.notificationService.deleteNotification(notification.getId());</span>
+<span class="fc" id="L157">		}</span>
+<span class="fc" id="L158">		toDelete.setFriends(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L159">		this.updateUser(toDelete, id);</span>
+<span class="fc" id="L160">		this.userRepository.delete(toDelete);</span>
+<span class="fc" id="L161">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

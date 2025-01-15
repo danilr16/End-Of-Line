@@ -163,9 +163,6 @@ class UserRestController {
   @PatchMapping("/myProfile/update-password")
      public ResponseEntity<User> updateMyPassword(@RequestBody UserProfileUpdateDTO userUpdateDTO) { {
          User toUpdate = userService.findCurrentUser();
-		 if (toUpdate == null) {
-			throw new AccessDeniedException("User not authenticated");
-		}
          int id = toUpdate.getId();
 		 String oldPassword = userUpdateDTO.getOldPasswordDTO();
 		 String newPassword = userUpdateDTO.getNewPasswordDTO();
@@ -185,8 +182,6 @@ class UserRestController {
 			if(newPassword!= null && !newPassword.strip().isEmpty()){
 				String encodePassword = encoder.encode(newPassword);
 				toUpdate.setPassword(encodePassword);
-			}else{
-				throw new AccessDeniedException("The new password is not valid");
 			}
              
          } else {
@@ -225,15 +220,4 @@ class UserRestController {
 		return new ResponseEntity<>(newFriends,HttpStatus.OK);
 	
 	}
-
-	@PatchMapping("/removeFriend")
-	public ResponseEntity<User> removeFriend(@RequestBody String username){
-		User currentUser = userService.findCurrentUser();
-		User toRemoveFriend = userService.findUser(username);
-		currentUser.getFriends().remove(toRemoveFriend);
-		userService.updateUser(currentUser, currentUser.getId());
-		return new ResponseEntity<>(currentUser,HttpStatus.OK);
-	}
-
-
 }

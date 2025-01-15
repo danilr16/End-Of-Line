@@ -3,6 +3,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -332,6 +333,24 @@ class UserControllerTests {
 
 	@Test
 	@WithMockUser("player")
+	void shoulNotUpdateProfileAnotherUserWithThatName() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setNewUsername("UPDATED");
+		dto.setNewImage("IMG_UPDATED");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(userService.existsUser(anyString())).thenReturn(true);
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException))
+				.andExpect(result -> assertTrue(result.getResolvedException().getMessage().equals("There already is a user with that username!")));
+
+		verify(userService, times(1)).findCurrentUser();
+		verify(userService).existsUser(anyString());
+	}
+
+	@Test
+	@WithMockUser("player")
 	void shouldUpdatePassword() throws Exception {
 		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
 		dto.setOldPasswordDTO("password");
@@ -383,6 +402,23 @@ class UserControllerTests {
 
 		verify(userService, times(1)).findCurrentUser();
 		verify(encoder, times(1)).matches(any(String.class), any(String.class));
+	}
+
+	@Test
+	@WithMockUser("player")
+	void shouldNotUpdatePasswordWithoutOldPassword() throws Exception {
+		UserProfileUpdateDTO dto = new UserProfileUpdateDTO();
+		dto.setOldPasswordDTO(null);
+		dto.setNewPasswordDTO("newPassword");
+		when(userService.findCurrentUser()).thenReturn(user);
+		when(this.userService.updateUser(any(User.class), any(Integer.class))).thenReturn(user);
+
+		mockMvc.perform(patch(BASE_URL + "/myProfile/update-password").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(dto))).andExpect(status().isForbidden())
+				.andExpect(result -> assertTrue(result.getResolvedException() instanceof AccessDeniedException))
+				.andExpect(result -> assertTrue(result.getResolvedException().getMessage().equals("All fields are required!")));
+
+		verify(userService, times(1)).findCurrentUser();
 	}
 
 	public Player createValidPlayer() {
@@ -565,5 +601,23 @@ class UserControllerTests {
 		verify(userService, times(1)).findAllGamesWithUser(currentUser);
 	}
 
+	@Test
+	@WithMockUser("player")
+	void shouldFindUserDTO() throws Exception {
+		User currentUser = new User();
+		currentUser.setId(1);
+		currentUser.setUsername("player1");
+		currentUser.setImage("fake_img");
+		currentUser.setFriends(new ArrayList<>());
 
+		when(userService.findCurrentUser()).thenReturn(currentUser);
+		
+		mockMvc.perform(get(BASE_URL + "/currentUserDTO").with(csrf()))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.username").value("player1"))
+			.andExpect(jsonPath("$.image").value("fake_img"));
+
+		verify(userService, times(1)).findCurrentUser();
+	}
 }
