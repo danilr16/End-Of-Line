@@ -627,7 +627,9 @@ export default function GameScreen() {
         <div className="full-screen">
             <div className="half-screen">
                 <InGamePlayerList players = {players} spectators = {game.spectators} colors = {playerColors}
-                    gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers} playerTurnIndex = {game.gameState == "IN_PROCESS" ? findPlayerIndexById(game.turn): null}/>
+                    gamestate={game.gameState} username = {user.username} gameCode = {gameCode} jwt={jwt} numPlayers={game.numPlayers} playerTurnIndex = {game.gameState == "IN_PROCESS" ? findPlayerIndexById(game.turn): null}
+                        maxPlayers = {game.numPlayers}
+                    />
 
                     {(game.tableCard !== null && gridSize > 0 && Array.isArray(boardItems) && boardItems.length > 0) && (
                         <Board 
@@ -649,6 +651,7 @@ export default function GameScreen() {
                             secondsLeft = {secondsLeft}
                             state = {game.gameState}
                             turn = {game.turn === player?.id}
+                            round = {game.nturn}
                         />
                     )}
 

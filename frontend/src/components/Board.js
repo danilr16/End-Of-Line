@@ -2,7 +2,7 @@ import React from 'react';
 import DropZone from './DropZone';
 import "../static/css/components/board.css"
 
-export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, state, setHoveredRotation, canDrop, secondsLeft, turn}) {
+export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, state, setHoveredRotation, canDrop, secondsLeft, turn, round}) {
     
     if (!Array.isArray(boardItems) || boardItems.length === 0 || boardItems.some(row => !Array.isArray(row) || row.length === 0)) {
         return null; 
@@ -48,6 +48,7 @@ export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isD
                 {turn && canDrop && <p className="turn-sign" >IT'S YOUR TURN!</p>}
             </div>
             {state === "IN_PROCESS" && <p className="seconds-left">{secondsLeft}</p>}
+            {state === "IN_PROCESS" && <p className="current-turn">TURN {round}</p>}
             
         </> 
     );
