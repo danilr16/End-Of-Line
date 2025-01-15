@@ -100,7 +100,7 @@ export default function ChatBox({gameCode,user,jwt,colors}){
                                     }}
                                 >
                                     <span className="message-user" style={{
-                                        WebkitTextStroke: colors[chatMessage.userName] > 10 ? `0.5px var(--player${colors[chatMessage.userName]}-dark)` : "none",
+                                        WebkitTextStroke: colors[chatMessage.userName] > 10 ? `0.5px var(--player${colors[chatMessage.userName]}-dark)` : "0.4px transparent",
                                     }}>[{chatMessage.userName}]:</span> <span className="message-content">{chatMessage.messageString}</span>
                                 </div>
                             ))}
