@@ -42,7 +42,6 @@ export default function Profile() {
     const [showEditAchievementModal, setEditAchievementModal] = useState(false); //Editar logros 
     const [showDeleteAchievementModal, setDeleteAchievementModal] = useState(false); //Eliminar logros 
 
-
     const predefinedImages = [
         "https://cdn-icons-png.flaticon.com/128/414/414681.png",
         "https://cdn-icons-png.flaticon.com/128/414/414686.png",
@@ -438,7 +437,7 @@ export default function Profile() {
                                     <img 
                                         key={index} 
                                         src={image} 
-                                        className="image-selector-item" 
+                                        className="image-selector-item"
                                         onClick={() => handleImageSelect(image)} 
                                     />
                                 ))}

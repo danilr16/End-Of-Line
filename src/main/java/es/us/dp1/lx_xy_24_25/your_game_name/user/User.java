@@ -2,6 +2,7 @@ package es.us.dp1.lx_xy_24_25.your_game_name.user;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,6 +26,19 @@ import lombok.Setter;
 @Table(name = "appusers")
 public class User extends BaseEntity {
 	
+	private static final List<String> IMAGE_POOL = List.of(
+        "https://cdn-icons-png.flaticon.com/128/414/414681.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414686.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414682.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414683.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414679.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414696.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414710.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414691.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414692.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414695.png",
+        "https://cdn-icons-png.flaticon.com/128/414/414684.png"
+    );
 
 	@Column(unique = true)
 	String username;
@@ -53,7 +67,7 @@ public class User extends BaseEntity {
     @PreUpdate
     private void prePersist() {
         if (image == null ) {
-            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png";
+            this.image = getRandomImage();
         }
 		if (achievements == null) {
 			this.achievements = new ArrayList<>();
@@ -71,7 +85,7 @@ public class User extends BaseEntity {
 
 	public void setImage(String image) {
         if (image == null || image.isEmpty()) {
-            this.image = "https://cdn-icons-png.flaticon.com/512/3135/3135768.png"; 
+            this.image = getRandomImage(); 
         } else {
             this.image = image;
         }
@@ -90,4 +104,9 @@ public class User extends BaseEntity {
 		}
 		return cond;
 	}
+
+	private String getRandomImage() {
+        Random random = new Random();
+        return IMAGE_POOL.get(random.nextInt(IMAGE_POOL.size()));
+    }
 }
