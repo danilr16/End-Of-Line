@@ -57,9 +57,9 @@ export default function InGamePlayerList({players,spectators,gamestate,username,
                             <p 
                                 style={{
                                     color: `var(--player${colors[index]}-normal)`,
-                                    textDecoration: player.playerState === "LOST" ? "line-through" : "none", 
-                                    WebkitTextStroke: colors[index] > 10 ? `0.4px var(--player${colors[index]}-dark)` : "none",
-                                }} 
+                                    textDecoration: player.playerState === "LOST" ? "line-through" : "none",
+                                    WebkitTextStroke: colors[index] > 10 ? `0.4px var(--player${colors[index]}-dark)` : "0.4px transparent",
+                                }}
                                 className="player-container-text"
                             >
                                 {player.user.username}

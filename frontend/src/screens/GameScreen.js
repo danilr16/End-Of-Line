@@ -304,7 +304,30 @@ export default function GameScreen() {
     useEffect(() => {
         if (game && game.gameMode) {
             if (game.gameMode == 'TEAM_BATTLE') {
-                setPlayerColors([3,13,1,11,2,12,4,14])
+                const teamNumbers = {
+                    1: [3, 13],
+                    2: [1, 11],
+                    3: [2, 12],
+                    4: [4, 14]
+                };
+            
+                const playerNumbers = players.map(player => {
+                    const username = player.user.username;
+                    let number = null;
+            
+                    game.teams.forEach((team, teamIndex) => {
+                        const teamNumber = teamIndex + 1; 
+                        if (team.userName1 === username) {
+                            number = teamNumbers[teamNumber][0]; 
+                        } else if (team.userName2 === username) {
+                            number = teamNumbers[teamNumber][1]; 
+                        }
+                    });
+            
+                    return number; 
+                });
+            
+                setPlayerColors(playerNumbers);
             }else {
                 setPlayerColors(randomShuffle(gameCode,players.length,colorMapping[game.gameMode]));
             }
