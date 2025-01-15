@@ -4,9 +4,6 @@ import "../static/css/components/board.css"
 
 export default function Board({ gridSize, size, gridRef, onDrop, boardItems, isDragging, hoveredIndex, setHoveredIndex, possiblePositions, hoveredRotation, state, setHoveredRotation, canDrop, secondsLeft, turn, round}) {
     
-    if (!Array.isArray(boardItems) || boardItems.length === 0 || boardItems.some(row => !Array.isArray(row) || row.length === 0)) {
-        return null; 
-    }
 
     
     return (
