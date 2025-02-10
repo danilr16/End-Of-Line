@@ -1,4 +1,4 @@
-# VideoGame End Of Line
+# Video Game End Of Line
 Small project based on spring-petclinic for teaching SPA architectures with react, java and spring developer for teaching DP1 at the Software Engineering degree of University of Sevilla.
 
 This is a fork of https://github.com/spring-projects/spring-petclinic  The main changes that have been performed were:
@@ -82,7 +82,7 @@ Visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagge
 
 |Spring Boot Configuration | Class or Java property files  |
 |--------------------------|---|
-|The Main Class | [PetClinicApplication](https://github.com/gii-is-DP1/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java) |
+|The Main Class | [PetClinicApplication](https://github.com/gii-is-DP1/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/GameApplication.java) |
 |Properties Files | [application.properties](https://github.com/gii-is-DP1/spring-petclinic/blob/master/src/main/resources) |
 
 
