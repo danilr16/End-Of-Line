@@ -1,4 +1,4 @@
-# React Petclinic
+# VideoGame End Of Line
 Small project based on spring-petclinic for teaching SPA architectures with react, java and spring developer for teaching DP1 at the Software Engineering degree of University of Sevilla.
 
 This is a fork of https://github.com/spring-projects/spring-petclinic  The main changes that have been performed were:
@@ -8,10 +8,10 @@ This is a fork of https://github.com/spring-projects/spring-petclinic  The main 
 - Modifying the security configuration to use JWT
 - Creating a React frontend.
 
-## Understanding the Spring Petclinic application  backend with a few diagrams
+## Understanding the Spring application backend with a few diagrams
 <a href="https://speakerdeck.com/michaelisvy/spring-petclinic-sample-application">See the presentation here</a>
 
-## Running petclinic backend locally
+## Running backend locally
 Petclinic is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
 
 
@@ -22,7 +22,7 @@ cd spring-petclinic
 java -jar target/*.jar
 ```
 
-You can then access petclinic backend here: [http://localhost:8080/](http://localhost:8080/swagger-ui/index.html)
+You can then access backend here: [http://localhost:8080/](http://localhost:8080/swagger-ui/index.html)
 
 
 
@@ -33,10 +33,10 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ```
 ## Database configuration
 
-In its default configuration, Petclinic uses an in-memory database (H2) which
+In its default configuration, End Of Line uses an in-memory database (H2) which
 gets populated at startup with data. The INSERTs are specified in the file data.sql.
 
-## Working with React Petclinic in your IDE
+## Working with End Of Line in your IDE
 
 ### Prerequisites
 The following items should be installed in your system:
@@ -65,7 +65,7 @@ Then either build on the command line `./mvnw generate-resources` or using the E
 
 3) Inside IntelliJ IDEA
 
-In the main menu, choose `File -> Open` and select the Petclinic [pom.xml](pom.xml). Click on the `Open` button.
+In the main menu, choose `File -> Open` and select [pom.xml](pom.xml). Click on the `Open` button.
 
 CSS files are generated from the Maven build. You can either build them on the command line `./mvnw generate-resources`
 or right click on the `spring-petclinic` project then `Maven -> Generates sources and Update Folders`.
@@ -74,7 +74,7 @@ A run configuration named `PetClinicApplication` should have been created for yo
 version. Otherwise, run the application by right clicking on the `PetClinicApplication` main class and choosing
 `Run 'PetClinicApplication'`.
 
-4) Navigate to Petclinic
+4) Navigate to:
 Visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) in your browser.
 
 
@@ -88,9 +88,9 @@ Visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagge
 
 ## Starting the frontend
 
-The Spring Petclinic is implemented with a React frontend in the folder named "frontend".
+The Spring project is implemented with a React frontend in the folder named "frontend".
 You can start the development server to see frontend using the command (maybe you should use the command npm insall prior to this):
 ```
 npm start
 ```
-You can then access the PetClinic frontend at [http://localhost:3000](http://localhost:3000)
+You can then access the End Of Line frontend at [http://localhost:3000](http://localhost:3000)
