@@ -82,8 +82,8 @@ Visit [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagge
 
 |Spring Boot Configuration | Class or Java property files  |
 |--------------------------|---|
-|The Main Class | [PetClinicApplication](https://github.com/gii-is-DP1/spring-petclinic/blob/master/src/main/java/org/springframework/samples/petclinic/GameApplication.java) |
-|Properties Files | [application.properties](https://github.com/gii-is-DP1/spring-petclinic/blob/master/src/main/resources) |
+|The Main Class | [GameApplication](https://github.com/danilr16/End-Of-Line/blob/main/src/main/java/es/us/dp1/lx_xy_24_25/your_game_name/GameApplication.java) |
+|Properties Files | [application.properties](https://github.com/danilr16/End-Of-Line/blob/main/src/main/resources/application.properties) |
 
 
 ## Starting the frontend
